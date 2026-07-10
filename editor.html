@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +20,7 @@
     .loading-overlay p{color:#888}
     .spinner{width:40px;height:40px;border:3px solid #333;border-top-color:#4CAF50;border-radius:50%;animation:spin .8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
-    .export-toast{position:fixed;bottom:24px;right:24px;background:#2E7D32;color:#fff;padding:14px 24px;border-radius:10px;z-index:999;font-weight:600;font-size:.9rem;box-shadow:0 4px 20px rgba(46,125,50,.4);opacity:0;transition:opacity .3s}
+    .export-toast{position:fixed;bottom:24px;right:24px;background:#2E7D32;color:#fff;padding:14px 24px;border-radius:10px;z-index:9999;font-weight:600;font-size:.9rem;box-shadow:0 4px 20px rgba(46,125,50,.4);opacity:0;transition:opacity .3s}
     .export-toast.show{opacity:1}
   </style>
 </head>
@@ -31,50 +31,49 @@
     <p>Fetching sales page + GrapesJS engine</p>
   </div>
   <div id="gjs"></div>
-  <div class="export-toast" id="toast">✅ HTML Downloaded — copy to replace index.html</div>
+  <div class="export-toast" id="toast">✅ Downloaded — replace index.html with this file</div>
 
   <script src="https://cdn.jsdelivr.net/npm/grapesjs@0.21.13/dist/grapes.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/grapesjs-preset-webpage@1.0.3/dist/index.min.js"></script>
   <script>
   (async function(){
 
-  // FETCH SALES PAGE
   var htmlContent = '';
   try {
     var resp = await fetch('index.html');
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
     htmlContent = await resp.text();
   } catch(e){
-    console.warn('Cannot fetch index.html, using fallback');
-    htmlContent = '<section><div class="container"><h2>Jaya Bina Services</h2><p>Sales page loading failed. Open index.html directly.</p></div></section>';
+    console.warn('Cannot fetch index.html', e);
+    htmlContent = '<section style="padding:80px 0"><div class="container"><h2>Jaya Bina Services</h2><p style="color:#888">Edit sales page di sini. <a href="index.html" style="color:#2E7D32">Buka sales page</a></p></div></section>';
   }
 
-  // Extract body content
-  var bodyMatch = htmlContent.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+  var bodyMatch = htmlContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
   var bodyHTML = bodyMatch ? bodyMatch[1] : htmlContent;
 
-  // Extract style
-  var styleMatch = htmlContent.match(/<style[^>]*>([\s\S]*)<\/style>/i);
+  var styleMatch = htmlContent.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
   var styleCSS = styleMatch ? styleMatch[1] : '';
 
-  // INIT EDITOR
+  var htmlTagMatch = htmlContent.match(/<html([^>]*)>/i);
+  var htmlAttrs = htmlTagMatch ? htmlTagMatch[1] : ' lang="ms"';
+
+  var headMatch = htmlContent.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
+  var headContent = headMatch ? headMatch[1] : '';
+  headContent = headContent.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+  headContent = headContent.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+
   var editor = grapesjs.init({
     container: '#gjs',
     height: '100%',
     width: 'auto',
-    storageManager: false,
+    storageManager: { type: 'local', autosave: false },
     plugins: ['gjs-preset-webpage'],
     pluginsOpts: {
       'gjs-preset-webpage': {
+        blocks: ['link-block','quote','text-basic'],
         modalImportTitle: 'Import HTML',
         modalImportLabel: '',
-        modalImportContent: function(editor){ return editor.getHtml() + '<style>'+editor.getCss()+'</style>' },
-        navbarOpts: true,
-        countdownOpts: true,
-        formsOpts: true,
-        exportOpts: true,
-        blocksBasicOpts: {
-          blocks: ['column1','column2','column3','column3-7','text','link','image','video','map']
-        },
+        modalImportContent: function(ed){ return ed.getHtml() + '<style>'+ed.getCss()+'</style>' },
       }
     },
     canvas: {
@@ -88,46 +87,74 @@
         { name: 'Tablet', width: '768px', widthMedia: '768px' },
         { name: 'Mobile', width: '375px', widthMedia: '375px' }
       ]
+    },
+    selectorManager: { componentFirst: true },
+    blockManager: {
+      blocks: [
+        { id:'text', label:'<b>T</b> Text', category:'Basic', content:{ type:'text', content:'Insert text here' } },
+        { id:'image', label:'<svg viewBox="0 0 24 24" width="16" height="16"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" fill="none" stroke="currentColor" stroke-width="2"/></svg> Image', category:'Basic', content:{ type:'image' } },
+        { id:'video', label:'<svg viewBox="0 0 24 24" width="16" height="16"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg> Video', category:'Basic', content:{ type:'video' } },
+        { id:'map', label:'<svg viewBox="0 0 24 24" width="16" height="16"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg> Map', category:'Basic', content:{ type:'map' } },
+        { id:'columns', label:'<svg viewBox="0 0 24 24" width="16" height="16"><rect x="2" y="3" width="9" height="18" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13" y="3" width="9" height="18" rx="1" fill="none" stroke="currentColor" stroke-width="2"/></svg> 2 Cols', category:'Basic', content:'<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px"><div>Left column</div><div>Right column</div></div>' },
+        { id:'section', label:'<svg viewBox="0 0 24 24" width="16" height="16"><rect x="2" y="2" width="20" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg> Section', category:'Basic', content:'<section style="padding:60px 0"><div class="container"><h2>New Section</h2><p>Add your content here.</p></div></section>' },
+        { id:'button', label:'<svg viewBox="0 0 24 24" width="16" height="16"><rect x="1" y="7" width="22" height="10" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="2"/></svg> Button', category:'Basic', content:'<a class="btn btn-primary" style="display:inline-block;padding:14px 32px;border-radius:50px;background:#2E7D32;color:#fff;font-weight:700;text-decoration:none">Click Here</a>' },
+        { id:'list', label:'<svg viewBox="0 0 24 24" width="16" height="16"><line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"/><line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2"/><line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2"/><circle cx="4" cy="6" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/></svg> List', category:'Basic', content:'<ul style="list-style:disc;padding-left:20px"><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>' }
+      ]
+    },
+    styleManager: {
+      sectors: [{
+        name: 'General',
+        open: true,
+        properties: [
+          { property:'float', type:'radio', def:'none', options:[{value:'none'},{value:'left'},{value:'right'}] },
+          { property:'display', type:'select', def:'block', options:[{value:'block'},{value:'inline-block'},{value:'inline'},{value:'flex'},{value:'grid'}] },
+          { property:'position', type:'select', def:'static', options:[{value:'static'},{value:'relative'},{value:'absolute'},{value:'fixed'}] },
+          { property:'top' },{ property:'right' },{ property:'bottom' },{ property:'left' },
+          { property:'width' },{ property:'height' },{ property:'max-width' },
+          { property:'margin' },{ property:'padding' },
+          { property:'background-color', name:'BG Color' },{ property:'color', name:'Text Color' },
+          { property:'font-family', name:'Font' },{ property:'font-size', name:'Font Size' },
+          { property:'font-weight', name:'Bold' },{ property:'text-align', name:'Align' },
+          { property:'line-height' },{ property:'letter-spacing' },
+          { property:'border-radius', name:'Radius' },{ property:'border' },
+          { property:'box-shadow', name:'Shadow' },{ property:'opacity' },
+          { property:'transform', name:'Transform' },{ property:'transition' }
+        ]
+      },{
+        name: 'Layout',
+        open: false,
+        properties: [
+          { property:'flex-direction' },{ property:'flex-wrap' },
+          { property:'justify-content' },{ property:'align-items' },
+          { property:'gap' },{ property:'grid-template-columns', name:'Grid Cols' }
+        ]
+      }]
     }
   });
 
-  // Inject CSS into canvas
+  // LOAD CONTENT PROPERLY — CSS first, then components
   editor.on('load', function(){
-    if(styleCSS){
-      editor.setStyle(styleCSS);
-    }
+    if(styleCSS) editor.setStyle(styleCSS);
+    editor.addComponents(bodyHTML);
+    setTimeout(function(){
+      document.getElementById('loader').classList.add('hidden');
+    }, 500);
   });
 
-  // Load the body HTML
-  editor.addComponents(bodyHTML);
-
-  // HIDE LOADER
-  setTimeout(function(){
-    document.getElementById('loader').classList.add('hidden');
-  }, 800);
-
-  // CUSTOM EXPORT BUTTON in top panel
+  // EXPORT BUTTON in panel
   editor.Panels.addButton('options', {
     id: 'export-html-btn',
     className: 'fa fa-download',
     command: 'export-full-html',
-    attributes: { title: 'Download Full HTML' }
+    attributes: { title: 'Download Full HTML (Ctrl+S)' }
   });
 
   editor.Commands.add('export-full-html', {
-    run: function(ed, sender){
+    run: function(ed){
       var html = ed.getHtml();
       var css = ed.getCss();
 
-      // Extract meta + title from original
-      var metaMatch = htmlContent.match(/<head[^>]*>([\s\S]*)<\/head>/i);
-      var headContent = metaMatch ? metaMatch[1] : '';
-      // Remove original style
-      headContent = headContent.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
-      // Remove original script tags
-      headContent = headContent.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
-
-      var fullHTML = '<!DOCTYPE html>\n<html lang="ms">\n<head>\n' + headContent.trim() + '\n  <style>\n' + css + '\n  </style>\n</head>\n<body>\n' + html + '\n</body>\n</html>';
+      var fullHTML = '<!DOCTYPE html>\n<html' + htmlAttrs + '>\n<head>\n' + headContent.trim() + '\n  <style>\n' + css + '\n  </style>\n</head>\n<body>\n' + html + '\n</body>\n</html>';
 
       var blob = new Blob([fullHTML], {type:'text/html'});
       var a = document.createElement('a');
@@ -136,14 +163,13 @@
       a.click();
       URL.revokeObjectURL(a.href);
 
-      // Toast
       var toast = document.getElementById('toast');
       toast.classList.add('show');
       setTimeout(function(){ toast.classList.remove('show'); }, 3000);
     }
   });
 
-  // KEYBOARD SHORTCUT: Ctrl+S to export
+  // Ctrl+S export
   document.addEventListener('keydown', function(e){
     if((e.ctrlKey || e.metaKey) && e.key === 's'){
       e.preventDefault();
@@ -151,9 +177,7 @@
     }
   });
 
-  // Expose for console
   window.editor = editor;
-
   })();
   </script>
 </body>

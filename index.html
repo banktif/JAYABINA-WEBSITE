@@ -7,6 +7,8 @@
   <meta property="og:title" content="Servis Cuci Tangki Air Profesional Lembah Klang | Jaya Bina Services">
   <meta property="og:description" content="Tengok dulu rupa tangki air kau. Air wudhu' nampak bersih — tapi dalam tangki? Jangan terkejut.">
   <meta property="og:type" content="website">
+  <meta property="og:image" content="https://banktif.github.io/jayaclean-salespage/og-image.jpg">
+  <meta property="og:url" content="https://banktif.github.io/jayaclean-salespage/">
   <title>Servis Cuci Tangki Air Profesional Lembah Klang | Jaya Bina Services</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +22,7 @@
     .container{max-width:1080px;margin:0 auto;padding:0 20px}
 
     /* NAV */
-    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);box-shadow:0 1px 20px rgba(0,0,0,.06);transition:all .3s}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 1px 20px rgba(0,0,0,.06);transition:all .3s}
     nav .container{display:flex;align-items:center;justify-content:space-between;padding-top:14px;padding-bottom:14px}
     .nav-logo{font-weight:700;font-size:1.1rem;color:#2E7D32;display:flex;align-items:center;gap:8px}
     .nav-logo svg{width:30px;height:30px}
@@ -29,11 +31,11 @@
     .nav-links a:hover,.nav-links a.active{color:#2E7D32}
     .nav-cta{background:#2E7D32;color:#fff;padding:9px 22px;border-radius:50px;font-size:.82rem;font-weight:600;transition:all .2s;border:none;cursor:pointer}
     .nav-cta:hover{background:#1B5E20;transform:translateY(-1px);box-shadow:0 4px 14px rgba(46,125,50,.3)}
-    .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px}
+    .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px}
     .hamburger span{width:24px;height:2.5px;background:#1a1a1a;border-radius:2px;transition:all .3s}
     @media(max-width:768px){
       .nav-links{display:none}.hamburger{display:flex}.nav-cta{display:none}
-      .mobile-menu{position:fixed;top:58px;left:0;right:0;background:#fff;box-shadow:0 15px 30px rgba(0,0,0,.1);padding:16px 20px;display:none;flex-direction:column;gap:6px;z-index:999}
+      .mobile-menu{position:fixed;top:58px;left:0;right:0;background:#fff;box-shadow:0 15px 30px rgba(0,0,0,.1);padding:16px 20px;display:none;flex-direction:column;gap:6px;z-index:1001}
       .mobile-menu.active{display:flex}
       .mobile-menu a{font-weight:600;padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:.9rem}
       .mobile-menu .nav-cta{display:block;text-align:center;margin-top:8px}
@@ -84,7 +86,7 @@
     .hero-stats{display:flex;gap:16px;margin-top:28px;flex-wrap:wrap}
     .hero-stat{text-align:center;padding:14px 22px;background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.04);min-width:90px}
     .hero-stat .sn{font-size:1.3rem;font-weight:800;color:#2E7D32}
-    .hero-stat .sl{font-size:.7rem;color:#888;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+    .hero-stat .sl{font-size:.7rem;color:#555;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
     @media(max-width:768px){.hero-stat{padding:10px 16px;min-width:70px}.hero-stat .sn{font-size:1.1rem}}
 
     /* GRID */
@@ -144,7 +146,7 @@
     .book-card h3{text-align:center;font-size:1.4rem;font-weight:800;margin-bottom:28px}
     .book-step{font-size:.78rem;font-weight:700;color:#2E7D32;margin-bottom:8px}
     .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;margin-bottom:20px}
-    .cal .dh{font-size:.7rem;font-weight:700;color:#999;padding:5px 0}
+    .cal .dh{font-size:.7rem;font-weight:700;color:#777;padding:5px 0}
     .cal .day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:.8rem;cursor:pointer;transition:all .12s;border:1px solid transparent;font-weight:500}
     .cal .day:hover:not(.d):not(.e){border-color:#4CAF50;background:#F1F8E9}
     .cal .day.sel{background:#2E7D32;color:#fff;font-weight:700}
@@ -214,7 +216,7 @@
     .cta-img-wrap .no-img{color:rgba(255,255,255,.5)}
 
     /* FOOTER */
-    footer{background:#111;color:#999;padding:36px 0;text-align:center}
+    footer{background:#111;color:#bbb;padding:36px 0;text-align:center}
     footer .fb{font-weight:700;font-size:1.05rem;color:#fff;margin-bottom:4px}
     footer p{font-size:.78rem}
 
@@ -223,7 +225,7 @@
     .fade-up.on{opacity:1;transform:translateY(0)}
 
     /* WA */
-    .wa{position:fixed;bottom:22px;right:22px;z-index:999;width:54px;height:54px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.35);cursor:pointer;transition:transform .2s}
+    .wa{position:fixed;bottom:22px;right:22px;z-index:100;width:54px;height:54px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.35);cursor:pointer;transition:transform .2s}
     .wa:hover{transform:scale(1.08)}
     .wa svg{width:28px;height:28px;fill:#fff}
   </style>
@@ -245,9 +247,9 @@
       <li><a href="#tempah">Tempah</a></li>
     </ul>
     <button class="nav-cta" onclick="document.getElementById('tempah').scrollIntoView({behavior:'smooth'})">Tempah &rarr;</button>
-    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
   </div>
-  <div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu" id="mobileMenu" role="menu" aria-hidden="true">
     <a href="#home">Utama</a><a href="#masalah">Masalah</a><a href="#proses">Proses</a><a href="#harga">Harga</a><a href="#tempah">Tempah</a><a href="#faq">FAQ</a>
     <button class="nav-cta" onclick="document.getElementById('tempah').scrollIntoView({behavior:'smooth'});document.getElementById('mobileMenu').classList.remove('active')">Tempah Slot</button>
   </div>
@@ -500,7 +502,7 @@
 
 <script>
 // MOBILE MENU
-document.getElementById('hamburger').addEventListener('click',function(){document.getElementById('mobileMenu').classList.toggle('active')});
+document.getElementById('hamburger').addEventListener('click',function(){var m=document.getElementById('mobileMenu'),h=this;var isOpen=m.classList.toggle('active');h.setAttribute('aria-expanded',isOpen);m.setAttribute('aria-hidden',!isOpen)});
 
 // SMOOTH SCROLL
 document.querySelectorAll('a[href^="#"]').forEach(function(l){l.addEventListener('click',function(e){var t=document.querySelector(this.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});document.getElementById('mobileMenu').classList.remove('active')}})});
@@ -513,12 +515,12 @@ fup.forEach(function(e){obs.observe(e)});
 // ACTIVE NAV
 var secs=document.querySelectorAll('section[id]');
 var nlinks=document.querySelectorAll('.nav-links a');
-window.addEventListener('scroll',function(){var sy=window.pageYOffset,cur='';secs.forEach(function(s){if(sy>=s.offsetTop-80)cur=s.getAttribute('id')});nlinks.forEach(function(l){l.classList.remove('active');if(l.getAttribute('href')==='#'+cur)l.classList.add('active')})});
+window.addEventListener('scroll',function(){var sy=window.pageYOffset,cur='';secs.forEach(function(s){if(sy>=s.offsetTop-80)cur=s.getAttribute('id')});nlinks.forEach(function(l){l.classList.remove('active');if(l.getAttribute('href')==='#'+cur)l.classList.add('active')})},{passive:true});
 
 // CALENDAR
 var td=new Date();
 var cm=td.getMonth(),cy=td.getFullYear(),sd=null,ss=null;
-function genBk(y,m){var bk={},d=new Date(y,m,1),ts=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0');while(d.getMonth()===m){var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');if(ds<=ts){d.setDate(d.getDate()+1);continue}var h=0;[ds,'s'].join('').split('').forEach(function(c){h=((h<<5)-h)+c.charCodeAt(0);h|=0});var sb=Math.abs(h%3);bk[ds]={t:sb,s:{9:sb>0,11:sb>1,2:sb>2,4:false}};d.setDate(d.getDate()+1)}return bk}
+function genBk(y,m){var bk={},d=new Date(y,m,1),ts=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0');while(d.getMonth()===m){var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');if(ds<=ts){d.setDate(d.getDate()+1);continue}var h=0;[ds,'s'].join('').split('').forEach(function(c){h=((h<<5)-h)+c.charCodeAt(0);h|=0});var sb=Math.abs(h%5);bk[ds]={t:sb,s:{9:sb>0,11:sb>1,2:sb>2,4:sb>3}};d.setDate(d.getDate()+1)}return bk}
 var bd={};function rb(){bd=genBk(cy,cm)}rb();
 function rCal(){var c=document.getElementById('cal'),l=document.getElementById('calMth'),mn=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];l.textContent=mn[cm]+' '+cy;var fd=new Date(cy,cm,1).getDay(),dim=new Date(cy,cm+1,0).getDate(),days=['Ahd','Isn','Sel','Rab','Kha','Jum','Sab'],h='';days.forEach(function(d){h+='<div class="dh">'+d+'</div>'});for(var i=0;i<fd;i++)h+='<div class="day e"></div>';var ts=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0');var mn2=new Date(td);mn2.setDate(mn2.getDate()+1);var mins=mn2.getFullYear()+'-'+String(mn2.getMonth()+1).padStart(2,'0')+'-'+String(mn2.getDate()).padStart(2,'0');var mx=new Date(td);mx.setDate(mx.getDate()+30);var maxs=mx.getFullYear()+'-'+String(mx.getMonth()+1).padStart(2,'0')+'-'+String(mx.getDate()).padStart(2,'0');for(var d=1;d<=dim;d++){var dobj=new Date(cy,cm,d),ds=dobj.getFullYear()+'-'+String(dobj.getMonth()+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),cls=['day'];if(ds<mins||ds>maxs)cls.push('d');else if(bd[ds]&&bd[ds].t>=4)cls.push('d');else if(bd[ds]&&bd[ds].t>0)cls.push('part');if(ds===ts)cls.push('today');if(sd===ds)cls.push('sel');var oc='';if(cls.indexOf('d')===-1)oc='onclick="selectDate(\''+ds+'\','+d+','+(cm+1)+','+cy+')"';h+='<div class="'+cls.join(' ')+'" '+oc+'>'+d+'</div>'}c.innerHTML=h;document.getElementById('prevM').disabled=(cy===td.getFullYear()&&cm<=td.getMonth())}
 function selectDate(ds,day,m,y){sd=ds;document.getElementById('selDt').textContent='Tarikh: '+day+'/'+m+'/'+y;document.getElementById('selDt').classList.add('show');ss=null;document.querySelectorAll('#slots .slot').forEach(function(s){s.classList.remove('on')});uSlots();rCal()}
@@ -529,7 +531,7 @@ document.getElementById('nextM').addEventListener('click',function(){if(cm===11)
 rCal();uSlots();
 
 // BOOKING SUBMIT
-document.getElementById('btnBook').addEventListener('click',function(){var n=document.getElementById('cn').value.trim(),p=document.getElementById('cp').value.trim(),a=document.getElementById('ca').value.trim(),v=true,en=document.getElementById('ecn'),ep=document.getElementById('ecp'),ea=document.getElementById('eca');en.style.display='none';ep.style.display='none';ea.style.display='none';if(!n){en.style.display='block';v=false}if(!p||!/^01\d{8,9}$/.test(p)){ep.style.display='block';v=false}if(!a||a.length<10){ea.style.display='block';v=false}if(!sd){alert('Pilih tarikh dulu.');v=false}if(!ss){alert('Pilih slot masa dulu.');v=false}if(!v)return;var btn=this;btn.disabled=true;btn.classList.add('loading');btn.textContent='Memproses...';var ssl=ss==='9am'?'9:00 AM':(ss==='11am'?'11:00 AM':(ss==='2pm'?'2:00 PM':'4:00 PM'));var dp=sd.split('-'),dl=dp[2]+'/'+dp[1]+'/'+dp[0];setTimeout(function(){btn.style.display='none';document.querySelector('.price-box').style.display='none';document.querySelectorAll('.book-step,.fg,.cal-nav,.cal,.sel-date,.slots').forEach(function(x){x.style.display='none'});document.getElementById('calendar').style.display='none';document.getElementById('confirmMsg').classList.add('show');document.getElementById('cmText').innerHTML='Terima kasih <strong>'+n.replace(/</g,'&lt;')+'</strong>!<br>Slot kau: <strong>'+dl+', '+ssl+'</strong>.<br>Nombor: <strong>'+p.replace(/</g,'&lt;')+'</strong> — kami akan hubungi segera.';document.getElementById('bookCard').querySelector('h3').textContent='&#9989; Tempahan Berjaya'},1500)});
+document.getElementById('btnBook').addEventListener('click',function(){var n=document.getElementById('cn').value.trim(),p=document.getElementById('cp').value.trim(),a=document.getElementById('ca').value.trim(),v=true,en=document.getElementById('ecn'),ep=document.getElementById('ecp'),ea=document.getElementById('eca');en.style.display='none';ep.style.display='none';ea.style.display='none';if(!n){en.style.display='block';v=false}if(!p||!/^01\d{8,9}$/.test(p)){ep.style.display='block';v=false}if(!a||a.length<10){ea.style.display='block';v=false}if(!sd){alert('Pilih tarikh dulu.');v=false}if(!ss){alert('Pilih slot masa dulu.');v=false}if(!v)return;var btn=this;btn.disabled=true;btn.classList.add('loading');btn.textContent='Memproses...';var ssl=ss==='9am'?'9:00 AM':(ss==='11am'?'11:00 AM':(ss==='2pm'?'2:00 PM':'4:00 PM'));var dp=sd.split('-'),dl=dp[2]+'/'+dp[1]+'/'+dp[0];setTimeout(function(){btn.style.display='none';document.querySelector('.price-box').style.display='none';document.querySelectorAll('.book-step,.fg,.cal-nav,.cal,.sel-date,.slots').forEach(function(x){x.style.display='none'});document.getElementById('confirmMsg').classList.add('show');document.getElementById('cmText').innerHTML='Terima kasih <strong>'+n.replace(/</g,'&lt;')+'</strong>!<br>Slot kau: <strong>'+dl+', '+ssl+'</strong>.<br>Nombor: <strong>'+p.replace(/</g,'&lt;')+'</strong> — kami akan hubungi segera.';document.getElementById('bookCard').querySelector('h3').textContent='&#9989; Tempahan Berjaya'},1500)});
 
 // FAQ ACCORDION
 document.querySelectorAll('.faq-q').forEach(function(b){b.addEventListener('click',function(){var o=this.classList.contains('open');document.querySelectorAll('.faq-q').forEach(function(x){x.classList.remove('open');x.nextElementSibling.classList.remove('show')});if(!o){this.classList.add('open');this.nextElementSibling.classList.add('show')}})});
