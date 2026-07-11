@@ -646,7 +646,7 @@ document.getElementById('btnBook').addEventListener('click',async function(){
       payer_telephone_number:phoneClean,
       return_url:'https://cuci.jayabina.com/success.html?ref='+bookingId
     };
-    var bcResp=await fetch('https://api.console.bayar.cash/v3/payment-intents',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+BC_PAT},body:JSON.stringify(bcBody)});
+    var bcResp=await fetch('https://corsproxy.io/?'+encodeURIComponent('https://api.console.bayar.cash/v3/payment-intents'),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+BC_PAT,'X-Requested-With':'XMLHttpRequest'},body:JSON.stringify(bcBody)});
     if(!bcResp.ok){var bce=await bcResp.text();throw new Error('Bayarcash: '+bce)}
     var bcData=await bcResp.json();
 
