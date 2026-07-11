@@ -76,13 +76,13 @@ Verify: staff RLS end-to-end tested (read own task, read booking, update status,
 ## PHASE 4 — Review + Complete + WhatsApp + Settings
 Goal: admin reviews photos, completes, notifies customer + staff.
 
-- [ ] Task Detail: before/after photos side by side
-- [ ] **Complete** button → task+booking `completed`, set completed_at
-- [ ] On complete → open wa.me to customer with Malay balance template (bank + QR link) from app_settings
-- [ ] **WhatsApp Staff** button → wa.me to staff with full job detail + Maps link (Malay)
-- [ ] Full Settings UI: bank details, QR upload (Cloudinary), templates, pricing
+- [x] Task Detail: before/after photos shown (admin review, tap to enlarge)
+- [x] **Complete** button (status in_progress/awaiting_review) -> task+booking `completed`, set completed_at
+- [x] On complete -> open wa.me to customer with Malay balance template (bank + QR link) from app_settings
+- [x] **WhatsApp Staff** button -> wa.me to staff with full job detail + Maps link (Malay) (done Phase 2)
+- [x] Settings UI: bank details, QR upload (Cloudinary), templates, pricing
 
-Verify: complete flow updates DB + opens correct pre-filled wa.me.
+Verify: complete flow updates DB + opens correct pre-filled wa.me. Admin RLS complete tested OK. Syntax checked.
 
 ---
 

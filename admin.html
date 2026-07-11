@@ -233,6 +233,9 @@
     .tl-item{display:flex;justify-content:space-between;font-size:.72rem}
     .tl-item .tk{color:var(--text3)}
     .tl-item .tv{color:var(--text);font-weight:600}
+    .adm-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+    .adm-thumb{aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--bg);border:1px solid var(--border);display:block}
+    .adm-thumb img{width:100%;height:100%;object-fit:cover}
 
     /* ════════ LOGIN ════════ */
     .login{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;transition:background .4s;padding:20px}
@@ -544,6 +547,8 @@ async function showSettings(){
       else h+='<input data-key="'+esc(s.key)+'" value="'+esc(s.value)+'" style="width:100%;padding:10px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg);color:var(--text);font-family:var(--font);font-size:.85rem">';
       h+='</div>';
     });
+    h+='<button class="d-btn" style="padding:12px" onclick="uploadQR()">&#128247; Upload Bank QR Image (Cloudinary)</button>';
+    h+='<div id="qrMsg" style="font-size:.75rem;color:var(--text3)"></div>';
     h+='<button class="d-btn acc" style="padding:12px" onclick="saveSettings()">Save Settings</button>';
     h+='<div id="setMsg" style="font-size:.75rem;color:var(--text3)"></div>';
     h+='</div></div>';
@@ -557,7 +562,28 @@ async function saveSettings(){
     var {error}=await SB.from('app_settings').upsert(rows);
     if(error)throw error;
     msg.style.color='var(--accent)';msg.textContent='Saved.';
+    await loadSettings();
   }catch(e){msg.style.color='var(--danger)';msg.textContent='Error: '+e.message;}
+}
+function uploadQR(){
+  var cn=settings.cloud_name,up=settings.upload_preset;
+  var cnEl=document.querySelector('[data-key="cloud_name"]'),upEl=document.querySelector('[data-key="upload_preset"]');
+  if(cnEl)cn=cnEl.value;if(upEl)up=upEl.value;
+  if(!cn||!up){alert('Set cloud_name and upload_preset first, then Save.');return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+  inp.onchange=async function(){
+    if(!inp.files||!inp.files[0])return;
+    var msg=document.getElementById('qrMsg');msg.style.color='var(--text3)';msg.textContent='Uploading...';
+    try{
+      var fd2=new FormData();fd2.append('file',inp.files[0]);fd2.append('upload_preset',up);fd2.append('folder','jayaclean/qr');
+      var res=await fetch('https://api.cloudinary.com/v1_1/'+cn+'/image/upload',{method:'POST',body:fd2});
+      var data=await res.json();
+      if(!data.secure_url)throw new Error(data.error?data.error.message:'Upload failed');
+      var qrEl=document.querySelector('[data-key="qr_image_url"]');if(qrEl)qrEl.value=data.secure_url;
+      msg.style.color='var(--accent)';msg.innerHTML='Uploaded. Click "Save Settings" to keep it.<br><img src="'+data.secure_url+'" style="max-width:120px;margin-top:6px;border-radius:8px">';
+    }catch(e){msg.style.color='var(--danger)';msg.textContent='Error: '+e.message;}
+  };
+  inp.click();
 }
 
 // ═══════════ SETTINGS LOADER + TEMPLATE HELPERS ═══════════
@@ -623,10 +649,17 @@ function showDay(ds,keep){
 }
 
 // ═══════════ TASK DETAIL ═══════════
-function openTask(taskId){
+async function openTask(taskId){
   var x=taskList.find(function(y){return y.t.id===taskId});if(!x)return;
   var b=x.b,t=x.t;cid=taskId;
   document.getElementById('mTitle').innerHTML='<span class="m-dot"></span>'+esc(b.customer_name);
+  document.getElementById('mBody').innerHTML='<div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div>';
+  document.getElementById('mActs').innerHTML='';
+  document.getElementById('modal').classList.add('show');
+  var photos=[];try{var pr=await SB.from('task_photos').select('*').eq('task_id',taskId).order('created_at',{ascending:true});photos=pr.data||[];}catch(e){}
+  var beforeP=photos.filter(function(p){return p.type==='before'});
+  var afterP=photos.filter(function(p){return p.type==='after'});
+  function thumbs(arr){if(!arr.length)return'<div style="font-size:.72rem;color:var(--text3)">None</div>';var s='<div class="adm-thumbs">';arr.forEach(function(p){s+='<a href="'+esc(p.url)+'" target="_blank" class="adm-thumb"><img src="'+esc(p.url)+'" loading="lazy"></a>'});return s+'</div>'}
   var opts='<option value="">-- Unassigned --</option>';
   staffList.forEach(function(s){opts+='<option value="'+s.id+'"'+(t.assigned_to===s.id?' selected':'')+'>'+esc(s.full_name)+' ('+esc(s.phone)+')</option>';});
   function row(k,v){return '<div class="tl-item"><span class="tk">'+k+'</span><span class="tv">'+(v||'-')+'</span></div>';}
@@ -636,7 +669,9 @@ function openTask(taskId){
     '<div class="m-row"><span class="mk">Status</span><span class="mv">'+taskBadge(t.status)+'</span></div>'+
     '<div class="m-row"><span class="mk">Address</span><span class="mv">'+esc(b.customer_address)+'</span></div>'+
     '<div class="m-row"><span class="mk">Payment</span><span class="mv">Deposit '+esc(b.payment_status)+' &middot; Balance RM'+esc(settings.price_balance||b.deposit_amount||'150')+'</span></div>'+
-    '<div style="margin:12px 0 6px;font-size:.72rem;color:var(--text3);font-weight:600">Assign Staff</div>'+
+    '<div style="margin:14px 0 6px;font-size:.72rem;color:var(--text3);font-weight:600">Before Photos ('+beforeP.length+')</div>'+thumbs(beforeP)+
+    '<div style="margin:14px 0 6px;font-size:.72rem;color:var(--text3);font-weight:600">After Photos ('+afterP.length+')</div>'+thumbs(afterP)+
+    '<div style="margin:14px 0 6px;font-size:.72rem;color:var(--text3);font-weight:600">Assign Staff</div>'+
     '<select id="assignSel" class="mv-sel">'+opts+'</select>'+
     '<div class="tl">'+tl+'</div>';
   var ph=waNum(b.customer_phone);
@@ -644,9 +679,26 @@ function openTask(taskId){
   a+='<button class="m-btn" style="background:var(--accent2);color:#fff" onclick="window.open(\''+mapsUrl(b.customer_address)+'\',\'_blank\')">&#128205; Maps</button>';
   a+='<button class="m-btn" style="background:#25D366;color:#fff" onclick="waStaff(\''+t.id+'\')">&#128172; WA Staff</button>';
   a+='<button class="m-btn" style="background:#25D366;color:#fff" onclick="window.open(\'https://wa.me/'+ph+'\',\'_blank\')">&#128172; WA Customer</button>';
+  if(t.status==='in_progress'||t.status==='awaiting_review')a+='<button class="m-btn done" style="grid-column:1/-1" onclick="completeTask(\''+t.id+'\')">&#10004; Complete &amp; Request Balance (WhatsApp)</button>';
   a+='<button class="m-btn close" onclick="closeModal()">Close</button>';
   document.getElementById('mActs').innerHTML=a;
-  document.getElementById('modal').classList.add('show');
+}
+function completeTask(taskId){
+  var x=taskList.find(function(y){return y.t.id===taskId});if(!x)return;
+  var b=x.b;
+  if(!confirm('Mark this job COMPLETED and open WhatsApp to request the RM'+(settings.price_balance||'150')+' balance from the customer?'))return;
+  var msg=fillTemplate(settings.wa_tmpl_baki||'Salam {nama}, kerja cuci tangki air di {alamat} telah siap. Sila jelaskan baki RM{baki} ke {bank} {akaun} ({pemegang}). QR: {qr_url}. Terima kasih {business}.',{
+    nama:b.customer_name,alamat:b.customer_address,baki:settings.price_balance||'150',bank:settings.bank_name||'',akaun:settings.bank_account_no||'',pemegang:settings.bank_account_holder||'',qr_url:settings.qr_image_url||'',business:settings.business_name||'JAYACLEAN'
+  });
+  window.open('https://wa.me/'+waNum(b.customer_phone)+'?text='+encodeURIComponent(msg),'_blank');
+  var now=new Date().toISOString();
+  (async function(){
+    try{
+      var r1=await SB.from('tasks').update({status:'completed',completed_at:now,updated_at:now}).eq('id',taskId);if(r1.error)throw r1.error;
+      var r2=await SB.from('bookings').update({status:'completed',updated_at:now}).eq('id',b.id);if(r2.error)throw r2.error;
+      closeModal();await loadTaskData();renderCalendar();
+    }catch(e){alert('Error: '+e.message);}
+  })();
 }
 async function saveAssign(taskId){
   var sid=document.getElementById('assignSel').value||null;
