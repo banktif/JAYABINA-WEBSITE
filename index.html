@@ -516,6 +516,7 @@
   <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.15-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.607.134-.133.297-.347.446-.52.148-.174.198-.298.297-.497.1-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.58-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.478 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.472 7.618h-.004c-1.558 0-3.085-.419-4.426-1.21l-.317-.188-3.296.864.88-3.214-.207-.328c-.868-1.381-1.326-2.977-1.326-4.634 0-4.788 3.895-8.683 8.683-8.683 2.318 0 4.498.903 6.137 2.543 1.64 1.64 2.543 3.82 2.543 6.137 0 4.788-3.895 8.683-8.683 8.683z"/></svg>
 </a>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 document.documentElement.classList.add('js-ready');
 // MOBILE MENU
@@ -534,14 +535,19 @@ var secs=document.querySelectorAll('section[id]');
 var nlinks=document.querySelectorAll('.nav-links a');
 window.addEventListener('scroll',function(){var sy=window.pageYOffset,cur='';secs.forEach(function(s){if(sy>=s.offsetTop-80)cur=s.getAttribute('id')});nlinks.forEach(function(l){l.classList.remove('active');if(l.getAttribute('href')==='#'+cur)l.classList.add('active')})},{passive:true});
 
-// SUPABASE CONFIG
-var SB_URL='https://thbscwlcyhcnqsppoyfn.supabase.co';
-var SB_KEY='sb_publishable_jFrl83f8l_tcWTulTL5lkQ_bLnCVpYR';
-async function sbCall(fn,body){
-  var r=await fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
-  if(!r.ok){var e=await r.text();throw new Error(fn+' failed: '+e)}
-  return r.json();
+// SUPABASE CLIENT (via CDN)
+var SB = supabase.createClient('https://thbscwlcyhcnqsppoyfn.supabase.co','sb_publishable_jFrl83f8l_tcWTulTL5lkQ_bLnCVpYR');
+
+// REAL SLOT CHECK
+async function fetchBookedSlots(date){
+  var {data,error}=await SB.from('slots').select('time_slot').eq('date',date).eq('is_booked',true);
+  if(error||!data)return[];return data.map(function(s){return s.time_slot});
 }
+
+// CALENDAR
+var td=new Date();
+var cm=td.getMonth(),cy=td.getFullYear(),sd=null,ss=null;
+var bookedCache={};
 
 // CALENDAR (real Supabase)
 var td=new Date();
@@ -579,11 +585,8 @@ async function uSlots(){
   if(!sd)return;
   var ts2=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0');
   if(sd<=ts2)return;
-  try{var data=await sbCall('get_available_slots',{p_date:sd});
-    data.forEach(function(row){
-      var slotEl=document.querySelector('#slots .slot[data-slot="'+row.time_slot+'"]');
-      if(slotEl&&row.available){slotEl.classList.remove('off')}
-    });
+  try{var booked=await fetchBookedSlots(sd);
+    sl.forEach(function(s){if(booked.indexOf(s.dataset.slot)===-1){s.classList.remove('off')}});
   }catch(e){console.warn('Slot fetch:',e);sl.forEach(function(s){s.classList.remove('off')})}
 }
 async function selectDate(ds){
@@ -596,7 +599,7 @@ async function selectDate(ds){
 document.getElementById('slots').addEventListener('click',function(e){var s=e.target.closest('.slot');if(!s||s.classList.contains('off'))return;if(!sd){alert('Pilih tarikh dulu.');return}document.querySelectorAll('#slots .slot').forEach(function(x){x.classList.remove('on')});s.classList.add('on');ss=s.dataset.slot});
 rCal();uSlots();
 
-// REAL BOOKING via Supabase
+// REAL BOOKING — direct table insert
 document.getElementById('btnBook').addEventListener('click',async function(){
   var n=document.getElementById('cn').value.trim(),p=document.getElementById('cp').value.trim(),a=document.getElementById('ca').value.trim(),v=true;
   var en=document.getElementById('ecn'),ep=document.getElementById('ecp'),ea=document.getElementById('eca');
@@ -607,22 +610,31 @@ document.getElementById('btnBook').addEventListener('click',async function(){
   if(!sd){alert('Pilih tarikh dulu.');v=false}
   if(!ss){alert('Pilih slot masa dulu.');v=false}
   if(!v)return;
-  var btn=this;btn.disabled=true;btn.classList.add('loading');btn.textContent='Menghubungi server...';
+  var btn=this;btn.disabled=true;btn.classList.add('loading');btn.textContent='Menyimpan...';
 
+  // Check slot
+  try{var booked=await fetchBookedSlots(sd);if(booked.indexOf(ss)>-1){alert('Maaf, slot ni dah ditempah.');btn.disabled=false;btn.classList.remove('loading');btn.textContent='&#128179; Bayar Deposit RM150 \u2192';return}}catch(e){}
+
+  // Insert via supabase-js
   try{
-    var bookingId=await sbCall('create_booking',{p_name:n,p_phone:p,p_address:a,p_date:sd,p_time:ss});
+    var {data:booking,error:berr}=await SB.from('bookings').insert({customer_name:n,customer_phone:p,customer_address:a,booking_date:sd,booking_time:ss,amount:300,deposit_amount:150,status:'pending_payment',payment_status:'pending'}).select();
+    if(berr)throw new Error(berr.message);
+    var bookingId=booking[0].id;
+
+    // Reserve slot
+    await SB.from('slots').insert({date:sd,time_slot:ss,is_booked:true,booking_id:bookingId});
+
     var ssl=ss==='9am'?'9:00 AM':(ss==='11am'?'11:00 AM':(ss==='2pm'?'2:00 PM':'4:00 PM'));
     var dp=sd.split('-'),dl=dp[2]+'/'+dp[1]+'/'+dp[0];
-    btn.style.display='none';
-    document.querySelector('.price-box').style.display='none';
+    btn.style.display='none';document.querySelector('.price-box').style.display='none';
     document.querySelectorAll('.book-step,.fg,.cal-nav,.cal,.sel-date,.slots').forEach(function(x){x.style.display='none'});
     document.getElementById('cal').style.display='none';
     document.getElementById('confirmMsg').classList.add('show');
-    document.getElementById('cmText').innerHTML='Terima kasih <strong>'+n.replace(/</g,'&lt;')+'</strong>!<br>Booking berjaya: <strong>'+dl+', '+ssl+'</strong>.<br>Ref: '+bookingId+'<br><br>Kami akan hubungi anda di <strong>'+p.replace(/</g,'&lt;')+'</strong> dalam masa 24 jam.';
+    document.getElementById('cmText').innerHTML='Terima kasih <strong>'+n.replace(/</g,'&lt;')+'</strong>!<br>Booking: <strong>'+dl+', '+ssl+'</strong><br>Ref: '+bookingId+'<br><br>Kami hubungi <strong>'+p.replace(/</g,'&lt;')+'</strong> dalam 24 jam.';
     document.getElementById('bookCard').querySelector('h3').textContent='&#9989; Tempahan Berjaya';
   }catch(e){
-    if(e.message.indexOf('not available')>-1){alert('Maaf, slot ni dah ditempah. Sila pilih slot lain.');}
-    else{alert('Maaf, ada masalah teknikal. Sila WhatsApp kami. Error: '+e.message);}
+    var msg=e.message;if(msg.indexOf('duplicate')>-1||msg.indexOf('23505')>-1){alert('Maaf, slot ni baru je ditempah. Sila pilih slot lain.');}
+    else{alert('Ralat teknikal. Sila WhatsApp kami. '+msg.substring(0,100));}
     btn.disabled=false;btn.classList.remove('loading');btn.textContent='&#128179; Bayar Deposit RM150 \u2192';
   }
 });
