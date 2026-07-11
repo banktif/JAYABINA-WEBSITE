@@ -36,8 +36,8 @@
 
     /* ═══════════ MOBILE ═══════════ */
     @media(max-width:1023px){
-      body{padding-bottom:0}
-      .hdr,.mnav{display:flex}.d-hdr,.d-sidebar,.d-only,.bnav{display:none}
+      body{padding-bottom:80px}
+      .hdr,.bnav{display:flex}.d-hdr,.d-sidebar,.d-only,.mnav{display:none}
     }
     .hdr{position:sticky;top:0;z-index:50;background:var(--overlay);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
     .hdr-l{display:flex;align-items:center;gap:12px}
@@ -148,7 +148,17 @@
     .mnav-item{flex-shrink:0;padding:7px 16px;border-radius:20px;border:1px solid var(--border-strong);background:transparent;color:var(--text2);font-size:.7rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:var(--font)}
     .mnav-item.active{background:var(--accent);color:#fff;border-color:var(--accent)}
     .mnav-item:active{transform:scale(.96)}
-    .bnav{position:fixed;bottom:0;left:0;right:0;background:var(--overlay);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 16px;z-index:50;display:none}
+
+    /* ════════ HAMBURGER DRAWER ════════ */
+    .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;opacity:0;pointer-events:none;transition:opacity .25s}
+    .drawer-overlay.open{opacity:1;pointer-events:auto}
+    .drawer{position:fixed;top:0;left:0;bottom:0;width:280px;max-width:85vw;background:var(--elevated);z-index:60;transform:translateX(-100%);transition:transform .25s cubic-bezier(.16,1,.3,1);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;overflow-y:auto}
+    .drawer.open{transform:translateX(0)}
+    .drawer-menu{padding:8px}
+    .drawer-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;color:var(--text2);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .12s;border:none;background:none;width:100%;text-align:left;font-family:var(--font)}
+    .drawer-item:hover{background:var(--bg);color:var(--text)}
+    .drawer-item span{width:24px;text-align:center;font-size:1rem}
+    .bnav{position:fixed;bottom:0;left:0;right:0;background:var(--overlay);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 16px;z-index:50}
     @media(max-width:1023px){.bnav{display:flex}}
     @supports(padding-bottom:env(safe-area-inset-bottom)){.bnav{padding-bottom:calc(8px + env(safe-area-inset-bottom))}}
     .bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--text3);cursor:pointer;padding:6px 14px;transition:all .2s;font-family:var(--font);position:relative}
@@ -234,21 +244,41 @@
 <!-- ═══════════ MOBILE HEADER ═══════════ -->
 <header class="hdr">
   <div class="hdr-l">
+    <button class="hdr-btn" id="burgerBtn" onclick="toggleDrawer()" style="font-size:1.3rem">&#9776;</button>
     <div class="hdr-logo">JC</div>
-    <div class="hdr-title"><h1>JAYACUCI</h1><span>Admin — Live</span></div>
+    <div class="hdr-title"><h1>JAYACUCI</h1><span>Admin</span></div>
   </div>
   <div class="hdr-r">
     <button class="hdr-btn" onclick="toggleTheme()">&#9788;</button>
-    <button class="hdr-btn" onclick="logout()" style="color:var(--danger)">&#10005;</button>
   </div>
 </header>
 
-<!-- ═══════════ MOBILE TAB NAV ═══════════ -->
-<nav class="mnav" id="mnav">
-  <button class="mnav-item active" id="navAll" onclick="load()">Semua</button>
-  <button class="mnav-item" id="navWait" onclick="load('pending_payment')">Pending</button>
-  <button class="mnav-item" id="navOK" onclick="load('confirmed')">Diterima</button>
-  <button class="mnav-item" id="navDone" onclick="load('completed')">Selesai</button>
+<!-- ═══════════ HAMBURGER DRAWER ═══════════ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+    <div class="hdr-logo" style="width:36px;height:36px;font-size:.75rem">JC</div>
+    <div><div style="font-weight:700;font-size:.9rem">JAYACUCI</div><div style="font-size:.62rem;color:var(--text3)">Admin Panel</div></div>
+  </div>
+  <div class="drawer-menu">
+    <button class="drawer-item" onclick="load();toggleDrawer()"><span>&#9635;</span> Semua Tempahan</button>
+    <button class="drawer-item" onclick="load('pending_payment');toggleDrawer()"><span>&#9200;</span> Pending <span class="d-nav-badge" id="drBadge" style="margin-left:auto">0</span></button>
+    <button class="drawer-item" onclick="load('confirmed');toggleDrawer()"><span>&#10003;</span> Diterima</button>
+    <button class="drawer-item" onclick="load('completed');toggleDrawer()"><span>&#10004;</span> Selesai</button>
+  </div>
+  <div class="drawer-menu" style="border-top:1px solid var(--border);padding-top:8px">
+    <button class="drawer-item" onclick="load(currentFilter);toggleDrawer()"><span>&#8635;</span> Refresh</button>
+    <button class="drawer-item" onclick="toggleTheme();toggleDrawer()"><span>&#9788;</span> Tema</button>
+    <button class="drawer-item" onclick="logout()" style="color:var(--danger)"><span>&#10005;</span> Logout</button>
+  </div>
+</div>
+
+<!-- ═══════════ MOBILE BOTTOM NAV ═══════════ -->
+<nav class="bnav">
+  <button class="bnav-item active" id="navAll" onclick="load()"><span class="bni">&#9635;</span><span class="bnl">Semua</span></button>
+  <button class="bnav-item" id="navWait" onclick="load('pending_payment')"><span class="bni">&#9200;</span><span class="bnl">Pending</span></button>
+  <button class="bnav-item" id="navOK" onclick="load('confirmed')"><span class="bni">&#10003;</span><span class="bnl">Diterima</span></button>
+  <button class="bnav-item" id="navDone" onclick="load('completed')"><span class="bni">&#10004;</span><span class="bnl">Selesai</span></button>
 </nav>
 
 <!-- ═══════════ MODAL ═══════════ -->
@@ -300,7 +330,7 @@ async function load(filter){
     else if(filter==='pending_payment')document.getElementById('dsWait').classList.add('active');
     else if(filter==='confirmed')document.getElementById('dsOK').classList.add('active');
     else if(filter==='completed')document.getElementById('dsDone').classList.add('active');
-  }else{document.querySelectorAll('.mnav-item').forEach(function(n){n.classList.remove('active')});
+  }else{document.querySelectorAll('.bnav-item').forEach(function(n){n.classList.remove('active')});
     if(!filter)document.getElementById('navAll').classList.add('active');
     else if(filter==='pending_payment')document.getElementById('navWait').classList.add('active');
     else if(filter==='confirmed')document.getElementById('navOK').classList.add('active');
@@ -313,6 +343,7 @@ async function load(filter){
     var f=filter?all.filter(function(b){return b.status===filter}):all;
     updateStats(all);document.getElementById('secCount').textContent=f.length;
     document.getElementById('dsBadge').textContent=all.filter(function(b){return b.status==='pending_payment'}).length;
+    document.getElementById('drBadge').textContent=all.filter(function(b){return b.status==='pending_payment'}).length;
     if(!f.length){l.innerHTML='<div class="empty"><div class="eicon">&#128588;</div><h2>Tiada Tempahan</h2><p>Booking baru akan muncul di sini.</p></div>';return}
 
     if(isDesktop){renderTable(f);}else{renderCards(f);}
@@ -395,6 +426,9 @@ document.getElementById('loginPass').addEventListener('keydown',function(e){if(e
 
 // PULL TO REFRESH (mobile)
 var ts=0;document.addEventListener('touchstart',function(e){ts=e.touches[0].clientY});document.addEventListener('touchend',function(e){if(window.scrollY===0&&e.changedTouches[0].clientY-ts>80)load(cf)});
+
+// HAMBURGER DRAWER
+function toggleDrawer(){document.getElementById('drawer').classList.toggle('open');document.getElementById('drawerOverlay').classList.toggle('open');document.body.style.overflow=document.getElementById('drawer').classList.contains('open')?'hidden':''}
 </script>
 </body>
 </html>
