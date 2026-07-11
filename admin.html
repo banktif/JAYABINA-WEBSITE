@@ -36,8 +36,8 @@
 
     /* ═══════════ MOBILE ═══════════ */
     @media(max-width:1023px){
-      body{padding-bottom:96px}
-      .hdr,.bnav{display:flex}.d-hdr,.d-sidebar,.d-only{display:none}
+      body{padding-bottom:0}
+      .hdr,.mnav{display:flex}.d-hdr,.d-sidebar,.d-only,.bnav{display:none}
     }
     .hdr{position:sticky;top:0;z-index:50;background:var(--overlay);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
     .hdr-l{display:flex;align-items:center;gap:12px}
@@ -142,7 +142,12 @@
     .bc-badge .bdot{width:6px;height:6px;border-radius:50%;background:currentColor}
     @media(min-width:1024px){.bc-badge{font-size:.66rem;padding:5px 14px}}
 
-    /* ════════ BOTTOM NAV (mobile only) ════════ */
+    /* ════════ MOBILE TAB NAV (below header) ════════ */
+    .mnav{background:var(--overlay);border-bottom:1px solid var(--border);padding:8px 16px 10px;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;display:none}
+    .mnav::-webkit-scrollbar{display:none}
+    .mnav-item{flex-shrink:0;padding:7px 16px;border-radius:20px;border:1px solid var(--border-strong);background:transparent;color:var(--text2);font-size:.7rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:var(--font)}
+    .mnav-item.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .mnav-item:active{transform:scale(.96)}
     .bnav{position:fixed;bottom:0;left:0;right:0;background:var(--overlay);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 16px;z-index:50;display:none}
     @media(max-width:1023px){.bnav{display:flex}}
     @supports(padding-bottom:env(safe-area-inset-bottom)){.bnav{padding-bottom:calc(8px + env(safe-area-inset-bottom))}}
@@ -238,12 +243,12 @@
   </div>
 </header>
 
-<!-- ═══════════ MOBILE BOTTOM NAV ═══════════ -->
-<nav class="bnav">
-  <button class="bnav-item active" id="navAll" onclick="load()"><span class="bni">&#9635;</span><span class="bnl">Semua</span></button>
-  <button class="bnav-item" id="navWait" onclick="load('pending_payment')"><span class="bni">&#9200;</span><span class="bnl">Pending</span></button>
-  <button class="bnav-item" id="navOK" onclick="load('confirmed')"><span class="bni">&#10003;</span><span class="bnl">Confirm</span></button>
-  <button class="bnav-item" onclick="load(currentFilter)"><span class="bni">&#8635;</span><span class="bnl">Refresh</span></button>
+<!-- ═══════════ MOBILE TAB NAV ═══════════ -->
+<nav class="mnav" id="mnav">
+  <button class="mnav-item active" id="navAll" onclick="load()">Semua</button>
+  <button class="mnav-item" id="navWait" onclick="load('pending_payment')">Pending</button>
+  <button class="mnav-item" id="navOK" onclick="load('confirmed')">Diterima</button>
+  <button class="mnav-item" id="navDone" onclick="load('completed')">Selesai</button>
 </nav>
 
 <!-- ═══════════ MODAL ═══════════ -->
@@ -295,10 +300,11 @@ async function load(filter){
     else if(filter==='pending_payment')document.getElementById('dsWait').classList.add('active');
     else if(filter==='confirmed')document.getElementById('dsOK').classList.add('active');
     else if(filter==='completed')document.getElementById('dsDone').classList.add('active');
-  }else{document.querySelectorAll('.bnav-item').forEach(function(n){n.classList.remove('active')});
+  }else{document.querySelectorAll('.mnav-item').forEach(function(n){n.classList.remove('active')});
     if(!filter)document.getElementById('navAll').classList.add('active');
     else if(filter==='pending_payment')document.getElementById('navWait').classList.add('active');
     else if(filter==='confirmed')document.getElementById('navOK').classList.add('active');
+    else if(filter==='completed')document.getElementById('navDone').classList.add('active');
   }
   var l=document.getElementById('list');l.innerHTML='<div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div>';
   try{
