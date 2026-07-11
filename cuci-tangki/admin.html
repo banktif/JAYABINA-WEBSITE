@@ -402,6 +402,7 @@ var _lt;function relucide(){clearTimeout(_lt);_lt=setTimeout(function(){try{if(w
 var _mo=new MutationObserver(relucide);_mo.observe(document.body,{childList:true,subtree:true});
 var FN_STAFF_ADMIN='https://thbscwlcyhcnqsppoyfn.supabase.co/functions/v1/staff-admin';
 var BC_BALANCE_FN='https://thbscwlcyhcnqsppoyfn.supabase.co/functions/v1/bayarcash/create-balance-intent';
+var FN_WA_API='https://thbscwlcyhcnqsppoyfn.supabase.co/functions/v1/wa-messenger/send';
 var cf=null,all=[],cid=null,currentView='bookings';
 var taskList=[],staffList=[],settings={},scMonth=new Date().getMonth(),scYear=new Date().getFullYear(),selDate=null;
 var newStaffAvatar='',staffCache=[],editAvatar='';
@@ -685,7 +686,7 @@ async function resetStaffPassword(id){
 }
 
 // ═══════════ SETTINGS ═══════════
-var SETTING_LABELS={business_name:'Business Name',bank_name:'Bank Name',bank_account_no:'Bank Account No',bank_account_holder:'Account Holder',qr_image_url:'Bank QR Image URL',price_total:'Price Total (RM)',price_deposit:'Deposit (RM)',price_balance:'Balance (RM)',wa_business_number:'Business WhatsApp Number',wa_tmpl_baki:'WA Template - Bank Transfer',wa_tmpl_balance_link:'WA Template - Payment Link',wa_tmpl_staff:'WA Template - Staff Assignment',coverage_area:'Coverage Area',max_slots_per_day:'Max Slots/Day',slots:'Time Slots',service_areas:'Service Areas (comma-separated)',auto_confirm_payment:'Auto-confirm Payment',auto_assign_enabled:'Auto-assign Staff',auto_assign_rule:'Auto-assign Rule',auto_complete_task:'Auto-complete Task',auto_send_wa_balance:'Auto-send WA Balance',cloud_name:'Cloudinary Cloud Name',upload_preset:'Cloudinary Upload Preset',folder:'Cloudinary Folder'};
+var SETTING_LABELS={business_name:'Business Name',bank_name:'Bank Name',bank_account_no:'Bank Account No',bank_account_holder:'Account Holder',qr_image_url:'Bank QR Image URL',price_total:'Price Total (RM)',price_deposit:'Deposit (RM)',price_balance:'Balance (RM)',wa_business_number:'Business WhatsApp Number',wa_tmpl_baki:'WA Template - Bank Transfer',wa_tmpl_balance_link:'WA Template - Payment Link',wa_tmpl_staff:'WA Template - Staff Assignment',wa_api_enabled:'WhatsApp Cloud API (auto-send)',coverage_area:'Coverage Area',max_slots_per_day:'Max Slots/Day',slots:'Time Slots',service_areas:'Service Areas (comma-separated)',auto_confirm_payment:'Auto-confirm Payment',auto_assign_enabled:'Auto-assign Staff',auto_assign_rule:'Auto-assign Rule',auto_complete_task:'Auto-complete Task',auto_send_wa_balance:'Auto-send WA Balance',cloud_name:'Cloudinary Cloud Name',upload_preset:'Cloudinary Upload Preset',folder:'Cloudinary Folder'};
 async function showSettings(){
   currentView='settings';setChrome(false);clearNav();setNav('dsSettings');
   setHeader('Settings','Business configuration');
@@ -707,6 +708,7 @@ async function showSettings(){
     h+=grp('Payment / Bank',[fld('bank_name'),fld('bank_account_no'),fld('bank_account_holder'),fld('qr_image_url'),fld('price_total','Price Total (RM)','text'),fld('price_deposit','Deposit (RM)','text'),fld('price_balance','Balance (RM)','text'),'<div><label class="sLbl">Bank QR Image</label><button class="d-btn" style="padding:10px 14px;font-size:.72rem" onclick="uploadQR()">Upload QR (Cloudinary)</button><div id="qrMsg" style="font-size:.72rem;color:var(--text3);margin-top:6px"></div></div>']);
     h+=grp('WhatsApp Templates (Malay)',[fld('wa_tmpl_baki','Bank Transfer (Manual)','textarea'),fld('wa_tmpl_balance_link','Payment Link (Bayarcash)','textarea'),fld('wa_tmpl_staff','Staff Assignment','textarea')]);
     h+=grp('Scheduling',[fld('slots'),fld('max_slots_per_day'),fld('coverage_area'),fld('service_areas','Service Areas','textarea')]);
+    h+=grp('WhatsApp API',[fld('wa_api_enabled','Enable Cloud API','select_onoff'),'<div style="font-size:.68rem;color:var(--text3);padding:6px 0">Set WA_PHONE_NUMBER_ID + WA_ACCESS_TOKEN in Supabase Edge Function secrets. Templates share settings with WhatsApp Templates above.</div>']);
     h+=grp('Automation',[fld('auto_confirm_payment','Auto-confirm Payment','select_onoff'),fld('auto_assign_enabled','Auto-assign Staff','select_onoff'),fld('auto_assign_rule','Assignment Rule','select_rule'),fld('auto_complete_task','Auto-complete Task','select_onoff'),fld('auto_send_wa_balance','Auto-send WA Balance','select_onoff')]);
     h+=grp('Cloudinary',[fld('cloud_name'),fld('upload_preset'),fld('folder')]);
     h+='<button class="d-btn acc" style="padding:12px" onclick="saveSettings()">Save All Settings</button>';
@@ -865,7 +867,8 @@ function completeTask(taskId){
   var x=taskList.find(function(y){return y.t.id===taskId});if(!x)return;
   var b=x.b;
   var autoWA=settings.auto_send_wa_balance==='true';
-  var cfmText=autoWA?'Generate Bayarcash payment link + auto-send WhatsApp for RM'+(settings.price_balance||'150')+' balance?':'Mark this job COMPLETED? (WhatsApp will NOT be sent automatically)';
+  var useAPI=settings.wa_api_enabled==='true';
+  var cfmText=autoWA?(useAPI?'Auto-send WhatsApp via Cloud API + Generate Bayarcash link for RM'+(settings.price_balance||'150')+' balance?':'Generate Bayarcash payment link + auto-send WhatsApp for RM'+(settings.price_balance||'150')+' balance?'):'Mark this job COMPLETED? (WhatsApp will NOT be sent automatically)';
   if(!confirm(cfmText))return;
   if(autoWA){
     (async function(){
@@ -873,11 +876,17 @@ function completeTask(taskId){
         var payRes=await fetch(BC_BALANCE_FN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({booking_id:b.id,origin:location.origin})});
         var payData=await payRes.json();
         var payUrl=payData.url||'';
-        var msg=fillTemplate(settings.wa_tmpl_balance_link||settings.wa_tmpl_baki||'Salam {nama}, kerja cuci tangki air di {alamat} telah siap. Sila jelaskan baki RM{baki} melalui pautan: {pay_url}. Terima kasih {business}.',{
-          nama:b.customer_name,alamat:b.customer_address,baki:settings.price_balance||'150',bank:settings.bank_name||'',akaun:settings.bank_account_no||'',pemegang:settings.bank_account_holder||'',qr_url:settings.qr_image_url||'',business:settings.business_name||'JAYACLEAN',pay_url:payUrl
-        });
-        window.open('https://wa.me/'+waNum(b.customer_phone)+'?text='+encodeURIComponent(msg),'_blank');
-      }catch(e){alert('Balance payment link failed: '+e.message);return;}
+        if(useAPI){
+          var waRes=await fetch(FN_WA_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({booking_id:b.id,template:'wa_tmpl_balance_link',extra:{baki:settings.price_balance||'150',business:settings.business_name||'JAYACLEAN'},pay_url:payUrl})});
+          var waData=await waRes.json();
+          if(!waRes.ok||waData.error){alert('WhatsApp API error: '+(waData.error||'failed')+'\nFalling back to manual wa.me.');window.open('https://wa.me/'+waNum(b.customer_phone)+'?text='+encodeURIComponent(payUrl),'_blank')}
+        }else{
+          var msg=fillTemplate(settings.wa_tmpl_balance_link||settings.wa_tmpl_baki||'Salam {nama}, kerja cuci tangki air di {alamat} telah siap. Sila lengkapkan baki RM{baki} melalui pautan: {pay_url}. Terima kasih {business}.',{
+            nama:b.customer_name,alamat:b.customer_address,baki:settings.price_balance||'150',bank:settings.bank_name||'',akaun:settings.bank_account_no||'',pemegang:settings.bank_account_holder||'',qr_url:settings.qr_image_url||'',business:settings.business_name||'JAYACLEAN',pay_url:payUrl
+          });
+          window.open('https://wa.me/'+waNum(b.customer_phone)+'?text='+encodeURIComponent(msg),'_blank');
+        }
+      }catch(e){alert('Error: '+e.message);return;}
     })();
   }
   var now=new Date().toISOString();
