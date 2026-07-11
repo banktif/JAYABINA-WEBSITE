@@ -198,6 +198,42 @@
     .empty{text-align:center;padding:64px 20px}.empty .eicon{font-size:2.8rem;margin-bottom:12px;opacity:.7}.empty h2{font-size:.95rem;font-weight:700;margin-bottom:4px}.empty p{color:var(--text3);font-size:.78rem}
     .spin{display:flex;align-items:center;justify-content:center;padding:48px;gap:6px}.spin-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:sp 1.4s infinite}.spin-dot:nth-child(2){animation-delay:.2s}.spin-dot:nth-child(3){animation-delay:.4s}@keyframes sp{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1.3)}}
 
+    /* ════════ SCHEDULE CALENDAR ════════ */
+    .cal-wrap{background:var(--elevated);border:1px solid var(--border);border-radius:16px;padding:16px;max-width:820px}
+    .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .cal-head h3{font-size:1rem;font-weight:700}
+    .cal-nav{display:flex;gap:6px}
+    .cal-nav button{width:34px;height:34px;border-radius:10px;border:1px solid var(--border-strong);background:var(--bg);color:var(--text);cursor:pointer;font-family:var(--font);font-size:1rem}
+    .cal-nav button:active{transform:scale(.94)}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+    .cal-dh{text-align:center;font-size:.58rem;font-weight:700;color:var(--text3);padding:4px 0;text-transform:uppercase;letter-spacing:.4px}
+    .cal-cell{min-height:58px;border:1px solid var(--border);border-radius:10px;padding:5px 6px;position:relative;cursor:pointer;transition:all .15s;background:var(--bg)}
+    .cal-cell:hover{border-color:var(--accent)}
+    .cal-cell.empty{background:transparent;border:none;cursor:default}
+    .cal-cell.today{border-color:var(--accent2);box-shadow:0 0 0 1px var(--accent2)}
+    .cal-cell .cnum{font-size:.74rem;font-weight:700}
+    .cal-cell .cbadge{position:absolute;bottom:5px;right:6px;font-size:.58rem;font-weight:800;padding:1px 7px;border-radius:10px;background:var(--accent-light);color:var(--accent)}
+    .cal-cell.all-done .cbadge{background:var(--accent2-light);color:var(--accent2)}
+    .cal-cell .cdot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--danger)}
+    .day-head{display:flex;align-items:center;gap:10px;margin:18px 0 12px}
+    .day-head h3{font-size:.95rem;font-weight:700}
+    .day-head button{padding:6px 14px;border-radius:10px;border:1px solid var(--border-strong);background:var(--bg);color:var(--text2);cursor:pointer;font-family:var(--font);font-size:.72rem;font-weight:600}
+    .tk-card{background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:8px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:all .15s}
+    .tk-card:hover{border-color:var(--accent)}
+    .tk-slot{font-size:.7rem;font-weight:700;color:var(--text2);background:var(--bg);padding:5px 11px;border-radius:20px;white-space:nowrap}
+    .tk-body{flex:1;min-width:0}
+    .tk-name{font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .tk-addr{font-size:.7rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .bc-badge.unassigned{background:var(--danger-light);color:var(--danger)}
+    .bc-badge.assigned{background:var(--accent2-light);color:var(--accent2)}
+    .bc-badge.in_progress{background:var(--warning-light);color:var(--warning)}
+    .bc-badge.awaiting_review{background:var(--warning-light);color:var(--warning)}
+    .mv-sel{padding:10px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg);color:var(--text);font-family:var(--font);font-size:.82rem;width:100%}
+    .tl{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+    .tl-item{display:flex;justify-content:space-between;font-size:.72rem}
+    .tl-item .tk{color:var(--text3)}
+    .tl-item .tv{color:var(--text);font-weight:600}
+
     /* ════════ LOGIN ════════ */
     .login{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;transition:background .4s;padding:20px}
     .login.hidden{display:none}
@@ -224,6 +260,7 @@
   <button class="d-nav-item" id="dsWait" onclick="showBookings('pending_payment')"><span class="dni">&#9200;</span> Pending <span class="d-nav-badge" id="dsBadge">0</span></button>
   <button class="d-nav-item" id="dsOK" onclick="showBookings('confirmed')"><span class="dni">&#10003;</span> Confirmed</button>
   <button class="d-nav-item" id="dsDone" onclick="showBookings('completed')"><span class="dni">&#10004;</span> Completed</button>
+  <button class="d-nav-item" id="dsSchedule" onclick="showSchedule()"><span class="dni">&#128197;</span> Schedule</button>
   <button class="d-nav-item" id="dsStaff" onclick="showStaff()"><span class="dni">&#128101;</span> Staff</button>
   <button class="d-nav-item" id="dsSettings" onclick="showSettings()"><span class="dni">&#9881;</span> Settings</button>
   <div class="d-sidebar-footer">
@@ -273,6 +310,7 @@
     <button class="drawer-item" onclick="showBookings('pending_payment');toggleDrawer()"><span>&#9200;</span> Pending <span class="d-nav-badge" id="drBadge" style="margin-left:auto">0</span></button>
     <button class="drawer-item" onclick="showBookings('confirmed');toggleDrawer()"><span>&#10003;</span> Confirmed</button>
     <button class="drawer-item" onclick="showBookings('completed');toggleDrawer()"><span>&#10004;</span> Completed</button>
+    <button class="drawer-item" onclick="showSchedule();toggleDrawer()"><span>&#128197;</span> Schedule</button>
     <button class="drawer-item" onclick="showStaff();toggleDrawer()"><span>&#128101;</span> Staff</button>
     <button class="drawer-item" onclick="showSettings();toggleDrawer()"><span>&#9881;</span> Settings</button>
   </div>
@@ -286,7 +324,7 @@
 <!-- ═══════════ MOBILE BOTTOM NAV ═══════════ -->
 <nav class="bnav">
   <button class="bnav-item active" id="navAll" onclick="showBookings()"><span class="bni">&#9635;</span><span class="bnl">All</span></button>
-  <button class="bnav-item" id="navWait" onclick="showBookings('pending_payment')"><span class="bni">&#9200;</span><span class="bnl">Pending</span></button>
+  <button class="bnav-item" id="navSchedule" onclick="showSchedule()"><span class="bni">&#128197;</span><span class="bnl">Schedule</span></button>
   <button class="bnav-item" id="navOK" onclick="showBookings('confirmed')"><span class="bni">&#10003;</span><span class="bnl">Confirmed</span></button>
   <button class="bnav-item" id="navDone" onclick="showBookings('completed')"><span class="bni">&#10004;</span><span class="bnl">Done</span></button>
   <button class="bnav-item" id="navStaff" onclick="showStaff()"><span class="bni">&#128101;</span><span class="bnl">Staff</span></button>
@@ -307,6 +345,7 @@
 var SB=supabase.createClient('https://thbscwlcyhcnqsppoyfn.supabase.co','sb_publishable_jFrl83f8l_tcWTulTL5lkQ_bLnCVpYR');
 var FN_STAFF_ADMIN='https://thbscwlcyhcnqsppoyfn.supabase.co/functions/v1/staff-admin';
 var cf=null,all=[],cid=null,currentView='bookings';
+var taskList=[],staffList=[],settings={},scMonth=new Date().getMonth(),scYear=new Date().getFullYear(),selDate=null;
 async function authToken(){var {data:{session}}=await SB.auth.getSession();return session?session.access_token:'';}
 
 // THEME
@@ -335,17 +374,9 @@ function badge(s){
 async function load(filter){
   cf=filter||null;
   var isDesktop=matchMedia('(min-width:1024px)').matches;
-  if(isDesktop){document.querySelectorAll('.d-nav-item').forEach(function(n){n.classList.remove('active')});
-    if(!filter)document.getElementById('dsAll').classList.add('active');
-    else if(filter==='pending_payment')document.getElementById('dsWait').classList.add('active');
-    else if(filter==='confirmed')document.getElementById('dsOK').classList.add('active');
-    else if(filter==='completed')document.getElementById('dsDone').classList.add('active');
-  }else{document.querySelectorAll('.bnav-item').forEach(function(n){n.classList.remove('active')});
-    if(!filter)document.getElementById('navAll').classList.add('active');
-    else if(filter==='pending_payment')document.getElementById('navWait').classList.add('active');
-    else if(filter==='confirmed')document.getElementById('navOK').classList.add('active');
-    else if(filter==='completed')document.getElementById('navDone').classList.add('active');
-  }
+  clearNav();
+  var nm={'':['dsAll','navAll'],'pending_payment':['dsWait','navWait'],'confirmed':['dsOK','navOK'],'completed':['dsDone','navDone']};
+  var ids=nm[filter||'']||nm[''];setNav(ids[0]);setNav(ids[1]);
   var l=document.getElementById('list');l.innerHTML='<div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div>';
   try{
     var{data,error}=await SB.from('bookings').select('*').order('booking_date',{ascending:true}).order('booking_time',{ascending:true});
@@ -431,7 +462,7 @@ function clearNav(){document.querySelectorAll('.d-nav-item,.bnav-item').forEach(
 function setNav(id){var el=document.getElementById(id);if(el)el.classList.add('active');}
 function setHeader(title,sub){var t=document.getElementById('dTitle'),s=document.getElementById('dSub');if(t)t.textContent=title;if(s)s.textContent=sub;}
 function showBookings(filter){currentView='bookings';setChrome(true);setHeader('Dashboard','Overview of all tank-cleaning bookings');document.getElementById('secTitle').textContent='Bookings';load(filter);}
-function refreshView(){if(currentView==='staff')showStaff();else if(currentView==='settings')showSettings();else load(cf);}
+function refreshView(){if(currentView==='staff')showStaff();else if(currentView==='settings')showSettings();else if(currentView==='schedule')showSchedule();else load(cf);}
 
 // ═══════════ STAFF MANAGEMENT ═══════════
 async function showStaff(){
@@ -529,6 +560,111 @@ async function saveSettings(){
   }catch(e){msg.style.color='var(--danger)';msg.textContent='Error: '+e.message;}
 }
 
+// ═══════════ SETTINGS LOADER + TEMPLATE HELPERS ═══════════
+async function loadSettings(){try{var {data}=await SB.from('app_settings').select('*');settings={};(data||[]).forEach(function(s){settings[s.key]=s.value});}catch(e){}}
+function fillTemplate(tmpl,map){return (tmpl||'').replace(/\{(\w+)\}/g,function(m,k){return map[k]!==undefined?map[k]:m});}
+function mapsUrl(addr){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(addr||'');}
+function waNum(p){p=(p||'').replace(/[^0-9]/g,'');if(p.indexOf('0')===0)p='6'+p.substring(1);return p;}
+function fmtTs(ts){if(!ts)return null;var d=new Date(ts);return d.toLocaleDateString()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+function taskBadge(s){var m={unassigned:'Unassigned',assigned:'Assigned',in_progress:'In Progress',awaiting_review:'Review',completed:'Completed',cancelled:'Cancelled'};return '<span class="bc-badge '+s+'"><span class="bdot"></span>'+(m[s]||s)+'</span>';}
+
+// ═══════════ SCHEDULE / CALENDAR ═══════════
+async function loadTaskData(){
+  var tq=await SB.from('tasks').select('*');
+  var bq=await SB.from('bookings').select('*');
+  var sq=await SB.from('profiles').select('id,full_name,phone,is_active').eq('role','staff');
+  var bmap={};(bq.data||[]).forEach(function(b){bmap[b.id]=b});
+  var smap={};(sq.data||[]).forEach(function(s){smap[s.id]=s});
+  staffList=(sq.data||[]).filter(function(s){return s.is_active});
+  taskList=(tq.data||[]).map(function(t){return {t:t,b:bmap[t.booking_id]||{},s:t.assigned_to?smap[t.assigned_to]:null}}).filter(function(x){return x.b&&x.b.id});
+}
+async function showSchedule(){
+  currentView='schedule';setChrome(false);clearNav();setNav('dsSchedule');setNav('navSchedule');
+  setHeader('Schedule','Tasks by date. Click a day to see jobs.');
+  var l=document.getElementById('list');
+  l.innerHTML='<div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div>';
+  try{await loadTaskData();renderCalendar();}catch(e){l.innerHTML='<div class="empty"><div class="eicon">&#9888;</div><h2>Error</h2><p>'+esc(e.message)+'</p></div>';}
+}
+function scPrev(){if(scMonth===0){scMonth=11;scYear--}else scMonth--;renderCalendar();}
+function scNext(){if(scMonth===11){scMonth=0;scYear++}else scMonth++;renderCalendar();}
+function renderCalendar(){
+  var mn=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var byDay={};taskList.forEach(function(x){var d=x.b.booking_date;if(!d)return;(byDay[d]=byDay[d]||[]).push(x)});
+  var fdw=new Date(scYear,scMonth,1).getDay(),dim=new Date(scYear,scMonth+1,0).getDate();
+  var now=new Date(),todayStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  var h='<div class="cal-wrap"><div class="cal-head"><h3>'+mn[scMonth]+' '+scYear+'</h3><div class="cal-nav"><button onclick="scPrev()">&#8249;</button><button onclick="scNext()">&#8250;</button></div></div><div class="cal-grid">';
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(d){h+='<div class="cal-dh">'+d+'</div>'});
+  for(var i=0;i<fdw;i++)h+='<div class="cal-cell empty"></div>';
+  for(var d=1;d<=dim;d++){
+    var ds=scYear+'-'+String(scMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var jobs=byDay[ds]||[];var cls='cal-cell';if(ds===todayStr)cls+=' today';
+    var hasUn=jobs.some(function(x){return x.t.status==='unassigned'});
+    var allDone=jobs.length>0&&jobs.every(function(x){return x.t.status==='completed'});
+    if(hasUn)cls+=' has-unassigned';if(allDone)cls+=' all-done';
+    h+='<div class="'+cls+'" onclick="showDay(\''+ds+'\')"><span class="cnum">'+d+'</span>';
+    if(hasUn)h+='<span class="cdot"></span>';if(jobs.length)h+='<span class="cbadge">'+jobs.length+'</span>';
+    h+='</div>';
+  }
+  h+='</div></div><div id="dayList"></div>';
+  document.getElementById('list').innerHTML=h;
+  if(selDate)showDay(selDate,true);
+}
+function slotOrder(s){return {'9am':1,'11am':2,'2pm':3,'4pm':4}[s]||9;}
+function showDay(ds,keep){
+  selDate=ds;
+  var jobs=taskList.filter(function(x){return x.b.booking_date===ds}).sort(function(a,b){return slotOrder(a.b.booking_time)-slotOrder(b.b.booking_time)});
+  var h='<div class="day-head"><h3>'+fd(ds)+'</h3><span class="sec-count">'+jobs.length+' job(s)</span></div>';
+  if(!jobs.length){h+='<div class="empty" style="padding:32px"><div class="eicon">&#128197;</div><p>No jobs on this date.</p></div>';}
+  else{jobs.forEach(function(x){
+    h+='<div class="tk-card" onclick="openTask(\''+x.t.id+'\')"><span class="tk-slot">'+ft(x.b.booking_time)+'</span><div class="tk-body"><div class="tk-name">'+esc(x.b.customer_name)+'</div><div class="tk-addr">&#128205; '+esc(x.b.customer_address)+'</div><div style="margin-top:4px;font-size:.68rem;color:var(--text3)">'+(x.s?'&#128100; '+esc(x.s.full_name):'&#9888; Unassigned')+'</div></div>'+taskBadge(x.t.status)+'</div>';
+  });}
+  document.getElementById('dayList').innerHTML=h;
+  if(!keep)document.getElementById('dayList').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ═══════════ TASK DETAIL ═══════════
+function openTask(taskId){
+  var x=taskList.find(function(y){return y.t.id===taskId});if(!x)return;
+  var b=x.b,t=x.t;cid=taskId;
+  document.getElementById('mTitle').innerHTML='<span class="m-dot"></span>'+esc(b.customer_name);
+  var opts='<option value="">-- Unassigned --</option>';
+  staffList.forEach(function(s){opts+='<option value="'+s.id+'"'+(t.assigned_to===s.id?' selected':'')+'>'+esc(s.full_name)+' ('+esc(s.phone)+')</option>';});
+  function row(k,v){return '<div class="tl-item"><span class="tk">'+k+'</span><span class="tv">'+(v||'-')+'</span></div>';}
+  var tl=row('Created',fmtTs(t.created_at))+row('Started',fmtTs(t.started_at))+row('Finished',fmtTs(t.finished_at))+row('Completed',fmtTs(t.completed_at));
+  document.getElementById('mBody').innerHTML=
+    '<div class="m-row"><span class="mk">Date & Time</span><span class="mv">'+fd(b.booking_date)+' &middot; '+ft(b.booking_time)+'</span></div>'+
+    '<div class="m-row"><span class="mk">Status</span><span class="mv">'+taskBadge(t.status)+'</span></div>'+
+    '<div class="m-row"><span class="mk">Address</span><span class="mv">'+esc(b.customer_address)+'</span></div>'+
+    '<div class="m-row"><span class="mk">Payment</span><span class="mv">Deposit '+esc(b.payment_status)+' &middot; Balance RM'+esc(settings.price_balance||b.deposit_amount||'150')+'</span></div>'+
+    '<div style="margin:12px 0 6px;font-size:.72rem;color:var(--text3);font-weight:600">Assign Staff</div>'+
+    '<select id="assignSel" class="mv-sel">'+opts+'</select>'+
+    '<div class="tl">'+tl+'</div>';
+  var ph=waNum(b.customer_phone);
+  var a='<button class="m-btn accept" onclick="saveAssign(\''+t.id+'\')">Save Assignment</button>';
+  a+='<button class="m-btn" style="background:var(--accent2);color:#fff" onclick="window.open(\''+mapsUrl(b.customer_address)+'\',\'_blank\')">&#128205; Maps</button>';
+  a+='<button class="m-btn" style="background:#25D366;color:#fff" onclick="waStaff(\''+t.id+'\')">&#128172; WA Staff</button>';
+  a+='<button class="m-btn" style="background:#25D366;color:#fff" onclick="window.open(\'https://wa.me/'+ph+'\',\'_blank\')">&#128172; WA Customer</button>';
+  a+='<button class="m-btn close" onclick="closeModal()">Close</button>';
+  document.getElementById('mActs').innerHTML=a;
+  document.getElementById('modal').classList.add('show');
+}
+async function saveAssign(taskId){
+  var sid=document.getElementById('assignSel').value||null;
+  var x=taskList.find(function(y){return y.t.id===taskId});
+  var upd={assigned_to:sid,updated_at:new Date().toISOString()};
+  if(sid&&(!x||x.t.status==='unassigned'))upd.status='assigned';
+  if(!sid)upd.status='unassigned';
+  try{var {error}=await SB.from('tasks').update(upd).eq('id',taskId);if(error)throw error;closeModal();await loadTaskData();renderCalendar();}
+  catch(e){alert('Error: '+e.message);}
+}
+function waStaff(taskId){
+  var x=taskList.find(function(y){return y.t.id===taskId});if(!x)return;
+  if(!x.s){alert('Assign a staff first.');return;}
+  var b=x.b;
+  var msg=fillTemplate(settings.wa_tmpl_staff||'Salam {nama_staff}, tugasan cuci tangki: {nama} di {alamat} pada {tarikh} ({slot}). Lokasi: {maps}',{nama_staff:x.s.full_name,nama:b.customer_name,alamat:b.customer_address,tarikh:fd(b.booking_date),slot:ft(b.booking_time),maps:mapsUrl(b.customer_address)});
+  window.open('https://wa.me/'+waNum(x.s.phone)+'?text='+encodeURIComponent(msg),'_blank');
+}
+
 // AUTH (Supabase)
 async function guard(){
   try{
@@ -537,6 +673,7 @@ async function guard(){
     var {data:profile}=await SB.from('profiles').select('role,is_active,full_name').eq('id',user.id).single();
     if(!profile||profile.role!=='admin'||!profile.is_active){await SB.auth.signOut();location.href='login.html';return;}
     document.getElementById('loginOverlay').classList.add('hidden');
+    await loadSettings();
     load();
   }catch(e){document.getElementById('authMsg').textContent='Error: '+e.message;}
 }

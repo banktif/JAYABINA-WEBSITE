@@ -47,15 +47,15 @@ Deploy + Verify:
 ## PHASE 2 — Task System + Schedule/Calendar
 Goal: tasks auto-created from confirmed bookings; admin calendar + manual assign.
 
-- [ ] Migration `tasks` + `task_photos` + RLS + indexes
-- [ ] Trigger: booking `status=confirmed` → insert task (unassigned) if none
-- [ ] Backfill tasks for existing confirmed bookings
-- [ ] admin.html **Schedule** tab: monthly calendar with per-day job count + status color; unassigned red flag
-- [ ] Click date → day view (tasks sorted by slot 9am/11am/2pm/4pm)
-- [ ] Click task → **Task Detail** modal: customer info + Google Maps button, schedule, payment (deposit paid / balance), assign staff dropdown, timeline
-- [ ] Manual assign staff → task status `assigned`
+- [x] Migration `tasks` + `task_photos` + RLS + indexes
+- [x] Trigger: booking `status=confirmed` -> insert task (unassigned) if none
+- [x] Backfill tasks for existing confirmed bookings (2 backfilled)
+- [x] admin.html **Schedule** tab: monthly calendar with per-day job count + unassigned red dot + all-done color
+- [x] Click date -> day view (tasks sorted by slot 9am/11am/2pm/4pm)
+- [x] Click task -> **Task Detail** modal: customer info + Google Maps button, schedule, payment, assign staff dropdown, timeline, WA Staff + WA Customer buttons
+- [x] Manual assign staff -> task status `assigned`
 
-Verify: confirmed booking creates a task; assign works; calendar counts correct.
+Verify: confirmed booking creates a task; assign works; calendar counts correct. (Admin RLS reads tasks OK; syntax checked.)
 
 ---
 
