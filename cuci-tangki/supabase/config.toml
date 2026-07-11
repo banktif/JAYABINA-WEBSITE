@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.staff-admin]
 verify_jwt = false
+
+[functions.wa-messenger]
+verify_jwt = false

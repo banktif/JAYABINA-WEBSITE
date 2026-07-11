@@ -316,6 +316,7 @@
   <button class="d-nav-item" id="dsDone" onclick="showBookings('completed')"><span class="dni"><i data-lucide="check-check"></i></span> Completed</button>
   <button class="d-nav-item" id="dsSchedule" onclick="showSchedule()"><span class="dni"><i data-lucide="calendar"></i></span> Schedule</button>
   <button class="d-nav-item" id="dsStaff" onclick="showStaff()"><span class="dni"><i data-lucide="users"></i></span> Staff</button>
+  <button class="d-nav-item" id="dsReports" onclick="showReports()"><span class="dni"><i data-lucide="bar-chart-3"></i></span> Reports</button>
   <button class="d-nav-item" id="dsSettings" onclick="showSettings()"><span class="dni"><i data-lucide="settings"></i></span> Settings</button>
   <div class="d-sidebar-footer">
     <button onclick="refreshView()"><i data-lucide="refresh-cw"></i> Refresh</button>
@@ -367,6 +368,7 @@
     <button class="drawer-item" onclick="showBookings('completed');toggleDrawer()"><span><i data-lucide="check-check"></i></span> Completed</button>
     <button class="drawer-item" onclick="showSchedule();toggleDrawer()"><span><i data-lucide="calendar"></i></span> Schedule</button>
     <button class="drawer-item" onclick="showStaff();toggleDrawer()"><span><i data-lucide="users"></i></span> Staff</button>
+    <button class="drawer-item" onclick="showReports();toggleDrawer()"><span><i data-lucide="bar-chart-3"></i></span> Reports</button>
     <button class="drawer-item" onclick="showSettings();toggleDrawer()"><span><i data-lucide="settings"></i></span> Settings</button>
   </div>
   <div class="drawer-menu" style="border-top:1px solid var(--border);padding-top:8px">
@@ -513,7 +515,7 @@ function clearNav(){document.querySelectorAll('.d-nav-item,.bnav-item').forEach(
 function setNav(id){var el=document.getElementById(id);if(el)el.classList.add('active');}
 function setHeader(title,sub){var t=document.getElementById('dTitle'),s=document.getElementById('dSub');if(t)t.textContent=title;if(s)s.textContent=sub;}
 function showBookings(filter){currentView='bookings';setChrome(true);setHeader('Bookings','All customer bookings');document.getElementById('secTitle').textContent='Bookings';load(filter);}
-function refreshView(){if(currentView==='staff')showStaff();else if(currentView==='settings')showSettings();else if(currentView==='schedule')showSchedule();else if(currentView==='dashboard')showDashboard();else load(cf);}
+function refreshView(){if(currentView==='staff')showStaff();else if(currentView==='settings')showSettings();else if(currentView==='schedule')showSchedule();else if(currentView==='dashboard')showDashboard();else if(currentView==='reports')showReports();else load(cf);}
 
 // ═══════════ DASHBOARD ═══════════
 function mrow(x){var b=x.b,t=x.t;return '<div class="mrow" onclick="openTask(\''+t.id+'\')"><span class="mslot">'+ft(b.booking_time)+'</span><div class="mb"><div class="mn">'+esc(b.customer_name)+'</div><div class="ma"><i data-lucide="map-pin"></i><span class="txt">'+esc(b.customer_address)+'</span></div></div>'+taskBadge(t.status)+'</div>';}
@@ -564,6 +566,113 @@ async function showDashboard(){
     if(!bookings.length)h+='<div class="panel-empty"><i data-lucide="inbox"></i>No bookings yet.</div>';
     else bookings.slice(0,5).forEach(function(b){h+='<div class="mrow" onclick="showModal(\''+b.id+'\')"><span class="mslot">'+ft(b.booking_time)+'</span><div class="mb"><div class="mn">'+esc(b.customer_name)+'</div><div class="ma">'+fd(b.booking_date)+'</div></div>'+badge(b.status)+'</div>';});
     h+='</div>';
+    l.innerHTML=h;
+  }catch(e){l.innerHTML='<div class="empty"><div class="eicon"><i data-lucide="alert-triangle"></i></div><h2>Error</h2><p>'+esc(e.message)+'</p></div>';}
+}
+
+// ═══════════ REPORTS ═══════════
+async function showReports(){
+  currentView='reports';setChrome(false);clearNav();setNav('dsReports');
+  setHeader('Reports','Performance & revenue analytics');
+  var l=document.getElementById('list');
+  l.innerHTML='<div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div>';
+  try{
+    var bq=await SB.from('bookings').select('*').order('booking_date',{ascending:false});
+    var bookings=bq.data||[];
+    await loadTaskData();
+    if(!staffCache.length){var{data}=await SB.from('profiles').select('*').order('created_at',{ascending:false});staffCache=(data||[]).filter(function(p){return p.role==='staff'})}
+    var profiles=staffCache;
+    var dep=parseInt(settings.price_deposit||'150',10);
+    var bal=parseInt(settings.price_balance||'150',10);
+
+    var now=new Date(),t=now.toISOString().split('T')[0];
+    var weekAgo=new Date(now);weekAgo.setDate(weekAgo.getDate()-7);var w=weekAgo.toISOString().split('T')[0];
+    var monthAgo=new Date(now);monthAgo.setMonth(monthAgo.getMonth()-1);var m=monthAgo.toISOString().split('T')[0];
+
+    function cnt(f){return bookings.filter(f).length}
+    function sum(f){var s=0;bookings.filter(f).forEach(function(b){s+=dep});return s}
+    var paidB=bookings.filter(function(b){return b.payment_status==='paid'});
+    var completedB=bookings.filter(function(b){return b.status==='completed'});
+    var totalDeposits=paidB.length*dep;
+    var totalBalance=completedB.length*bal;
+    var totalRevenue=totalDeposits+totalBalance;
+    var tasksCompleted=taskList.filter(function(x){return x.t.status==='completed'}).length;
+
+    function rKpi(cls,icon,val,label){return '<div class="kpi '+cls+'"><div class="kpi-ic"><i data-lucide="'+icon+'"></i></div><div class="kpi-v">'+val+'</div><div class="kpi-l">'+label+'</div></div>'}
+
+    var h='<div class="dash-grid">';
+    h+=rKpi('green','banknote','RM'+totalRevenue,'Total Revenue');
+    h+=rKpi('blue','credit-card','RM'+totalDeposits,'Deposits Collected');
+    h+=rKpi('amber','hourglass','RM'+totalBalance,'Balance Outstanding');
+    h+=rKpi('green','check-check',tasksCompleted,'Jobs Completed');
+    h+='</div>';
+
+    h+='<div class="panels">';
+
+    // Staff leaderboard
+    h+='<div class="panel"><div class="panel-h"><h3><i data-lucide="users"></i> Staff Leaderboard</h3><span class="sec-count">'+profiles.length+' staff</span></div>';
+    if(!profiles.length)h+='<div class="panel-empty">No staff yet.</div>';
+    else{
+      var staffStats=profiles.map(function(p){
+        var jobs=taskList.filter(function(x){return x.t.assigned_to===p.id&&x.t.status==='completed'}).length;
+        var active=taskList.filter(function(x){return x.t.assigned_to===p.id&&['assigned','in_progress','awaiting_review'].indexOf(x.t.status)>-1}).length;
+        return {name:p.full_name,area:p.service_area||'-',completed:jobs,active:active};
+      }).sort(function(a,b){return b.completed-a.completed});
+      staffStats.forEach(function(s,i){
+        h+='<div class="mrow"><span style="font-size:.8rem;font-weight:700;color:var(--text3);min-width:22px">#'+(i+1)+'</span><div class="mb"><div class="mn">'+esc(s.name)+'</div><div class="ma">'+esc(s.area)+(s.active?' &middot; '+s.active+' active':'')+'</div></div><span style="font-size:.78rem;font-weight:700;color:var(--accent)">'+s.completed+' jobs</span></div>';
+      });
+    }
+    h+='</div>';
+
+    // Area breakdown
+    var areaMap={};
+    bookings.forEach(function(b){
+      var a=detectArea(b.customer_address)||'Unknown';
+      if(!areaMap[a])areaMap[a]={total:0,completed:0,deposits:0};
+      areaMap[a].total++;
+      if(b.status==='completed')areaMap[a].completed++;
+      if(b.payment_status==='paid')areaMap[a].deposits+=dep;
+    });
+    h+='<div class="panel"><div class="panel-h"><h3><i data-lucide="map-pin"></i> By Area</h3><span class="sec-count">'+Object.keys(areaMap).length+' areas</span></div>';
+    if(!Object.keys(areaMap).length)h+='<div class="panel-empty">No data.</div>';
+    else{
+      Object.keys(areaMap).sort(function(a,b){return areaMap[b].total-areaMap[a].total}).forEach(function(a){
+        var d=areaMap[a];
+        h+='<div class="mrow"><div class="mb"><div class="mn">'+esc(a)+'</div><div class="ma">'+d.total+' bookings &middot; '+d.completed+' completed</div></div><span style="font-size:.78rem;font-weight:700;color:var(--accent2)">RM'+d.deposits+'</span></div>';
+      });
+    }
+    h+='</div>';
+
+    // Monthly trend
+    var monthMap={};
+    bookings.forEach(function(b){
+      var key=(b.booking_date||'').substring(0,7);if(!key)return;
+      if(!monthMap[key])monthMap[key]={total:0,completed:0,revenue:0};
+      monthMap[key].total++;
+      if(b.status==='completed'){monthMap[key].completed++;monthMap[key].revenue+=dep+bal}
+      else if(b.payment_status==='paid')monthMap[key].revenue+=dep;
+    });
+    var months=Object.keys(monthMap).sort().slice(-6);
+    h+='</div><div class="panels"><div class="panel" style="grid-column:1/-1"><div class="panel-h"><h3><i data-lucide="trending-up"></i> Monthly Trend</h3><span class="sec-count">Last '+months.length+' months</span></div>';
+    if(!months.length)h+='<div class="panel-empty">No data.</div>';
+    else{
+      h+='<div style="overflow-x:auto"><table><thead><tr><th>Month</th><th>Bookings</th><th>Completed</th><th>Revenue</th></tr></thead><tbody>';
+      months.forEach(function(mo){
+        var d=monthMap[mo];
+        h+='<tr><td style="font-weight:700">'+mo+'</td><td>'+d.total+'</td><td>'+d.completed+'</td><td>RM'+d.revenue+'</td></tr>';
+      });
+      h+='</tbody></table></div>';
+    }
+    h+='</div></div>';
+
+    // Recent 10 bookings quick view
+    h+='<div class="panel"><div class="panel-h"><h3><i data-lucide="history"></i> Recent Bookings</h3></div>';
+    if(!bookings.length)h+='<div class="panel-empty">No bookings.</div>';
+    else bookings.slice(0,10).forEach(function(b){
+      h+='<div class="mrow" onclick="showModal(\''+b.id+'\')"><span class="mslot">'+ft(b.booking_time)+'</span><div class="mb"><div class="mn">'+esc(b.customer_name)+'</div><div class="ma">'+fd(b.booking_date)+' &middot; Deposit: '+(b.payment_status==='paid'?'Paid':'Pending')+'</div></div>'+badge(b.status)+'</div>';
+    });
+    h+='</div>';
+
     l.innerHTML=h;
   }catch(e){l.innerHTML='<div class="empty"><div class="eicon"><i data-lucide="alert-triangle"></i></div><h2>Error</h2><p>'+esc(e.message)+'</p></div>';}
 }
