@@ -100,25 +100,23 @@ button:active{ transform:scale(.97); }
 a,button,input,select,textarea{ outline:none; }
 :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
 
-/* Auto-hide scrollbars — visible only on hover */
-*{ scrollbar-width:none; }
-html,body{ scrollbar-width:none; }
-::-webkit-scrollbar{ display:none; }
+/* Auto-hide scrollbars — sidebar/drawer show on hover, body always hidden */
+html,body{ scrollbar-width:none; overflow-y:auto; }
+html::-webkit-scrollbar,body::-webkit-scrollbar{ width:0 !important;height:0 !important;background:transparent; }
+.d-sidebar,.drawer,.m-sheet,.d-main{ scrollbar-width:none; }
+.d-sidebar::-webkit-scrollbar,.drawer::-webkit-scrollbar,.m-sheet::-webkit-scrollbar,.d-main::-webkit-scrollbar{ width:0;height:0;background:transparent; }
 
-.d-sidebar:hover,.drawer:hover,.m-sheet:hover,body:hover{
+.d-sidebar:hover,.drawer:hover,.m-sheet:hover,.d-main:hover{
   scrollbar-width:thin; scrollbar-color:var(--border-strong) transparent;
 }
-.d-sidebar:hover::-webkit-scrollbar,.drawer:hover::-webkit-scrollbar,.m-sheet:hover::-webkit-scrollbar,body:hover::-webkit-scrollbar{
-  display:block; width:5px;height:5px;
+.d-sidebar:hover::-webkit-scrollbar,.drawer:hover::-webkit-scrollbar,.m-sheet:hover::-webkit-scrollbar,.d-main:hover::-webkit-scrollbar{
+  width:5px;height:5px;
 }
-.d-sidebar:hover::-webkit-scrollbar-thumb,.drawer:hover::-webkit-scrollbar-thumb,.m-sheet:hover::-webkit-scrollbar-thumb,body:hover::-webkit-scrollbar-thumb{
+.d-sidebar:hover::-webkit-scrollbar-thumb,.drawer:hover::-webkit-scrollbar-thumb,.m-sheet:hover::-webkit-scrollbar-thumb,.d-main:hover::-webkit-scrollbar-thumb{
   background:var(--border-strong); border-radius:20px;
 }
-.d-sidebar:hover::-webkit-scrollbar-thumb:hover,.drawer:hover::-webkit-scrollbar-thumb:hover,.m-sheet:hover::-webkit-scrollbar-thumb:hover,body:hover::-webkit-scrollbar-thumb:hover{
+.d-sidebar:hover::-webkit-scrollbar-thumb:hover,.drawer:hover::-webkit-scrollbar-thumb:hover,.m-sheet:hover::-webkit-scrollbar-thumb:hover,.d-main:hover::-webkit-scrollbar-thumb:hover{
   background:var(--text3);
-}
-.d-sidebar:hover::-webkit-scrollbar-track,.drawer:hover::-webkit-scrollbar-track,.m-sheet:hover::-webkit-scrollbar-track,body:hover::-webkit-scrollbar-track{
-  background:transparent;
 }
 
 ::selection{ background:var(--accent); color:#fff; }
