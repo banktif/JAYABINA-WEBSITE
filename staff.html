@@ -226,7 +226,11 @@ async function startJob(id){
 async function finishJob(id){
   if(!photosFor(id,'after').length){toast('Add at least 1 after photo');return}
   try{var {error}=await SB.from('tasks').update({status:'awaiting_review',finished_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;
-    var x=jobs.find(function(y){return y.t.id===id});if(x)x.t.status='awaiting_review';toast('Sent for review');openJob(id)}catch(e){toast('Error: '+e.message)}
+    await loadJobs();
+    var x=jobs.find(function(y){return y.t.id===id});
+    var done=x&&x.t.status==='completed';
+    toast(done?'Job auto-completed!':'Sent for admin review');
+    openJob(id)}catch(e){toast('Error: '+e.message)}
 }
 
 guard();relucide();

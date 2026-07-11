@@ -669,7 +669,7 @@ async function resetStaffPassword(id){
 }
 
 // ═══════════ SETTINGS ═══════════
-var SETTING_LABELS={business_name:'Business Name',bank_name:'Bank Name',bank_account_no:'Bank Account No',bank_account_holder:'Account Holder',qr_image_url:'Bank QR Image URL',price_total:'Price Total (RM)',price_deposit:'Deposit (RM)',price_balance:'Balance (RM)',wa_business_number:'Business WhatsApp Number',wa_tmpl_baki:'WhatsApp Template - Balance (Malay)',wa_tmpl_staff:'WhatsApp Template - Staff (Malay)',coverage_area:'Coverage Area',max_slots_per_day:'Max Slots/Day',slots:'Time Slots',auto_assign_enabled:'Auto-assign Enabled',auto_assign_rule:'Auto-assign Rule',cloud_name:'Cloudinary Cloud Name',upload_preset:'Cloudinary Upload Preset',folder:'Cloudinary Folder'};
+var SETTING_LABELS={business_name:'Business Name',bank_name:'Bank Name',bank_account_no:'Bank Account No',bank_account_holder:'Account Holder',qr_image_url:'Bank QR Image URL',price_total:'Price Total (RM)',price_deposit:'Deposit (RM)',price_balance:'Balance (RM)',wa_business_number:'Business WhatsApp Number',wa_tmpl_baki:'WhatsApp Template - Balance (Malay)',wa_tmpl_staff:'WhatsApp Template - Staff (Malay)',coverage_area:'Coverage Area',max_slots_per_day:'Max Slots/Day',slots:'Time Slots',auto_confirm_payment:'Auto-confirm Payment',auto_assign_enabled:'Auto-assign Staff',auto_assign_rule:'Auto-assign Rule',auto_complete_task:'Auto-complete Task',auto_send_wa_balance:'Auto-send WA Balance',cloud_name:'Cloudinary Cloud Name',upload_preset:'Cloudinary Upload Preset',folder:'Cloudinary Folder'};
 async function showSettings(){
   currentView='settings';setChrome(false);clearNav();setNav('dsSettings');
   setHeader('Settings','Business configuration');
@@ -691,7 +691,7 @@ async function showSettings(){
     h+=grp('Payment / Bank',[fld('bank_name'),fld('bank_account_no'),fld('bank_account_holder'),fld('qr_image_url'),fld('price_total','Price Total (RM)','text'),fld('price_deposit','Deposit (RM)','text'),fld('price_balance','Balance (RM)','text'),'<div><label class="sLbl">Bank QR Image</label><button class="d-btn" style="padding:10px 14px;font-size:.72rem" onclick="uploadQR()">Upload QR (Cloudinary)</button><div id="qrMsg" style="font-size:.72rem;color:var(--text3);margin-top:6px"></div></div>']);
     h+=grp('WhatsApp Templates (Malay)',[fld('wa_tmpl_baki','Balance Payment','textarea'),fld('wa_tmpl_staff','Staff Assignment','textarea')]);
     h+=grp('Scheduling',[fld('slots'),fld('max_slots_per_day'),fld('coverage_area')]);
-    h+=grp('Auto-assign',[fld('auto_assign_enabled','Enable','select_onoff'),fld('auto_assign_rule','Rule','select_rule')]);
+    h+=grp('Automation',[fld('auto_confirm_payment','Auto-confirm Payment','select_onoff'),fld('auto_assign_enabled','Auto-assign Staff','select_onoff'),fld('auto_assign_rule','Assignment Rule','select_rule'),fld('auto_complete_task','Auto-complete Task','select_onoff'),fld('auto_send_wa_balance','Auto-send WA Balance','select_onoff')]);
     h+=grp('Cloudinary',[fld('cloud_name'),fld('upload_preset'),fld('folder')]);
     h+='<button class="d-btn acc" style="padding:12px" onclick="saveSettings()">Save All Settings</button>';
     h+='<div id="setMsg" style="font-size:.75rem;color:var(--text3)"></div>';
@@ -824,18 +824,22 @@ async function openTask(taskId){
   a+='<button class="m-btn" style="background:var(--accent2);color:#fff" onclick="window.open(\''+mapsUrl(b.customer_address)+'\',\'_blank\')"><i data-lucide="map-pin"></i> Maps</button>';
   a+='<button class="m-btn" style="background:#25D366;color:#fff" onclick="waStaff(\''+t.id+'\')"><i data-lucide="message-circle"></i> WA Staff</button>';
   a+='<button class="m-btn" style="background:#25D366;color:#fff" onclick="window.open(\'https://wa.me/'+ph+'\',\'_blank\')"><i data-lucide="message-circle"></i> WA Customer</button>';
-  if(t.status==='in_progress'||t.status==='awaiting_review')a+='<button class="m-btn done" style="grid-column:1/-1" onclick="completeTask(\''+t.id+'\')"><i data-lucide="check-check"></i> Complete &amp; Request Balance (WhatsApp)</button>';
+  if(t.status==='in_progress'||t.status==='awaiting_review')a+='<button class="m-btn done" style="grid-column:1/-1" onclick="completeTask(\''+t.id+'\')"><i data-lucide="check-check"></i> Complete'+(settings.auto_send_wa_balance==='true'?' &amp; Request Balance (WA)':'')+'</button>';
   a+='<button class="m-btn close" onclick="closeModal()">Close</button>';
   document.getElementById('mActs').innerHTML=a;
 }
 function completeTask(taskId){
   var x=taskList.find(function(y){return y.t.id===taskId});if(!x)return;
   var b=x.b;
-  if(!confirm('Mark this job COMPLETED and open WhatsApp to request the RM'+(settings.price_balance||'150')+' balance from the customer?'))return;
-  var msg=fillTemplate(settings.wa_tmpl_baki||'Salam {nama}, kerja cuci tangki air di {alamat} telah siap. Sila jelaskan baki RM{baki} ke {bank} {akaun} ({pemegang}). QR: {qr_url}. Terima kasih {business}.',{
-    nama:b.customer_name,alamat:b.customer_address,baki:settings.price_balance||'150',bank:settings.bank_name||'',akaun:settings.bank_account_no||'',pemegang:settings.bank_account_holder||'',qr_url:settings.qr_image_url||'',business:settings.business_name||'JAYACLEAN'
-  });
-  window.open('https://wa.me/'+waNum(b.customer_phone)+'?text='+encodeURIComponent(msg),'_blank');
+  var autoWA=settings.auto_send_wa_balance==='true';
+  var cfmText=autoWA?'Mark this job COMPLETED and auto-send WhatsApp to request RM'+(settings.price_balance||'150')+' balance?':'Mark this job COMPLETED? (WhatsApp will NOT be sent automatically)';
+  if(!confirm(cfmText))return;
+  if(autoWA){
+    var msg=fillTemplate(settings.wa_tmpl_baki||'Salam {nama}, kerja cuci tangki air di {alamat} telah siap. Sila jelaskan baki RM{baki} ke {bank} {akaun} ({pemegang}). QR: {qr_url}. Terima kasih {business}.',{
+      nama:b.customer_name,alamat:b.customer_address,baki:settings.price_balance||'150',bank:settings.bank_name||'',akaun:settings.bank_account_no||'',pemegang:settings.bank_account_holder||'',qr_url:settings.qr_image_url||'',business:settings.business_name||'JAYACLEAN'
+    });
+    window.open('https://wa.me/'+waNum(b.customer_phone)+'?text='+encodeURIComponent(msg),'_blank');
+  }
   var now=new Date().toISOString();
   (async function(){
     try{

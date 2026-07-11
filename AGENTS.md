@@ -43,7 +43,7 @@ Domain: `cuci.jayabina.com` (GitHub Pages; CNAME file present)
 - **WhatsApp:** Semi-auto `wa.me` (free). No paid gateway. Messages pre-filled, sent with one tap.
 - **Auth:** Supabase Auth. Admin + 50 staff have real accounts. Staff login via phone → synthetic email (`<digits>@staff.jayabina.local`) + password set by admin.
 - **Photo storage:** Cloudinary unsigned upload preset. Folder `jayaclean/tasks`.
-- **Auto-assign:** Manual for v1. Auto (round-robin/least-loaded) later.
+- **Auto-assign:** Toggle in Settings > Automation. Can be On (auto) or Off (manual). Default: Off.
 - **Config:** Non-secret config in `app_settings` table (Settings UI). Secrets in Supabase Edge secrets. Staff credentials in Supabase Auth (never plaintext).
 - **Payment amount:** Always computed server-side from DB (`bookings.deposit_amount`), never trusted from client.
 - **Pricing:** Total RM300, deposit RM150, balance RM150 (configurable via `app_settings`).
@@ -105,7 +105,11 @@ Domain: `cuci.jayabina.com` (GitHub Pages; CNAME file present)
 | `wa_tmpl_staff` | Malay job assignment template (staff) |
 | `wa_business_number` | Business WhatsApp number (60...) |
 | `slots`, `max_slots_per_day`, `coverage_area` | Scheduling |
-| `auto_assign_enabled`, `auto_assign_rule` | Assignment |
+| `auto_confirm_payment` | Auto-confirm booking when payment callback received (On/Off) |
+| `auto_assign_enabled` | Auto-assign staff to new tasks (On/Off) |
+| `auto_assign_rule` | Assignment rule (`round_robin` / `least_loaded`) |
+| `auto_complete_task` | Auto-complete task when staff finishes job, skip admin review (On/Off) |
+| `auto_send_wa_balance` | Auto-open WhatsApp to customer for balance when admin completes task (On/Off) |
 | `cloud_name`, `upload_preset`, `folder` | Cloudinary |
 
 Template placeholders: `{nama}`, `{alamat}`, `{tarikh}`, `{slot}`, `{baki}`, `{bank}`, `{akaun}`, `{qr_url}`, `{maps}`.

@@ -199,7 +199,14 @@ async function handleCallback(req: Request): Promise<Response> {
   };
   if (paid) {
     update.payment_status = "paid";
-    update.status = "confirmed";
+    const { data: setting } = await sb
+      .from("app_settings")
+      .select("value")
+      .eq("key", "auto_confirm_payment")
+      .single();
+    if (!setting || setting.value !== "false") {
+      update.status = "confirmed";
+    }
   } else if (failed) {
     update.payment_status = "failed";
   }
