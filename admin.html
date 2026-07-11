@@ -543,7 +543,11 @@ async function showSettings(){
       var lbl=SETTING_LABELS[s.key]||s.key;
       var isLong=(s.key.indexOf('tmpl')>-1);
       h+='<div><label style="display:block;font-size:.72rem;color:var(--text3);font-weight:600;margin-bottom:4px">'+esc(lbl)+' <span style="opacity:.5">('+esc(s.key)+')</span></label>';
-      if(isLong)h+='<textarea data-key="'+esc(s.key)+'" rows="3" style="width:100%;padding:10px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg);color:var(--text);font-family:var(--font);font-size:.8rem">'+esc(s.value)+'</textarea>';
+      if(s.key==='auto_assign_enabled'){
+        h+='<select data-key="auto_assign_enabled" class="mv-sel"><option value="false"'+(s.value==='true'?'':' selected')+'>Off</option><option value="true"'+(s.value==='true'?' selected':'')+'>On</option></select>';
+      }else if(s.key==='auto_assign_rule'){
+        h+='<select data-key="auto_assign_rule" class="mv-sel"><option value="round_robin"'+(s.value==='least_loaded'?'':' selected')+'>Round-robin (rotate evenly)</option><option value="least_loaded"'+(s.value==='least_loaded'?' selected':'')+'>Least loaded (fewest active jobs)</option></select>';
+      }else if(isLong)h+='<textarea data-key="'+esc(s.key)+'" rows="3" style="width:100%;padding:10px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg);color:var(--text);font-family:var(--font);font-size:.8rem">'+esc(s.value)+'</textarea>';
       else h+='<input data-key="'+esc(s.key)+'" value="'+esc(s.value)+'" style="width:100%;padding:10px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg);color:var(--text);font-family:var(--font);font-size:.85rem">';
       h+='</div>';
     });
@@ -618,7 +622,8 @@ function renderCalendar(){
   var byDay={};taskList.forEach(function(x){var d=x.b.booking_date;if(!d)return;(byDay[d]=byDay[d]||[]).push(x)});
   var fdw=new Date(scYear,scMonth,1).getDay(),dim=new Date(scYear,scMonth+1,0).getDate();
   var now=new Date(),todayStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
-  var h='<div class="cal-wrap"><div class="cal-head"><h3>'+mn[scMonth]+' '+scYear+'</h3><div class="cal-nav"><button onclick="scPrev()">&#8249;</button><button onclick="scNext()">&#8250;</button></div></div><div class="cal-grid">';
+  var h='<div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="d-btn acc" style="padding:10px 16px" onclick="autoAssignAll()">&#9889; Auto-assign unassigned</button></div>';
+  h+='<div class="cal-wrap"><div class="cal-head"><h3>'+mn[scMonth]+' '+scYear+'</h3><div class="cal-nav"><button onclick="scPrev()">&#8249;</button><button onclick="scNext()">&#8250;</button></div></div><div class="cal-grid">';
   ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(d){h+='<div class="cal-dh">'+d+'</div>'});
   for(var i=0;i<fdw;i++)h+='<div class="cal-cell empty"></div>';
   for(var d=1;d<=dim;d++){
@@ -715,6 +720,16 @@ function waStaff(taskId){
   var b=x.b;
   var msg=fillTemplate(settings.wa_tmpl_staff||'Salam {nama_staff}, tugasan cuci tangki: {nama} di {alamat} pada {tarikh} ({slot}). Lokasi: {maps}',{nama_staff:x.s.full_name,nama:b.customer_name,alamat:b.customer_address,tarikh:fd(b.booking_date),slot:ft(b.booking_time),maps:mapsUrl(b.customer_address)});
   window.open('https://wa.me/'+waNum(x.s.phone)+'?text='+encodeURIComponent(msg),'_blank');
+}
+async function autoAssignAll(){
+  if(!staffList.length){alert('No active staff to assign. Add staff first.');return;}
+  if(!confirm('Auto-assign all unassigned tasks to staff now (using the current rule)?'))return;
+  try{
+    var r=await SB.rpc('distribute_unassigned');
+    if(r.error)throw r.error;
+    await loadTaskData();renderCalendar();
+    alert('Assigned '+(r.data||0)+' task(s).');
+  }catch(e){alert('Error: '+e.message);}
 }
 
 // AUTH (Supabase)

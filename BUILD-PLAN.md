@@ -87,8 +87,10 @@ Verify: complete flow updates DB + opens correct pre-filled wa.me. Admin RLS com
 ---
 
 ## PHASE 5 — Auto-assign (later)
-- [ ] `auto_assign_enabled` toggle + rule (round-robin / least-loaded)
-- [ ] On task create, if enabled, auto-pick staff
+- [x] `auto_assign_enabled` toggle + rule (round-robin / least-loaded) in Settings (dropdowns)
+- [x] On task create (booking confirmed trigger), if enabled, auto-pick staff
+- [x] Admin RPC `distribute_unassigned()` + Schedule "Auto-assign unassigned" button
+Verify: new confirmed booking auto-assigned (round-robin) OK; distribute RPC assigned all unassigned OK. Syntax checked.
 
 ---
 
