@@ -605,6 +605,16 @@ rCal();uSlots();
 // REAL BOOKING — Supabase + Bayarcash payment (via Edge Function proxy)
 var BC_FN='https://thbscwlcyhcnqsppoyfn.supabase.co/functions/v1/bayarcash/create-intent';
 
+// TEST MODE — append ?test=1 to URL to book at RM2 (does NOT reserve real slot)
+var TEST_MODE=/[?&]test=1(&|$)/.test(location.search);
+var DEPOSIT=TEST_MODE?2:150, TOTAL=TEST_MODE?2:300;
+if(TEST_MODE){
+  var tb=document.createElement('div');
+  tb.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#946200;color:#fff;text-align:center;font:700 13px Poppins,sans-serif;padding:8px';
+  tb.textContent='\u26A0 MOD UJIAN — deposit RM2 sahaja, slot TIDAK ditempah. URL biasa = RM150.';
+  document.body.appendChild(tb);
+}
+
 document.getElementById('btnBook').addEventListener('click',async function(){
   var n=document.getElementById('cn').value.trim(),p=document.getElementById('cp').value.trim(),a=document.getElementById('ca').value.trim(),v=true;
   var en=document.getElementById('ecn'),ep=document.getElementById('ecp'),ea=document.getElementById('eca');
@@ -623,10 +633,12 @@ document.getElementById('btnBook').addEventListener('click',async function(){
   // Insert booking + reserve slot via Supabase
   var bookingId=null;
   try{
-    var {data:booking,error:berr}=await SB.from('bookings').insert({customer_name:n,customer_phone:p,customer_address:a,booking_date:sd,booking_time:ss,amount:300,deposit_amount:150,status:'pending_payment',payment_status:'pending'}).select();
+    var row={customer_name:n,customer_phone:p,customer_address:a,booking_date:sd,booking_time:ss,amount:TOTAL,deposit_amount:DEPOSIT,status:'pending_payment',payment_status:'pending'};
+    if(TEST_MODE)row.notes='TEST PAYMENT RM'+DEPOSIT+' - booking form test mode';
+    var {data:booking,error:berr}=await SB.from('bookings').insert(row).select();
     if(berr)throw new Error(berr.message);
     bookingId=booking[0].id;
-    await SB.from('slots').insert({date:sd,time_slot:ss,is_booked:true,booking_id:bookingId});
+    if(!TEST_MODE)await SB.from('slots').insert({date:sd,time_slot:ss,is_booked:true,booking_id:bookingId});
   }catch(e){
     var msg=e.message||'';
     if(msg.indexOf('23505')>-1||msg.indexOf('duplicate')>-1){alert('Maaf, slot ni baru je ditempah.');}
