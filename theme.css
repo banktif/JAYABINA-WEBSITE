@@ -2,23 +2,24 @@
    JAYACLEAN — Shared Theme (admin / staff / login)
    Modern design tokens + Lucide icon defaults + global polish.
    Single source of truth for colors. Customer pages NOT affected.
+   Palette: JAYASEO forest-green design system.
    ============================================================ */
 
 /* ---------- LIGHT (default) ---------- */
 :root{
-  --bg:#f6f8fb;
+  --bg:#f5f7f5;
   --surface:#ffffff;
   --elevated:#ffffff;
   --overlay:rgba(255,255,255,.82);
-  --border:#edf0f4;
-  --border-strong:#e0e5ec;
+  --border:#e5e7eb;
+  --border-strong:#d5dbd5;
   --text:#0b1220;
   --text2:#48546a;
   --text3:#8b95a7;
-  --accent:#0ea364;
-  --accent-hover:#0b8a54;
-  --accent-light:#e9f9f1;
-  --accent-glow:rgba(14,163,100,.18);
+  --accent:#166534;
+  --accent-hover:#14532d;
+  --accent-light:#f0fdf4;
+  --accent-glow:rgba(22,101,52,.18);
   --accent2:#3b82f6;
   --accent2-light:#eaf1ff;
   --warning:#d99a0b;
@@ -26,27 +27,27 @@
   --danger:#e5484d;
   --danger-light:#fdecec;
   --font:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  --radius:14px;
-  --radius-lg:20px;
-  --shadow:0 1px 2px rgba(16,24,40,.04),0 2px 6px rgba(16,24,40,.05);
-  --shadow-lg:0 12px 34px rgba(16,24,40,.10);
+  --radius:12px;
+  --radius-lg:16px;
+  --shadow:0 1px 2px rgba(22,101,52,.04),0 2px 6px rgba(22,101,52,.06);
+  --shadow-lg:0 12px 34px rgba(22,101,52,.10);
 }
 
 /* ---------- DARK (forced via html.dark) ---------- */
 html.dark{
-  --bg:#0b0f14;
-  --surface:#121821;
-  --elevated:#171e29;
-  --overlay:rgba(11,15,20,.85);
+  --bg:#0a0f0a;
+  --surface:#162016;
+  --elevated:#1c2b1c;
+  --overlay:rgba(10,15,10,.85);
   --border:rgba(255,255,255,.06);
   --border-strong:rgba(255,255,255,.11);
   --text:#e9eef5;
   --text2:#9aa7b8;
   --text3:#66748a;
-  --accent:#1db974;
-  --accent-hover:#25c980;
-  --accent-light:rgba(29,185,116,.12);
-  --accent-glow:rgba(29,185,116,.26);
+  --accent:#22c55e;
+  --accent-hover:#16a34a;
+  --accent-light:rgba(34,197,94,.14);
+  --accent-glow:rgba(34,197,94,.26);
   --accent2:#5b9dff;
   --accent2-light:rgba(91,157,255,.12);
   --warning:#f0b429;
@@ -60,19 +61,19 @@ html.dark{
 /* ---------- DARK (system pref, unless page forces light/dark) ---------- */
 @media (prefers-color-scheme: dark){
   html:not(.light):not(.dark){
-    --bg:#0b0f14;
-    --surface:#121821;
-    --elevated:#171e29;
-    --overlay:rgba(11,15,20,.85);
+    --bg:#0a0f0a;
+    --surface:#162016;
+    --elevated:#1c2b1c;
+    --overlay:rgba(10,15,10,.85);
     --border:rgba(255,255,255,.06);
     --border-strong:rgba(255,255,255,.11);
     --text:#e9eef5;
     --text2:#9aa7b8;
     --text3:#66748a;
-    --accent:#1db974;
-    --accent-hover:#25c980;
-    --accent-light:rgba(29,185,116,.12);
-    --accent-glow:rgba(29,185,116,.26);
+    --accent:#22c55e;
+    --accent-hover:#16a34a;
+    --accent-light:rgba(34,197,94,.14);
+    --accent-glow:rgba(34,197,94,.26);
     --accent2:#5b9dff;
     --accent2-light:rgba(91,157,255,.12);
     --warning:#f0b429;
