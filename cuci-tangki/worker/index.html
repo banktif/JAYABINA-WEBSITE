@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#166534">
+  <title>JAYACLEAN — Worker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;padding-bottom:40px}
+    .hdr{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+    .hdr-l{display:flex;align-items:center;gap:10px}
+    .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#16a34a);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem}
+    .hdr h1{font-size:.95rem;font-weight:700;line-height:1.1}.hdr .who{font-size:.62rem;color:var(--text3);font-weight:600}
+    .hbtn{padding:8px 14px;border-radius:10px;border:1px solid var(--border-strong);background:var(--elevated);color:var(--danger);font-family:var(--font);font-weight:700;font-size:.7rem;cursor:pointer}
+    .wrap{max-width:640px;margin:0 auto;padding:16px}
+    .filters{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}
+    .fpill{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid transparent;background:var(--accent-light);color:var(--text2);font-size:.74rem;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap}
+    .fpill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .daygrp{font-size:.66rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:16px 2px 8px}
+    .job{background:var(--elevated);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:all .15s;box-shadow:var(--shadow)}
+    .job:active{transform:scale(.99);border-color:var(--accent)}
+    .job .slot{font-size:.72rem;font-weight:700;color:var(--text2);background:var(--bg);padding:6px 10px;border-radius:12px;white-space:nowrap;text-align:center;min-width:62px}
+    .job .jb{flex:1;min-width:0}
+    .job .jn{font-weight:700;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .job .ja{font-size:.72rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:.6rem;font-weight:600;text-transform:none;white-space:nowrap}
+    .badge .bd{width:6px;height:6px;border-radius:50%;background:currentColor}
+    .badge.assigned{background:var(--accent2-light);color:var(--accent2)}
+    .badge.in_progress{background:var(--warning-light);color:var(--warning)}
+    .badge.awaiting_review{background:var(--warning-light);color:var(--warning)}
+    .badge.completed{background:var(--accent-light);color:var(--accent)}
+    .empty{text-align:center;padding:60px 20px;color:var(--text3)}.empty .ei{font-size:2.6rem;margin-bottom:10px}
+    .spin{display:flex;justify-content:center;padding:48px;gap:6px}.sd{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:sp 1.4s infinite}.sd:nth-child(2){animation-delay:.2s}.sd:nth-child(3){animation-delay:.4s}@keyframes sp{0%,80%,100%{opacity:.2}40%{opacity:1}}
+    /* Detail overlay */
+    .ov{position:fixed;inset:0;background:var(--bg);z-index:60;overflow-y:auto;display:none}
+    .ov.show{display:block}
+    .ov-hdr{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:5}
+    .ov-hdr button{background:none;border:none;font-size:1.3rem;color:var(--text);cursor:pointer}
+    .ov-hdr h2{font-size:.95rem;font-weight:700}
+    .ov-body{max-width:640px;margin:0 auto;padding:16px}
+    .card{background:var(--elevated);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+    .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:.82rem}.row:last-child{border:none}.row .k{color:var(--text3)}.row .v{font-weight:600;text-align:right;max-width:62%}
+    .abtn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-family:var(--font);font-weight:700;font-size:.9rem;cursor:pointer;margin-top:10px;text-align:center}
+    .abtn.primary{background:var(--accent);color:#fff}.abtn.primary:disabled{opacity:.5}
+    .abtn.blue{background:var(--accent2);color:#fff}.abtn.wa{background:#25D366;color:#fff}
+    .abtn.ghost{background:var(--elevated);border:1px solid var(--border-strong);color:var(--text2)}
+    .sec-h{font-size:.78rem;font-weight:700;margin:6px 0 10px;display:flex;align-items:center;justify-content:space-between}
+    .thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .thumb{aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--bg);border:1px solid var(--border)}
+    .thumb img{width:100%;height:100%;object-fit:cover}
+    .up{border:2px dashed var(--border-strong);border-radius:12px;padding:18px;text-align:center;color:var(--text3);font-size:.8rem;cursor:pointer}
+    .up.busy{opacity:.6;pointer-events:none}
+    .note{font-size:.78rem;color:var(--text3);text-align:center;padding:14px;background:var(--accent-light);color:var(--accent);border-radius:12px;font-weight:600}
+    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:12px 20px;border-radius:30px;font-size:.8rem;font-weight:600;z-index:100;opacity:0;transition:opacity .2s;pointer-events:none}
+    .toast.show{opacity:1}
+    .login{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+  </style>
+</head>
+<body>
+<div class="login" id="loading"><div class="logo">JC</div><div class="spin"><div class="sd"></div><div class="sd"></div><div class="sd"></div></div></div>
+
+<header class="hdr" id="hdr" style="display:none">
+  <div class="hdr-l"><div class="logo">JC</div><div><h1>My Jobs</h1><div class="who" id="who"></div></div></div>
+  <button class="hbtn" onclick="logout()">Logout</button>
+</header>
+
+<div class="wrap" id="wrap" style="display:none">
+  <div class="filters" id="filters">
+    <button class="fpill active" data-f="active" onclick="setFilter('active')">Active</button>
+    <button class="fpill" data-f="today" onclick="setFilter('today')">Today</button>
+    <button class="fpill" data-f="all" onclick="setFilter('all')">All</button>
+    <button class="fpill" data-f="completed" onclick="setFilter('completed')">Done</button>
+  </div>
+  <div id="jobs"></div>
+</div>
+
+<!-- JOB DETAIL OVERLAY -->
+<div class="ov" id="ov">
+  <div class="ov-hdr"><button onclick="closeJob()"><i data-lucide="arrow-left"></i></button><h2 id="ovTitle">Job</h2></div>
+  <div class="ov-body" id="ovBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+var SB=supabase.createClient('https://thbscwlcyhcnqsppoyfn.supabase.co','sb_publishable_jFrl83f8l_tcWTulTL5lkQ_bLnCVpYR');
+var _lt;function relucide(){clearTimeout(_lt);_lt=setTimeout(function(){try{if(window.lucide)lucide.createIcons()}catch(e){}},30);}
+var _mo=new MutationObserver(relucide);_mo.observe(document.body,{childList:true,subtree:true});
+var me=null,profile=null,settings={},jobs=[],photos={},filter='active',openId=null;
+
+function esc(s){return(s||'').toString().replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})}
+function fd(d){if(!d)return'-';var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
+function ft(t){return t?t.replace('am',':00 AM').replace('pm',':00 PM').replace(/^(\d):/,'0$1:'):t}
+function today(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')}
+function waNum(p){p=(p||'').replace(/[^0-9]/g,'');if(p.indexOf('0')===0)p='6'+p.substring(1);return p}
+function mapsUrl(a){return'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a||'')}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2200)}
+function badge(s){var m={assigned:'Assigned',in_progress:'In Progress',awaiting_review:'In Review',completed:'Completed',unassigned:'Unassigned',cancelled:'Cancelled'};return'<span class="badge '+s+'"><span class="bd"></span>'+(m[s]||s)+'</span>'}
+
+async function loadSettings(){try{var {data}=await SB.from('app_settings').select('*');settings={};(data||[]).forEach(function(s){settings[s.key]=s.value})}catch(e){}}
+
+async function guard(){
+  var {data:{user}}=await SB.auth.getUser();
+  if(!user){location.href='/login/';return}
+  me=user;
+  var {data:p}=await SB.from('profiles').select('role,is_active,full_name,avatar_url,service_area').eq('id',user.id).single();
+  if(!p||!p.is_active){await SB.auth.signOut();location.href='/login/';return}
+  if(p.role==='admin'){location.href='/admin/';return}
+  profile=p;
+  document.getElementById('who').textContent=(p.full_name||'Worker')+(p.service_area?' \u2022 '+p.service_area:'');
+  if(p.avatar_url){var lg=document.querySelector('.hdr .logo');if(lg){lg.style.overflow='hidden';lg.innerHTML='<img src="'+p.avatar_url+'" style="width:100%;height:100%;object-fit:cover">';}}
+  await loadSettings();
+  document.getElementById('loading').style.display='none';
+  document.getElementById('hdr').style.display='flex';
+  document.getElementById('wrap').style.display='block';
+  await loadJobs();
+}
+async function logout(){try{await SB.auth.signOut()}catch(e){}location.href='/login/'}
+
+async function loadJobs(){
+  var j=document.getElementById('jobs');
+  j.innerHTML='<div class="spin"><div class="sd"></div><div class="sd"></div><div class="sd"></div></div>';
+  try{
+    var tq=await SB.from('tasks').select('*').eq('assigned_to',me.id);
+    var tasks=(tq.data||[]).filter(function(t){return t.status!=='cancelled'});
+    var ids=tasks.map(function(t){return t.booking_id});
+    var bmap={};
+    if(ids.length){var bq=await SB.from('bookings').select('*').in('id',ids);(bq.data||[]).forEach(function(b){bmap[b.id]=b})}
+    jobs=tasks.map(function(t){return{t:t,b:bmap[t.booking_id]||{}}}).filter(function(x){return x.b&&x.b.id});
+    var tids=tasks.map(function(t){return t.id});photos={};
+    if(tids.length){var pq=await SB.from('task_photos').select('*').in('task_id',tids);(pq.data||[]).forEach(function(ph){(photos[ph.task_id]=photos[ph.task_id]||[]).push(ph)})}
+    renderJobs();
+  }catch(e){j.innerHTML='<div class="empty"><div class="ei"><i data-lucide="alert-triangle"></i></div><p>'+esc(e.message)+'</p></div>'}
+}
+
+function slotOrder(s){var slots=(settings.slots||'9am,11am,2pm,4pm').split(',').map(function(s){return s.trim()});var idx=slots.indexOf(s);return idx>=0?idx:9}
+function setFilter(f){filter=f;document.querySelectorAll('.fpill').forEach(function(p){p.classList.toggle('active',p.getAttribute('data-f')===f)});renderJobs()}
+function renderJobs(){
+  var list=jobs.slice();
+  var t=today();
+  if(filter==='active')list=list.filter(function(x){return['assigned','in_progress','awaiting_review'].indexOf(x.t.status)>-1});
+  else if(filter==='today')list=list.filter(function(x){return x.b.booking_date===t});
+  else if(filter==='completed')list=list.filter(function(x){return x.t.status==='completed'});
+  list.sort(function(a,b){return(a.b.booking_date+String(slotOrder(a.b.booking_time))).localeCompare(b.b.booking_date+String(slotOrder(b.b.booking_time)))});
+  var el=document.getElementById('jobs');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei"><i data-lucide="clipboard-list"></i></div><p>No jobs here.</p></div>';return}
+  var h='',lastDate=null;
+  list.forEach(function(x){
+    if(x.b.booking_date!==lastDate){lastDate=x.b.booking_date;var lbl=x.b.booking_date===t?'TODAY - '+fd(x.b.booking_date):fd(x.b.booking_date);h+='<div class="daygrp">'+lbl+'</div>'}
+    h+='<div class="job" onclick="openJob(\''+x.t.id+'\')"><div class="slot">'+ft(x.b.booking_time)+'</div><div class="jb"><div class="jn">'+esc(x.b.customer_name)+'</div><div class="ja"><i data-lucide="map-pin"></i> '+esc(x.b.customer_address)+'</div></div>'+badge(x.t.status)+'</div>';
+  });
+  el.innerHTML=h;
+}
+
+function photosFor(id,type){return(photos[id]||[]).filter(function(p){return p.type===type})}
+function openJob(id){
+  openId=id;var x=jobs.find(function(y){return y.t.id===id});if(!x)return;
+  var b=x.b,t=x.t;
+  document.getElementById('ovTitle').textContent=b.customer_name;
+  var beforeP=photosFor(id,'before'),afterP=photosFor(id,'after');
+  function thumbs(arr){if(!arr.length)return'<div style="font-size:.74rem;color:var(--text3)">No photos yet.</div>';var s='<div class="thumbs">';arr.forEach(function(p){s+='<div class="thumb"><img src="'+esc(p.url)+'" loading="lazy"></div>'});return s+'</div>'}
+  var h='<div class="card">'+
+    '<div class="row"><span class="k">Status</span><span class="v">'+badge(t.status)+'</span></div>'+
+    '<div class="row"><span class="k">Date & Time</span><span class="v">'+fd(b.booking_date)+' &middot; '+ft(b.booking_time)+'</span></div>'+
+    '<div class="row"><span class="k">Customer</span><span class="v">'+esc(b.customer_name)+'</span></div>'+
+    '<div class="row"><span class="k">Address</span><span class="v">'+esc(b.customer_address)+'</span></div>'+
+    '</div>';
+  h+='<a class="abtn blue" href="'+mapsUrl(b.customer_address)+'" target="_blank"><i data-lucide="map-pin"></i> Open in Google Maps</a>';
+  h+='<a class="abtn wa" href="https://wa.me/'+waNum(b.customer_phone)+'" target="_blank"><i data-lucide="message-circle"></i> WhatsApp Customer</a>';
+
+  // BEFORE photos
+  h+='<div class="card"><div class="sec-h"><span>Before Photos</span><span style="color:var(--text3);font-weight:600">'+beforeP.length+'</span></div>'+thumbs(beforeP);
+  if(t.status==='assigned')h+='<div class="up" id="upBefore" onclick="pickPhoto(\''+id+'\',\'before\')"><i data-lucide="camera"></i> Tap to add BEFORE photo</div>';
+  h+='</div>';
+
+  // Action / after based on status
+  if(t.status==='assigned'){
+    h+='<button class="abtn primary" id="startBtn" onclick="startJob(\''+id+'\')"'+(beforeP.length?'':' disabled')+'><i data-lucide="play"></i> Start Job'+(beforeP.length?'':' (add before photo)')+'</button>';
+  }else if(t.status==='in_progress'){
+    h+='<div class="card"><div class="sec-h"><span>After Photos</span><span style="color:var(--text3);font-weight:600">'+afterP.length+'</span></div>'+thumbs(afterP);
+    h+='<div class="up" id="upAfter" onclick="pickPhoto(\''+id+'\',\'after\')"><i data-lucide="camera"></i> Tap to add AFTER photo</div></div>';
+    h+='<button class="abtn primary" id="finishBtn" onclick="finishJob(\''+id+'\')"'+(afterP.length?'':' disabled')+'><i data-lucide="check"></i> Finish Job'+(afterP.length?'':' (add after photo)')+'</button>';
+  }else if(t.status==='awaiting_review'){
+    h+='<div class="card"><div class="sec-h"><span>After Photos</span><span style="color:var(--text3);font-weight:600">'+afterP.length+'</span></div>'+thumbs(afterP)+'</div>';
+    h+='<div class="note"><i data-lucide="clock"></i> Waiting for admin review &amp; approval.</div>';
+  }else if(t.status==='completed'){
+    h+='<div class="card"><div class="sec-h"><span>After Photos</span><span style="color:var(--text3);font-weight:600">'+afterP.length+'</span></div>'+thumbs(afterP)+'</div>';
+    h+='<div class="note"><i data-lucide="check"></i> Job completed. Thank you!</div>';
+  }
+  document.getElementById('ovBody').innerHTML=h;
+  document.getElementById('ov').classList.add('show');
+}
+function closeJob(){document.getElementById('ov').classList.remove('show');openId=null;loadJobs()}
+
+function pickPhoto(id,type){
+  var inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.setAttribute('capture','environment');
+  inp.onchange=function(){if(inp.files&&inp.files[0])doUpload(id,type,inp.files[0])};
+  inp.click();
+}
+async function doUpload(id,type,file){
+  if(!settings.cloud_name||!settings.upload_preset){toast('Cloudinary not configured');return}
+  var box=document.getElementById(type==='before'?'upBefore':'upAfter');if(box){box.classList.add('busy');box.textContent='Uploading...'}
+  try{
+    var fd2=new FormData();fd2.append('file',file);fd2.append('upload_preset',settings.upload_preset);if(settings.folder)fd2.append('folder',settings.folder);
+    var res=await fetch('https://api.cloudinary.com/v1_1/'+settings.cloud_name+'/image/upload',{method:'POST',body:fd2});
+    var data=await res.json();
+    if(!data.secure_url)throw new Error(data.error?data.error.message:'Upload failed');
+    var {error}=await SB.from('task_photos').insert({task_id:id,type:type,url:data.secure_url,uploaded_by:me.id});
+    if(error)throw error;
+    (photos[id]=photos[id]||[]).push({task_id:id,type:type,url:data.secure_url});
+    toast('Photo uploaded');openJob(id);
+  }catch(e){toast('Error: '+e.message);if(box){box.classList.remove('busy');box.textContent='<i data-lucide="camera"></i> Tap to retry'}}
+}
+async function startJob(id){
+  if(!photosFor(id,'before').length){toast('Add at least 1 before photo');return}
+  try{var {error}=await SB.from('tasks').update({status:'in_progress',started_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;
+    var x=jobs.find(function(y){return y.t.id===id});if(x)x.t.status='in_progress';toast('Job started');openJob(id)}catch(e){toast('Error: '+e.message)}
+}
+async function finishJob(id){
+  if(!photosFor(id,'after').length){toast('Add at least 1 after photo');return}
+  try{var {error}=await SB.from('tasks').update({status:'awaiting_review',finished_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;
+    await loadJobs();
+    var x=jobs.find(function(y){return y.t.id===id});
+    var done=x&&x.t.status==='completed';
+    toast(done?'Job auto-completed!':'Sent for admin review');
+    openJob(id)}catch(e){toast('Error: '+e.message)}
+}
+
+guard();relucide();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){})}
+</script>
+</body>
+</html>

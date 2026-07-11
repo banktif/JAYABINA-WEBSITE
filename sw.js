@@ -1,8 +1,9 @@
 // JAYACLEAN — Service Worker (Offline Cache)
 var CACHE='jayaclean-v1';
 var FILES=[
-  '/','/index.html','/success.html','/test-pay.html','/customer.html',
-  '/admin.html','/staff.html','/login.html','/theme.css','/manifest.json',
+  '/','/index.html','/success.html','/test-pay.html',
+  '/admin/','/worker/','/customer/','/login/',
+  '/theme.css','/manifest.json','/sw.js',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
   'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js',
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap'
