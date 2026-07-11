@@ -97,7 +97,7 @@ var me=null,profile=null,settings={},jobs=[],photos={},filter='active',openId=nu
 
 function esc(s){return(s||'').toString().replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})}
 function fd(d){if(!d)return'-';var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
-function ft(t){return{'9am':'9:00 AM','11am':'11:00 AM','2pm':'2:00 PM','4pm':'4:00 PM'}[t]||t}
+function ft(t){return t?t.replace('am',':00 AM').replace('pm',':00 PM').replace(/^(\d):/,'0$1:'):t}
 function today(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')}
 function waNum(p){p=(p||'').replace(/[^0-9]/g,'');if(p.indexOf('0')===0)p='6'+p.substring(1);return p}
 function mapsUrl(a){return'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a||'')}
@@ -140,7 +140,7 @@ async function loadJobs(){
   }catch(e){j.innerHTML='<div class="empty"><div class="ei"><i data-lucide="alert-triangle"></i></div><p>'+esc(e.message)+'</p></div>'}
 }
 
-function slotOrder(s){return{'9am':1,'11am':2,'2pm':3,'4pm':4}[s]||9}
+function slotOrder(s){var slots=(settings.slots||'9am,11am,2pm,4pm').split(',').map(function(s){return s.trim()});var idx=slots.indexOf(s);return idx>=0?idx:9}
 function setFilter(f){filter=f;document.querySelectorAll('.fpill').forEach(function(p){p.classList.toggle('active',p.getAttribute('data-f')===f)});renderJobs()}
 function renderJobs(){
   var list=jobs.slice();

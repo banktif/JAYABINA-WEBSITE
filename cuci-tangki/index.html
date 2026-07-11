@@ -172,8 +172,7 @@
     .cal-nav button:hover{background:#DCFCE7}
     .cal-nav button:disabled{opacity:.3;cursor:not-allowed}
     .cal-month{font-weight:700;font-size:.95rem}
-    .slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:24px}
-    @media(max-width:400px){.slots{grid-template-columns:1fr 1fr}}
+    .slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:24px}
     .slot{padding:12px 8px;border:2px solid #e0e0e0;border-radius:10px;text-align:center;cursor:pointer;font-weight:600;font-size:.85rem;transition:all .12s;background:#fff}
     .slot:hover:not(.off){border-color:#16A34A;background:#F0FDF4}
     .slot.on{border-color:#166534;background:#F0FDF4;color:#166534}
@@ -432,12 +431,7 @@
       <div class="sel-date" id="selDt"></div>
 
       <div class="book-step">2. Pilih Masa</div>
-      <div class="slots" id="slots">
-        <div class="slot" data-slot="9am">&#9728;&#65039; 9:00 AM</div>
-        <div class="slot" data-slot="11am">&#128338; 11:00 AM</div>
-        <div class="slot" data-slot="2pm">&#128338; 2:00 PM</div>
-        <div class="slot" data-slot="4pm">&#127774; 4:00 PM</div>
-      </div>
+      <div class="slots" id="slots"></div>
 
       <div class="book-step">3. Isi Butiran</div>
       <div class="fg"><label for="cn">Nama Penuh</label><input type="text" id="cn" placeholder="Nama penuh kau..."><div class="ferr" id="ecn">Sila isi nama penuh.</div></div>
@@ -539,6 +533,29 @@ window.addEventListener('scroll',function(){var sy=window.pageYOffset,cur='';sec
 // SUPABASE CLIENT (via CDN)
 var SB = supabase.createClient('https://thbscwlcyhcnqsppoyfn.supabase.co','sb_publishable_jFrl83f8l_tcWTulTL5lkQ_bLnCVpYR');
 
+// DYNAMIC SLOTS — load from app_settings via RPC
+var SLOT_LIST=[],SLOT_MAX=999;
+function formatSlot(s){
+  return s.replace('am',':00 AM').replace('pm',':00 PM').replace(/^(\d):/,'0$1:');
+}
+async function loadSlots(){
+  try{
+    var {data,error}=await SB.rpc('get_public_config');
+    if(error||!data)return;
+    var cfg=typeof data==='string'?JSON.parse(data):data;
+    SLOT_LIST=(cfg.slots||'9am,11am,2pm,4pm').split(',').map(function(s){return s.trim()}).filter(Boolean);
+    SLOT_MAX=parseInt(cfg.max_slots_per_day||'999',10);
+    renderSlots();
+  }catch(e){SLOT_LIST=['9am','11am','2pm','4pm'];renderSlots();}
+}
+function renderSlots(){
+  var el=document.getElementById('slots');if(!el)return;
+  el.innerHTML='';
+  SLOT_LIST.forEach(function(s){
+    el.innerHTML+='<div class="slot" data-slot="'+s+'">'+formatSlot(s)+'</div>';
+  });
+}
+
 // REAL SLOT CHECK
 async function fetchBookedSlots(date){
   var {data,error}=await SB.from('slots').select('time_slot').eq('date',date).eq('is_booked',true);
@@ -600,7 +617,7 @@ async function selectDate(ds){
 }
 
 document.getElementById('slots').addEventListener('click',function(e){var s=e.target.closest('.slot');if(!s||s.classList.contains('off'))return;if(!sd){alert('Pilih tarikh dulu.');return}document.querySelectorAll('#slots .slot').forEach(function(x){x.classList.remove('on')});s.classList.add('on');ss=s.dataset.slot});
-rCal();uSlots();
+rCal();uSlots();loadSlots();
 
 // REAL BOOKING — Supabase + Bayarcash payment (via Edge Function proxy)
 var BC_FN='https://thbscwlcyhcnqsppoyfn.supabase.co/functions/v1/bayarcash/create-intent';
@@ -656,7 +673,7 @@ document.getElementById('btnBook').addEventListener('click',async function(){
     throw new Error('gateway');
   }catch(e){
     // Fallback: booking saved but payment gateway unreachable — offer manual WhatsApp payment
-    var ssl=ss==='9am'?'9:00 AM':(ss==='11am'?'11:00 AM':(ss==='2pm'?'2:00 PM':'4:00 PM'));
+    var ssl=formatSlot(ss);
     var dp=sd.split('-'),dl=dp[2]+'/'+dp[1]+'/'+dp[0];
     btn.style.display='none';document.querySelector('.price-box').style.display='none';
     document.querySelectorAll('.book-step,.fg,.cal-nav,.cal,.sel-date,.slots').forEach(function(x){x.style.display='none'});

@@ -9,11 +9,19 @@ RETURNS TABLE(time_slot TEXT, available BOOLEAN)
 LANGUAGE plpgsql SECURITY DEFINER
 SET search_path = 'public'
 AS $$
+DECLARE
+  v_slots TEXT;
+  v_max   INTEGER;
+  v_cnt   INTEGER;
 BEGIN
+  SELECT value INTO v_slots FROM app_settings WHERE key = 'slots';
+  SELECT COALESCE(NULLIF(value,'')::INTEGER, 999) INTO v_max FROM app_settings WHERE key = 'max_slots_per_day';
+  SELECT COUNT(*) INTO v_cnt FROM slots WHERE date = p_date AND is_booked = true;
+
   RETURN QUERY
-  SELECT t.time_slot::TEXT, COALESCE(NOT s.is_booked, true) AS available
-  FROM (VALUES ('9am'),('11am'),('2pm'),('4pm')) AS t(time_slot)
-  LEFT JOIN slots s ON s.date = p_date AND s.time_slot = t.time_slot::TEXT;
+  SELECT trim(t.slot), (v_cnt < v_max)
+  FROM unnest(string_to_array(v_slots, ',')) AS t(slot)
+  WHERE trim(t.slot) <> '';
 END;
 $$;
 
@@ -22,11 +30,13 @@ RETURNS BOOLEAN
 LANGUAGE plpgsql SECURITY DEFINER
 SET search_path = 'public'
 AS $$
+DECLARE
+  v_max INTEGER;
+  v_cnt  INTEGER;
 BEGIN
-  RETURN NOT EXISTS (
-    SELECT 1 FROM slots
-    WHERE date = p_date AND time_slot = p_time AND is_booked = true
-  );
+  SELECT COALESCE(NULLIF(value,'')::INTEGER, 999) INTO v_max FROM app_settings WHERE key = 'max_slots_per_day';
+  SELECT COUNT(*) INTO v_cnt FROM slots WHERE date = p_date AND is_booked = true;
+  RETURN v_cnt < v_max;
 END;
 $$;
 
@@ -40,7 +50,7 @@ DECLARE
   v_booking_id UUID;
 BEGIN
   IF NOT check_slot(p_date, p_time) THEN
-    RAISE EXCEPTION 'Slot not available' USING ERRCODE = '23505';
+    RAISE EXCEPTION 'No slots available for this date' USING ERRCODE = '23505';
   END IF;
 
   INSERT INTO bookings (customer_name, customer_phone, customer_address, booking_date, booking_time)
