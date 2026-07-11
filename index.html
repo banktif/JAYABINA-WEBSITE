@@ -599,7 +599,10 @@ async function selectDate(ds){
 document.getElementById('slots').addEventListener('click',function(e){var s=e.target.closest('.slot');if(!s||s.classList.contains('off'))return;if(!sd){alert('Pilih tarikh dulu.');return}document.querySelectorAll('#slots .slot').forEach(function(x){x.classList.remove('on')});s.classList.add('on');ss=s.dataset.slot});
 rCal();uSlots();
 
-// REAL BOOKING — direct table insert
+// REAL BOOKING — Supabase + Bayarcash payment
+var BC_PORTAL='4b474a2c15affa36baa329e3c84c4d4';
+var BC_PAT='eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI1IiwianRpIjoiZWQyZjJkYTA3OTY4ZDRhZjYwZTllMDRkY2E5MTFjMWUyMjNkYmEzYWZiZmIwZjYzODQ3MDRiZjcwYTJhZjViZDVjODEyMWUwNzNjNTY1NGEiLCJpYXQiOjE3MzAxNzI5ODcuNDY5NDk2LCJuYmYiOjE3MzAxNzI5ODcuNDY5NDk5LCJleHAiOjIwNDU3MDU3ODcuNDY4NjY4LCJzdWIiOiI1NjUiLCJzY29wZXMiOlsiKiJdfQ.Z5Yig6tTybTvmuEd2Q-LE2OL0vGgpeR0VzaRisJiW9P2ZPOtQDEoSJ_Dq--pWxJt8YliZlQfUgiYbBStJnqZiKXrxmQ_09mQ7dWz1WbwCiK2W5aJiLp4dXGJOvkh9uwWxIiWb20Fvh1qLw6peXU_-695obcEGPpRD4SF2wdcIFNfHk4LTz8QVigG9nunrJ8iFCziFP-KlSvi3V_QIkFJJ_onRcSxRiTWpScb7dn29QmG6SrvWrbaZHJWArLtoYmiEskwH7T2GUrkdTS9orXRouhamfb_1n4PaIMdRJ7CSujJZfNCFWBq0JLc3tp__h_48mf7l8OoGA5IFzPkQGgxXew583A7YwhGrobqNo2uD5P90YeLF_uLtjy6cz1sC7ydGOTPzYH_jdh5WXTDxOCbIRff3oRlUA5HYxj0mBiafOm8fTq42wdKgGZe6DabcOpTJ9TQ_J2JeSIpQ2smfgD4rqRZPCLYzOsx_EbqSO2OhwnMkjwEAVievtSBO0OBPwk8P5R53GjpfNcHJ_OM5BWVkOuKOZEJyQnwBuYtsLmzlDLH68RTJ_jWfLElb-BAj2vClUut1royxql_Jbg74LTMFFJI-mWupJD7dRPnqrzpU-dio-RGZJOP9qQUB6Jf3-B3VhUCSO4Oz4iL0_VaangyH29h6bWTvyLRyrxbzcxtZwg';
+
 document.getElementById('btnBook').addEventListener('click',async function(){
   var n=document.getElementById('cn').value.trim(),p=document.getElementById('cp').value.trim(),a=document.getElementById('ca').value.trim(),v=true;
   var en=document.getElementById('ecn'),ep=document.getElementById('ecp'),ea=document.getElementById('eca');
@@ -615,7 +618,7 @@ document.getElementById('btnBook').addEventListener('click',async function(){
   // Check slot
   try{var booked=await fetchBookedSlots(sd);if(booked.indexOf(ss)>-1){alert('Maaf, slot ni dah ditempah.');btn.disabled=false;btn.classList.remove('loading');btn.textContent='&#128179; Bayar Deposit RM150 \u2192';return}}catch(e){}
 
-  // Insert via supabase-js
+  // Insert booking via Supabase
   try{
     var {data:booking,error:berr}=await SB.from('bookings').insert({customer_name:n,customer_phone:p,customer_address:a,booking_date:sd,booking_time:ss,amount:300,deposit_amount:150,status:'pending_payment',payment_status:'pending'}).select();
     if(berr)throw new Error(berr.message);
@@ -624,18 +627,33 @@ document.getElementById('btnBook').addEventListener('click',async function(){
     // Reserve slot
     await SB.from('slots').insert({date:sd,time_slot:ss,is_booked:true,booking_id:bookingId});
 
-    var ssl=ss==='9am'?'9:00 AM':(ss==='11am'?'11:00 AM':(ss==='2pm'?'2:00 PM':'4:00 PM'));
-    var dp=sd.split('-'),dl=dp[2]+'/'+dp[1]+'/'+dp[0];
-    btn.style.display='none';document.querySelector('.price-box').style.display='none';
-    document.querySelectorAll('.book-step,.fg,.cal-nav,.cal,.sel-date,.slots').forEach(function(x){x.style.display='none'});
-    document.getElementById('cal').style.display='none';
-    document.getElementById('confirmMsg').classList.add('show');
-    document.getElementById('cmText').innerHTML='Terima kasih <strong>'+n.replace(/</g,'&lt;')+'</strong>!<br>Booking: <strong>'+dl+', '+ssl+'</strong><br>Ref: '+bookingId+'<br><br>Kami hubungi <strong>'+p.replace(/</g,'&lt;')+'</strong> dalam 24 jam.';
-    document.getElementById('bookCard').querySelector('h3').textContent='&#9989; Tempahan Berjaya';
+    // Create Bayarcash payment intent
+    btn.textContent='Menghubungi Bayarcash...';
+    var phoneClean=p.replace(/[^0-9]/g,'');
+    if(phoneClean.startsWith('0'))phoneClean='6'+phoneClean.substring(1);
+    else if(!phoneClean.startsWith('60'))phoneClean='60'+phoneClean;
+
+    var bcBody={
+      payment_channel:5,
+      portal_key:BC_PORTAL,
+      order_number:bookingId,
+      amount:15000,
+      payer_name:n,
+      payer_email:bookingId+'@jbs.local',
+      payer_telephone_number:phoneClean,
+      return_url:'https://cuci.jayabina.com/success.html?ref='+bookingId
+    };
+    var bcResp=await fetch('https://api.console.bayar.cash/v3/payment-intents',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+BC_PAT},body:JSON.stringify(bcBody)});
+    if(!bcResp.ok){var bce=await bcResp.text();throw new Error('Bayarcash: '+bce)}
+    var bcData=await bcResp.json();
+
+    // Redirect to Bayarcash payment page
+    window.location.href=bcData.url;
   }catch(e){
-    var msg=e.message;if(msg.indexOf('duplicate')>-1||msg.indexOf('23505')>-1){alert('Maaf, slot ni baru je ditempah. Sila pilih slot lain.');}
-    else{alert('Ralat teknikal. Sila WhatsApp kami. '+msg.substring(0,100));}
-    btn.disabled=false;btn.classList.remove('loading');btn.textContent='&#128179; Bayar Deposit RM150 \u2192';
+    var msg=e.message;
+    if(msg.indexOf('23505')>-1||msg.indexOf('duplicate')>-1){alert('Maaf, slot ni baru je ditempah.');}
+    else if(msg.indexOf('Bayarcash')>-1){alert('Ralat Bayarcash. Booking disimpan tapi payment gagal. Kami akan WhatsApp anda.');btn.textContent='Booking Tersimpan (payment pending)';btn.disabled=true;}
+    else{alert('Ralat: '+msg.substring(0,150));btn.disabled=false;btn.classList.remove('loading');btn.textContent='&#128179; Bayar Deposit RM150 \u2192';}
   }
 });
 
