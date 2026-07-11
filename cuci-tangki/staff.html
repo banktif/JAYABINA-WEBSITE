@@ -110,11 +110,11 @@ async function guard(){
   var {data:{user}}=await SB.auth.getUser();
   if(!user){location.href='login.html';return}
   me=user;
-  var {data:p}=await SB.from('profiles').select('role,is_active,full_name,avatar_url').eq('id',user.id).single();
+  var {data:p}=await SB.from('profiles').select('role,is_active,full_name,avatar_url,service_area').eq('id',user.id).single();
   if(!p||!p.is_active){await SB.auth.signOut();location.href='login.html';return}
   if(p.role==='admin'){location.href='admin.html';return}
   profile=p;
-  document.getElementById('who').textContent=p.full_name||'Staff';
+  document.getElementById('who').textContent=(p.full_name||'Staff')+(p.service_area?' \u2022 '+p.service_area:'');
   if(p.avatar_url){var lg=document.querySelector('.hdr .logo');if(lg){lg.style.overflow='hidden';lg.innerHTML='<img src="'+p.avatar_url+'" style="width:100%;height:100%;object-fit:cover">';}}
   await loadSettings();
   document.getElementById('loading').style.display='none';

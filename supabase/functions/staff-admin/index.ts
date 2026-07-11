@@ -41,7 +41,7 @@ async function requireAdmin(req: Request, sb: ReturnType<typeof admin>) {
   return data.user;
 }
 
-async function createStaff(sb: ReturnType<typeof admin>, s: { full_name?: string; phone?: string; password?: string; email?: string; address?: string; avatar_url?: string }) {
+async function createStaff(sb: ReturnType<typeof admin>, s: { full_name?: string; phone?: string; password?: string; email?: string; address?: string; avatar_url?: string; service_area?: string }) {
   const phone = (s.phone || "").replace(/[^0-9]/g, "");
   if (!phone || !s.full_name) return { ok: false, phone, error: "full_name and phone required" };
   if (!s.password || s.password.length < 6) return { ok: false, phone, error: "password min 6 chars" };
@@ -56,6 +56,7 @@ async function createStaff(sb: ReturnType<typeof admin>, s: { full_name?: string
       email: s.email || "",
       address: s.address || "",
       avatar_url: s.avatar_url || "",
+      service_area: s.service_area || "",
     },
   });
   if (error) return { ok: false, phone, error: error.message };
@@ -94,7 +95,7 @@ Deno.serve(async (req: Request) => {
       const userId = String(body.user_id || "");
       if (!userId) return json({ error: "user_id required" }, 400);
       const patch: Record<string, unknown> = {};
-      for (const k of ["full_name", "email", "address", "avatar_url"]) {
+      for (const k of ["full_name", "email", "address", "avatar_url", "service_area"]) {
         if (body[k] !== undefined) patch[k] = String(body[k] ?? "");
       }
       if (Object.keys(patch).length === 0) return json({ error: "nothing to update" }, 400);

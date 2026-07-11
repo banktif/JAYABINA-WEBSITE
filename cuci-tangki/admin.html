@@ -582,6 +582,9 @@ async function showStaff(){
     h+='<input id="stEmail" type="email" placeholder="Email (optional)" class="sInp" style="height:auto">';
     h+='<input id="stPhone" placeholder="Phone (login ID, e.g. 0123456789)" class="sInp" style="height:auto">';
     h+='<textarea id="stAddress" placeholder="Address" rows="2" class="sInp"></textarea>';
+    h+='<select id="stArea" class="sInp" style="height:auto"><option value="">Area (optional)</option>';
+    (settings.service_areas||'').split(',').map(function(s){return s.trim()}).filter(Boolean).forEach(function(a){h+='<option value="'+esc(a)+'">'+esc(a)+'</option>'});
+    h+='</select>';
     h+='<input id="stPass" placeholder="Password (min 6 chars)" class="sInp" style="height:auto">';
     h+='<button class="d-btn acc" style="padding:12px" onclick="addStaff()">Add Staff</button>';
     h+='<div id="stMsg" style="font-size:.75rem;color:var(--text3)"></div>';
@@ -589,12 +592,13 @@ async function showStaff(){
     h+='<div class="sec"><span class="sec-title">Staff List</span><span class="sec-count">'+staff.length+'</span></div>';
     if(!staff.length){h+='<div class="empty"><div class="eicon"><i data-lucide="users"></i></div><h2>No staff yet</h2><p>Add your first staff above.</p></div>';}
     else{
-      h+='<div class="d-card"><table><thead><tr><th>Staff</th><th>Phone</th><th>Address</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+      h+='<div class="d-card"><table><thead><tr><th>Staff</th><th>Phone</th><th>Address</th><th>Area</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
       staff.forEach(function(p){
         var av=p.avatar_url?'<div class="st-av sm"><img src="'+esc(p.avatar_url)+'"></div>':'<div class="st-av sm"><i data-lucide="user"></i></div>';
         h+='<tr><td><div style="display:flex;align-items:center;gap:10px">'+av+'<div><div class="d-name"><strong>'+esc(p.full_name)+'</strong></div>'+(p.email?'<span class="d-phone">'+esc(p.email)+'</span>':'')+'</div></div></td>';
         h+='<td class="d-phone">'+esc(p.phone)+'</td>';
         h+='<td><div class="d-addr" title="'+esc(p.address)+'">'+esc(p.address||'-')+'</div></td>';
+        h+='<td><span class="bc-badge confirmed" style="font-size:.62rem">'+(p.service_area?esc(p.service_area):'-')+'</span></td>';
         h+='<td>'+(p.is_active?'<span class="bc-badge confirmed"><span class="bdot"></span>Active</span>':'<span class="bc-badge cancelled"><span class="bdot"></span>Inactive</span>')+'</td>';
         h+='<td><div class="d-acts">';
         h+='<button class="d-btn" onclick="openEditStaff(\''+p.id+'\')">Edit</button>';
@@ -626,11 +630,14 @@ function pickStaffAvatar(){
 function openEditStaff(id){
   var p=staffCache.find(function(x){return x.id===id});if(!p)return;editAvatar=p.avatar_url||'';
   document.getElementById('mTitle').innerHTML='<span class="m-dot"></span>Edit Staff';
+  var aHTML='<option value="">None</option>';
+  (settings.service_areas||'').split(',').map(function(s){return s.trim()}).filter(Boolean).forEach(function(a){aHTML+='<option value="'+esc(a)+'"'+(p.service_area===a?' selected':'')+'>'+esc(a)+'</option>'});
   document.getElementById('mBody').innerHTML=
     '<div style="display:flex;align-items:center;gap:14px;margin-bottom:12px"><div class="st-av" id="edAvPrev">'+(editAvatar?'<img src="'+esc(editAvatar)+'">':'<i data-lucide="user"></i>')+'</div><button class="d-btn" onclick="pickEditAvatar()">Change Photo</button></div>'+
     '<div style="margin:6px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Full Name</div><input id="edName" class="mv-sel" value="'+esc(p.full_name)+'">'+
     '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Email</div><input id="edEmail" class="mv-sel" value="'+esc(p.email)+'">'+
     '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Address</div><textarea id="edAddress" class="mv-sel" rows="2">'+esc(p.address)+'</textarea>'+
+    '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Assigned Area</div><select id="edArea" class="mv-sel">'+aHTML+'</select>'+
     '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Phone (login ID)</div><input class="mv-sel" value="'+esc(p.phone)+'" disabled style="opacity:.6">';
   document.getElementById('mActs').innerHTML='<button class="m-btn accept" onclick="saveEditStaff(\''+id+'\')">Save</button><button class="m-btn close" onclick="closeModal()">Close</button>';
   document.getElementById('modal').classList.add('show');
@@ -644,7 +651,7 @@ function pickEditAvatar(){
   inp.click();
 }
 async function saveEditStaff(id){
-  var r=await callStaffAdmin({action:'update',user_id:id,full_name:document.getElementById('edName').value.trim(),email:document.getElementById('edEmail').value.trim(),address:document.getElementById('edAddress').value.trim(),avatar_url:editAvatar});
+  var r=await callStaffAdmin({action:'update',user_id:id,full_name:document.getElementById('edName').value.trim(),email:document.getElementById('edEmail').value.trim(),address:document.getElementById('edAddress').value.trim(),service_area:document.getElementById('edArea').value,avatar_url:editAvatar});
   if(r.ok){closeModal();showStaff();}else alert('Error: '+(r.body.error||'failed'));
 }
 
@@ -656,10 +663,10 @@ async function callStaffAdmin(payload){
 async function addStaff(){
   var msg=document.getElementById('stMsg');
   var name=document.getElementById('stName').value.trim(),phone=document.getElementById('stPhone').value.trim(),pass=document.getElementById('stPass').value;
-  var email=document.getElementById('stEmail').value.trim(),address=document.getElementById('stAddress').value.trim();
+  var email=document.getElementById('stEmail').value.trim(),address=document.getElementById('stAddress').value.trim(),area=document.getElementById('stArea').value;
   if(!name||!phone||pass.length<6){msg.style.color='var(--danger)';msg.textContent='Enter name, phone, and password (min 6).';return;}
   msg.style.color='var(--text3)';msg.textContent='Creating...';
-  var r=await callStaffAdmin({action:'create',full_name:name,phone:phone,password:pass,email:email,address:address,avatar_url:newStaffAvatar});
+  var r=await callStaffAdmin({action:'create',full_name:name,phone:phone,password:pass,email:email,address:address,service_area:area,avatar_url:newStaffAvatar});
   if(r.ok){msg.style.color='var(--accent)';msg.textContent='Staff added.';showStaff();}
   else{msg.style.color='var(--danger)';msg.textContent='Error: '+(r.body.error||'failed');}
 }
