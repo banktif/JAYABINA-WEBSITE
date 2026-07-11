@@ -2,252 +2,275 @@
 <html lang="ms">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel — Jaya Bina Services</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#2E7D32">
+  <link rel="manifest" href="/manifest.json">
+  <title>Jaya Bina Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Poppins',sans-serif;background:#111;color:#e0e0e0;min-height:100vh}
-    .header{background:#1a1a1a;border-bottom:2px solid #2E7D32;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
-    .header h1{font-size:1.2rem;color:#4CAF50}
-    .header .stats{display:flex;gap:20px;font-size:.82rem}
-    .header .stats span{color:#888}.header .stats strong{color:#fff;font-size:1rem}
-    .container{max-width:1200px;margin:0 auto;padding:24px}
-    .refresh-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-    .refresh-bar .info{font-size:.78rem;color:#888}
-    .btn{background:#2E7D32;color:#fff;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.85rem;transition:all .15s}
-    .btn:hover{background:#388E3C}
-    .btn-sm{padding:6px 14px;font-size:.75rem}
-    .btn-danger{background:#c62828}.btn-danger:hover{background:#e53935}
-    table{width:100%;border-collapse:collapse;background:#1a1a1a;border-radius:12px;overflow:hidden;font-size:.85rem}
-    th{background:#222;color:#4CAF50;padding:14px 16px;text-align:left;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}
-    td{padding:12px 16px;border-bottom:1px solid #2a2a2a}
-    tr:hover{background:#1e1e1e}
-    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700}
-    .badge-confirmed{background:#1B5E20;color:#A5D6A7}
-    .badge-pending{background:#5D4037;color:#FFCC80}
-    .badge-completed{background:#01579B;color:#B3E5FC}
-    .badge-cancelled{background:#B71C1C;color:#EF9A9A}
-    .empty{text-align:center;padding:60px 20px;color:#666}
-    .empty .eicon{font-size:3rem;margin-bottom:12px}
-    .loading-row td{text-align:center;padding:40px;color:#888}
-    .loading-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#4CAF50;margin:0 3px;animation:pulse 1.4s infinite}
-    .loading-dot:nth-child(2){animation-delay:.2s}.loading-dot:nth-child(3){animation-delay:.4s}
-    @keyframes pulse{0%,80%,100%{opacity:.3}40%{opacity:1}}
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:100}
-    .modal.show{display:flex}
-    .modal-card{background:#1a1a1a;border-radius:16px;padding:28px;max-width:500px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.5)}
-    .modal-card h3{color:#4CAF50;margin-bottom:16px}
-    .modal-card p{font-size:.88rem;color:#bbb;margin-bottom:8px;line-height:1.6}
-    .modal-card strong{color:#e0e0e0}
-    .modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+    body{font-family:'Poppins',sans-serif;background:#0a0a0a;color:#e0e0e0;min-height:100vh;min-height:100dvh;padding-bottom:80px;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
 
-    /* LOGIN GATE */
-    .login-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:flex;align-items:center;justify-content:center}
+    /* APP HEADER */
+    .app-header{position:sticky;top:0;z-index:100;background:#111;border-bottom:1px solid #222;padding:14px 18px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+    .app-header-top{display:flex;align-items:center;justify-content:space-between}
+    .app-title{font-size:1.2rem;font-weight:700;color:#4CAF50;letter-spacing:-.3px}
+    .app-sub{font-size:.65rem;color:#666;text-transform:uppercase;letter-spacing:1px}
+    .badge-dot{width:8px;height:8px;border-radius:50%;background:#4CAF50;display:inline-block;margin-right:6px;animation:blink 1.5s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+    /* STAT CARDS */
+    .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px 18px}
+    .stat-card{background:#151515;border-radius:14px;padding:16px 14px;text-align:center;border:1px solid #1e1e1e}
+    .stat-card .num{font-size:1.6rem;font-weight:800;color:#fff;line-height:1}
+    .stat-card .lbl{font-size:.65rem;color:#666;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+    .stat-card.green .num{color:#4CAF50}
+
+    /* BOOKING LIST */
+    .section-label{padding:0 18px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .section-label span{font-size:.7rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px}
+
+    .booking-list{padding:0 14px}
+    .booking-card{background:#151515;border-radius:16px;padding:16px;margin-bottom:8px;border:1px solid #1e1e1e;position:relative;transition:transform .15s;animation:slideUp .3s ease;display:flex;gap:14px;align-items:center}
+    @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .booking-card:active{transform:scale(.98)}
+    .bc-left{flex:1;min-width:0}
+    .bc-date{font-size:.7rem;color:#888;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+    .bc-name{font-size:.95rem;font-weight:700;color:#fff;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .bc-addr{font-size:.72rem;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+    .bc-phone{font-size:.7rem;color:#4CAF50;margin-top:2px}
+    .bc-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+    .bc-badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+    .bc-badge.pending{background:#3E2723;color:#FFB74D}
+    .bc-badge.confirmed{background:#1B5E20;color:#A5D6A7}
+    .bc-badge.completed{background:#0D3B66;color:#90CAF9}
+    .bc-badge.cancelled{background:#B71C1C;color:#EF9A9A}
+
+    /* SWIPE ACTIONS */
+    .swipe-actions{display:flex;gap:6px;margin-top:6px}
+    .swipe-btn{background:#222;border:none;color:#999;padding:6px 14px;border-radius:20px;font-size:.68rem;font-weight:600;cursor:pointer;transition:all .15s}
+    .swipe-btn:active{transform:scale(.95)}
+    .swipe-btn.confirm{color:#A5D6A7}.swipe-btn.confirm:active{background:#1B5E20;color:#fff}
+    .swipe-btn.done{color:#90CAF9}.swipe-btn.done:active{background:#1565C0;color:#fff}
+    .swipe-btn.cancel{color:#EF9A9A}.swipe-btn.cancel:active{background:#B71C1C;color:#fff}
+
+    /* EMPTY */
+    .empty-state{text-align:center;padding:60px 20px}
+    .empty-state .eicon{font-size:3rem;margin-bottom:12px;opacity:.5}
+    .empty-state p{color:#555;font-size:.85rem}
+
+    /* BOTTOM NAV */
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #222;display:flex;justify-content:space-around;padding:8px 0 16px;z-index:100;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:#555;cursor:pointer;padding:6px 16px;transition:color .15s;font-family:inherit}
+    .nav-item.active{color:#4CAF50}
+    .nav-item .ni{font-size:1.2rem}
+    .nav-item .nl{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+
+    /* MODAL */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:flex-end;justify-content:center;z-index:200;padding:16px}
+    .modal.show{display:flex}
+    .modal-sheet{background:#151515;border-radius:20px 20px 0 0;padding:24px 20px;width:100%;max-width:480px;animation:slideUp2 .25s ease;border:1px solid #222;max-height:80vh;overflow-y:auto}
+    @keyframes slideUp2{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .modal-sheet h3{font-size:1.1rem;color:#4CAF50;margin-bottom:16px}
+    .modal-sheet .row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1a1a1a;font-size:.82rem}
+    .modal-sheet .row .k{color:#888}.modal-sheet .row .v{color:#e0e0e0;font-weight:600;text-align:right;max-width:60%}
+    .modal-sheet .wa-link{display:inline-block;color:#25D366;font-weight:600;text-decoration:none;margin-top:4px}
+    .modal-actions{display:flex;gap:8px;margin-top:16px}
+    .modal-actions button{flex:1;padding:10px;border:none;border-radius:10px;font-weight:700;font-size:.78rem;cursor:pointer;transition:all .15s;color:#fff}
+    .modal-actions .act-close{background:#333}
+    .modal-actions .act-confirm{background:#2E7D32}
+    .modal-actions .act-done{background:#1565C0}
+    .modal-actions .act-cancel{background:#B71C1C}
+
+    /* LOGIN */
+    .login-overlay{position:fixed;inset:0;background:#0a0a0a;z-index:300;display:flex;align-items:center;justify-content:center}
     .login-overlay.hidden{display:none}
-    .login-box{background:#1a1a1a;border:1px solid #333;border-radius:16px;padding:40px 36px;width:380px;max-width:90vw;text-align:center}
-    .login-box h2{color:#4CAF50;margin-bottom:8px;font-size:1.4rem}
-    .login-box .sub{color:#888;font-size:.82rem;margin-bottom:24px}
-    .login-box input{width:100%;padding:12px 16px;background:#252525;border:1px solid #444;border-radius:10px;color:#e0e0e0;font-family:inherit;font-size:.95rem;margin-bottom:12px;outline:none;transition:border-color .2s}
+    .login-box{width:320px;max-width:90vw;text-align:center}
+    .login-box .lock{font-size:3rem;margin-bottom:12px}
+    .login-box h2{color:#4CAF50;font-size:1.3rem;margin-bottom:4px}
+    .login-box .sub{color:#666;font-size:.75rem;margin-bottom:20px}
+    .login-box input{width:100%;padding:14px 16px;background:#151515;border:1px solid #333;border-radius:12px;color:#e0e0e0;font-family:inherit;font-size:.95rem;margin-bottom:10px;outline:none;transition:border .2s;text-align:center}
     .login-box input:focus{border-color:#4CAF50}
-    .login-box .err{color:#e53935;font-size:.78rem;margin-bottom:8px;display:none}
-    .login-box .btn-login{width:100%;padding:12px;background:#2E7D32;color:#fff;border:none;border-radius:10px;font-weight:700;font-size:.95rem;cursor:pointer;transition:background .15s}
-    .login-box .btn-login:hover{background:#388E3C}
-    .btn-logout{background:transparent;color:#e53935;border:1px solid #e53935;padding:4px 12px;border-radius:6px;cursor:pointer;font-size:.72rem;transition:all .15s}
-    .btn-logout:hover{background:#e53935;color:#fff}
+    .login-box .err{color:#e53935;font-size:.72rem;margin-bottom:4px;display:none}
+    .login-box button{width:100%;padding:12px;background:#2E7D32;color:#fff;border:none;border-radius:12px;font-weight:700;font-size:.9rem;cursor:pointer}
+
+    /* LOADER */
+    .spinner-wrap{display:flex;align-items:center;justify-content:center;padding:40px;gap:8px}
+    .spinner-dot{width:6px;height:6px;border-radius:50%;background:#4CAF50;animation:pulse 1.4s infinite}
+    .spinner-dot:nth-child(2){animation-delay:.2s}.spinner-dot:nth-child(3){animation-delay:.4s}
+    @keyframes pulse{0%,80%,100%{opacity:.3}40%{opacity:1}}
+
+    /* SAFE AREA iPhone */
+    @supports(padding-bottom:env(safe-area-inset-bottom)){.bottom-nav{padding-bottom:calc(8px + env(safe-area-inset-bottom))}}
+    @media(min-width:768px){body{max-width:480px;margin:0 auto;border-left:1px solid #1a1a1a;border-right:1px solid #1a1a1a}}
   </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>Jaya Bina — Admin Panel</h1>
-  <div style="display:flex;align-items:center;gap:16px">
-    <div class="stats">
-      <span>Hari ini: <strong id="statToday">-</strong></span>
-      <span>Total: <strong id="statTotal">-</strong></span>
-      <span>Pending: <strong id="statPending">-</strong></span>
+<div class="app-header">
+  <div class="app-header-top">
+    <div>
+      <div class="app-title"><span class="badge-dot"></span>Jaya Bina</div>
+      <div class="app-sub">Admin Panel</div>
     </div>
-    <button class="btn-logout" onclick="logout()">Logout</button>
+    <button class="swipe-btn" onclick="logout()" style="color:#e53935">Logout</button>
   </div>
 </div>
 
-<!-- LOGIN GATE -->
+<div class="stat-row">
+  <div class="stat-card"><div class="num" id="statToday">0</div><div class="lbl">Hari Ini</div></div>
+  <div class="stat-card green"><div class="num" id="statTotal">0</div><div class="lbl">Total</div></div>
+  <div class="stat-card"><div class="num" id="statPending">0</div><div class="lbl">Pending</div></div>
+</div>
+
+<div class="section-label"><span>📋 Tempahan</span></div>
+<div class="booking-list" id="bookingList">
+  <div class="spinner-wrap"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div>
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-item active" onclick="loadBookings()">
+    <span class="ni">📋</span><span class="nl">Semua</span>
+  </button>
+  <button class="nav-item" id="navPending" onclick="filterStatus('pending_payment')">
+    <span class="ni">⏳</span><span class="nl">Pending</span>
+  </button>
+  <button class="nav-item" id="navConfirmed" onclick="filterStatus('confirmed')">
+    <span class="ni">✅</span><span class="nl">Confirm</span>
+  </button>
+  <button class="nav-item" onclick="loadBookings()">
+    <span class="ni">🔄</span><span class="nl">Refresh</span>
+  </button>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-sheet">
+    <h3 id="modalTitle">Detail</h3>
+    <div id="modalBody"></div>
+    <div class="modal-actions" id="modalActions"></div>
+  </div>
+</div>
+
+<!-- LOGIN -->
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
-    <h2>&#128274; Admin Login</h2>
-    <p class="sub">Masukkan password untuk akses panel</p>
-    <input type="password" id="loginPass" placeholder="Password..." autocomplete="current-password">
+    <div class="lock">🔐</div>
+    <h2>Admin Access</h2>
+    <p class="sub">Masukkan password</p>
+    <input type="password" id="loginPass" placeholder="Password..." autocomplete="off">
     <p class="err" id="loginErr">Password salah</p>
-    <button class="btn-login" onclick="doLogin()">Login</button>
+    <button onclick="doLogin()">Unlock</button>
   </div>
 </div>
 
-<div class="container">
-  <div class="refresh-bar">
-    <span class="info" id="refreshInfo">Loading...</span>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-sm" onclick="loadBookings()">&#8635; Refresh</button>
-    </div>
-  </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Tarikh</th>
-        <th>Masa</th>
-        <th>Nama</th>
-        <th>Telefon</th>
-        <th>Alamat</th>
-        <th>Status</th>
-        <th>Tindakan</th>
-      </tr>
-    </thead>
-    <tbody id="bookingTable">
-      <tr class="loading-row"><td colspan="7"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></td></tr>
-    </tbody>
-  </table>
-</div>
-
-<div class="modal" id="detailModal">
-  <div class="modal-card">
-    <h3>Detail Booking</h3>
-    <div id="modalContent"></div>
-    <div class="modal-actions">
-      <button class="btn btn-sm" onclick="updateStatus('confirmed')">&#10003; Confirm</button>
-      <button class="btn btn-sm" onclick="updateStatus('completed')">&#10004; Selesai</button>
-      <button class="btn btn-sm btn-danger" onclick="updateStatus('cancelled')">&#10007; Batal</button>
-      <button class="btn btn-sm" style="background:#555" onclick="document.getElementById('detailModal').classList.remove('show')">Tutup</button>
-    </div>
-  </div>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-var SB_URL='https://thbscwlcyhcnqsppoyfn.supabase.co';
-var SB_KEY='sb_publishable_jFrl83f8l_tcWTulTL5lkQ_bLnCVpYR';
-var currentBookingId=null;
+var SB = supabase.createClient('https://thbscwlcyhcnqsppoyfn.supabase.co','sb_publishable_jFrl83f8l_tcWTulTL5lkQ_bLnCVpYR');
+var AUTH_KEY='jaya_admin_v1',ADMIN_PW='6e5574b72c57535f',currentFilter=null,allBookings=[],currentBookingId=null;
 
-async function sbFetch(table,query){
-  var url=SB_URL+'/rest/v1/'+table+query;
-  var r=await fetch(url,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-  if(!r.ok)throw new Error(await r.text());
-  return r.json();
-}
-
-async function sbPatch(table,id,body){
-  var url=SB_URL+'/rest/v1/'+table+'?id=eq.'+id;
-  var r=await fetch(url,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(body)});
-  if(!r.ok)throw new Error(await r.text());
-  return r.json();
-}
-
-function fmtDate(d){if(!d)return '-';var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
+function fmtDate(d){if(!d)return'-';var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
 function fmtTime(t){return t==='9am'?'9:00 AM':(t==='11am'?'11:00 AM':(t==='2pm'?'2:00 PM':'4:00 PM'))}
-function statusBadge(s){
-  if(s==='confirmed')return '<span class="badge badge-confirmed">Disahkan</span>';
-  if(s==='completed')return '<span class="badge badge-completed">Selesai</span>';
-  if(s==='cancelled')return '<span class="badge badge-cancelled">Dibatalkan</span>';
-  return '<span class="badge badge-pending">Pending</span>';
+function badge(s){
+  if(s==='confirmed')return'<span class="bc-badge confirmed">Diterima</span>';
+  if(s==='completed')return'<span class="bc-badge completed">Selesai</span>';
+  if(s==='cancelled')return'<span class="bc-badge cancelled">Batal</span>';
+  return'<span class="bc-badge pending">Pending</span>';
 }
 
-async function loadBookings(){
-  var tbody=document.getElementById('bookingTable');
-  tbody.innerHTML='<tr class="loading-row"><td colspan="7"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></td></tr>';
+async function loadBookings(filter){
+  currentFilter=filter||null;
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
+  if(!filter)document.querySelector('.nav-item').classList.add('active');
+  else if(filter==='pending_payment')document.getElementById('navPending').classList.add('active');
+  else if(filter==='confirmed')document.getElementById('navConfirmed').classList.add('active');
+
+  var list=document.getElementById('bookingList');
+  list.innerHTML='<div class="spinner-wrap"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div>';
+
   try{
-    var data=await sbFetch('bookings','?select=*&order=booking_date.asc,booking_time.asc');
-    if(!data.length){tbody.innerHTML='<tr><td colspan="7"><div class="empty"><div class="eicon">&#128203;</div><p>Tiada booking lagi.</p></div></td></tr>';updateStats(data);return}
-    var html='';
-    data.forEach(function(b){
-      html+='<tr>';
-      html+='<td>'+fmtDate(b.booking_date)+'</td>';
-      html+='<td>'+fmtTime(b.booking_time)+'</td>';
-      html+='<td><strong>'+b.customer_name.replace(/</g,'&lt;')+'</strong></td>';
-      html+='<td><a href="https://wa.me/6'+b.customer_phone.replace(/[^0-9]/g,'').slice(1)+'" target="_blank" style="color:#4CAF50">'+b.customer_phone.replace(/</g,'&lt;')+'</a></td>';
-      html+='<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+b.customer_address.replace(/</g,'&lt;')+'">'+b.customer_address.replace(/</g,'&lt;')+'</td>';
-      html+='<td>'+statusBadge(b.status)+'</td>';
-      html+='<td><button class="btn btn-sm" onclick="showDetail(\''+b.id+'\')">&#128065; Lihat</button></td>';
-      html+='</tr>';
+    var query=SB.from('bookings').select('*').order('booking_date',{ascending:true}).order('booking_time',{ascending:true});
+    var {data,error}=await query;
+    if(error)throw new Error(error.message);
+    allBookings=data||[];
+    var filtered=filter?allBookings.filter(function(b){return b.status===filter}):allBookings;
+    updateStats(allBookings);
+    if(!filtered.length){list.innerHTML='<div class="empty-state"><div class="eicon">📭</div><p>Tiada tempahan</p></div>';return}
+    var h='';filtered.forEach(function(b){
+      h+='<div class="booking-card" onclick="showDetail(\''+b.id+'\')">';
+      h+='<div class="bc-left"><div class="bc-date">'+fmtDate(b.booking_date)+' · '+fmtTime(b.booking_time)+'</div>';
+      h+='<div class="bc-name">'+b.customer_name.replace(/</g,'&lt;')+'</div>';
+      h+='<div class="bc-addr">📍 '+b.customer_address.replace(/</g,'&lt;')+'</div>';
+      h+='<div class="bc-phone">📱 '+b.customer_phone.replace(/</g,'&lt;')+'</div>';
+      h+='<div class="swipe-actions" onclick="event.stopPropagation()">';
+      if(b.status==='pending_payment')h+='<button class="swipe-btn confirm" onclick="updateStatus(\''+b.id+'\',\'confirmed\')">✅ Terima</button>';
+      if(b.status==='confirmed'||b.status==='pending_payment')h+='<button class="swipe-btn done" onclick="updateStatus(\''+b.id+'\',\'completed\')">✔ Selesai</button>';
+      h+='<button class="swipe-btn cancel" onclick="updateStatus(\''+b.id+'\',\'cancelled\')">✕ Batal</button></div>';
+      h+='</div><div class="bc-right">'+badge(b.status)+'</div></div>';
     });
-    tbody.innerHTML=html;
-    updateStats(data);
-    document.getElementById('refreshInfo').textContent='Last update: '+new Date().toLocaleTimeString('ms-MY');
-  }catch(e){
-    tbody.innerHTML='<tr><td colspan="7"><div class="empty"><div class="eicon">&#9888;</div><p>Gagal load: '+e.message+'</p></div></td></tr>';
-  }
+    list.innerHTML=h;
+  }catch(e){list.innerHTML='<div class="empty-state"><div class="eicon">⚠️</div><p>'+e.message+'</p></div>'}
 }
 
 function updateStats(data){
   var today=new Date().toISOString().split('T')[0];
-  var todayCount=data.filter(function(b){return b.booking_date===today}).length;
-  document.getElementById('statToday').textContent=todayCount;
+  document.getElementById('statToday').textContent=data.filter(function(b){return b.booking_date===today}).length;
   document.getElementById('statTotal').textContent=data.length;
   document.getElementById('statPending').textContent=data.filter(function(b){return b.status==='pending_payment'}).length;
 }
 
 async function showDetail(id){
   currentBookingId=id;
-  try{
-    var data=await sbFetch('bookings','?select=*&id=eq.'+id);
-    var b=data[0];
-    document.getElementById('modalContent').innerHTML='\
-      <p><strong>Nama:</strong> '+b.customer_name+'</p>\
-      <p><strong>Telefon:</strong> <a href="https://wa.me/6'+b.customer_phone.replace(/[^0-9]/g,'').slice(1)+'" target="_blank" style="color:#4CAF50">'+b.customer_phone+'</a></p>\
-      <p><strong>Alamat:</strong> '+b.customer_address+'</p>\
-      <p><strong>Tarikh:</strong> '+fmtDate(b.booking_date)+' | <strong>Masa:</strong> '+fmtTime(b.booking_time)+'</p>\
-      <p><strong>Deposit:</strong> RM'+b.deposit_amount+' | <strong>Jumlah:</strong> RM'+b.amount+'</p>\
-      <p><strong>Status Bayaran:</strong> '+b.payment_status+'</p>\
-      <p><strong>Status Booking:</strong> '+b.status+'</p>\
-      <p><strong>Ref:</strong> <code>'+b.id+'</code></p>';
-    document.getElementById('detailModal').classList.add('show');
-  }catch(e){alert('Error: '+e.message)}
+  var b=allBookings.find(function(x){return x.id===id});
+  if(!b)return;
+  document.getElementById('modalTitle').textContent=b.customer_name;
+  var ph=b.customer_phone.replace(/[^0-9]/g,'');
+  if(ph.startsWith('0'))ph='6'+ph.substring(1);
+  document.getElementById('modalBody').innerHTML=
+    '<div class="row"><span class="k">Tarikh</span><span class="v">'+fmtDate(b.booking_date)+' · '+fmtTime(b.booking_time)+'</span></div>'+
+    '<div class="row"><span class="k">Telefon</span><span class="v"><a class="wa-link" href="https://wa.me/'+ph+'" target="_blank">📱 '+b.customer_phone+'</a></span></div>'+
+    '<div class="row"><span class="k">Alamat</span><span class="v">'+b.customer_address+'</span></div>'+
+    '<div class="row"><span class="k">Jumlah</span><span class="v">RM'+b.amount+'</span></div>'+
+    '<div class="row"><span class="k">Deposit</span><span class="v">RM'+b.deposit_amount+'</span></div>'+
+    '<div class="row"><span class="k">Status Bayar</span><span class="v">'+b.payment_status+'</span></div>'+
+    '<div class="row"><span class="k">Status</span><span class="v">'+b.status+'</span></div>'+
+    '<div class="row"><span class="k">Ref</span><span class="v" style="font-size:.65rem;word-break:break-all">'+b.id+'</span></div>';
+  var acts='';
+  if(b.status==='pending_payment')acts+='<button class="act-confirm" onclick="updateStatus(\''+id+'\',\'confirmed\')">✅ Terima</button>';
+  if(b.status==='confirmed'||b.status==='pending_payment')acts+='<button class="act-done" onclick="updateStatus(\''+id+'\',\'completed\')">✔ Selesai</button>';
+  acts+='<button class="act-cancel" onclick="updateStatus(\''+id+'\',\'cancelled\')">✕ Batal</button>';
+  acts+='<button class="act-close" onclick="closeModal()">Tutup</button>';
+  document.getElementById('modalActions').innerHTML=acts;
+  document.getElementById('modal').classList.add('show');
 }
 
-async function updateStatus(status){
-  if(!currentBookingId)return;
+function closeModal(){document.getElementById('modal').classList.remove('show');currentBookingId=null}
+
+async function updateStatus(id,status){
   try{
-    await sbPatch('bookings',currentBookingId,{status:status,updated_at:new Date().toISOString()});
-    document.getElementById('detailModal').classList.remove('show');
-    loadBookings();
-  }catch(e){alert('Error: '+e.message)}
+    await SB.from('bookings').update({status:status,updated_at:new Date().toISOString()}).eq('id',id);
+    document.getElementById('modal').classList.remove('show');
+    loadBookings(currentFilter);
+  }catch(e){alert(e.message)}
 }
 
-loadBookings();
-setInterval(loadBookings,30000);
+function filterStatus(s){loadBookings(s)}
 
-// === AUTH LOGIC ===
-var ADMIN_PW = '6e5574b72c57535f'; // SHA256 hash — tukar password guna hash
-var AUTH_KEY = 'jaya_admin_v1';
-
-function hash(str){var h=0,i,c;for(i=0;i<str.length;i++){c=str.charCodeAt(i);h=((h<<5)-h)+c;h|=0}return Math.abs(h).toString(36)}
-
+// AUTH
 function doLogin(){
-  var pw=document.getElementById('loginPass').value;
-  if(!pw)return;
-  // For first use: accept 'admin123' to set your own password
-  // SHA256 not available in vanilla JS, guna salted hash instead
-  var salted = 'JBS'+pw+'cuci';
-  var h='';for(var i=0;i<salted.length;i++)h+=((salted.charCodeAt(i)*7)%16).toString(16);
-  if(h===ADMIN_PW){
-    sessionStorage.setItem(AUTH_KEY,'1');
-    document.getElementById('loginOverlay').classList.add('hidden');
-    document.getElementById('loginPass').value='';
-  }else{
-    document.getElementById('loginErr').style.display='block';
-    document.getElementById('loginErr').style.color='#e53935';
-    document.getElementById('loginErr').textContent='Password salah';
-  }
-}
-function setPassword(newPw){
-  var salted='JBS'+newPw+'cuci';
-  var h='';for(var i=0;i<salted.length;i++)h+=((salted.charCodeAt(i)*7)%16).toString(16);
-  ADMIN_PW=h;sessionStorage.setItem('admin_pw_hash',h);
-  alert('Password updated! Copy hash ni ke admin.html: '+h);
+  var pw=document.getElementById('loginPass').value;if(!pw)return;
+  var salted='JBS'+pw+'cuci',h='';for(var i=0;i<salted.length;i++)h+=((salted.charCodeAt(i)*7)%16).toString(16);
+  if(h===ADMIN_PW){sessionStorage.setItem(AUTH_KEY,'1');document.getElementById('loginOverlay').classList.add('hidden');loadBookings()}else{document.getElementById('loginErr').style.display='block'}
 }
 function logout(){sessionStorage.removeItem(AUTH_KEY);location.reload()}
-if(sessionStorage.getItem(AUTH_KEY)==='1'){document.getElementById('loginOverlay').classList.add('hidden')}
-if(sessionStorage.getItem('admin_pw_hash')){ADMIN_PW=sessionStorage.getItem('admin_pw_hash')}
-
-// Enter key on password field
+if(sessionStorage.getItem(AUTH_KEY)==='1'){document.getElementById('loginOverlay').classList.add('hidden');loadBookings()}
 document.getElementById('loginPass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
+
+// PULL TO REFRESH
+var touchStart=0;document.addEventListener('touchstart',function(e){touchStart=e.touches[0].clientY});
+document.addEventListener('touchend',function(e){if(window.scrollY===0&&e.changedTouches[0].clientY-touchStart>80){loadBookings(currentFilter)}});
 </script>
 </body>
 </html>
