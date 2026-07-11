@@ -569,10 +569,14 @@ function rCal(){
     else if(bookedDates[ds]&&bookedDates[ds].partial)cls.push('part');
     if(ds===ts)cls.push('today');
     if(sd===ds)cls.push('sel');
-    var oc='';if(cls.indexOf('d')===-1)oc='onclick="selectDate(\''+ds+'\')"';
-    else oc='onclick=""';
-    h+='<div class="'+cls.join(' ')+'" onclick="'+oc.replace(/"/g,'&quot;')+'">'+d+'</div>';
+    if(cls.indexOf('d')!==-1)cls.push('nodate');
+    h+='<div class="'+cls.join(' ')+'" data-date="'+ds+'">'+d+'</div>';
   }
+  c.innerHTML=h;
+  c.querySelectorAll('.day:not(.nodate)').forEach(function(el){
+    el.addEventListener('click',function(){selectDate(this.dataset.date)});
+    el.style.cursor='pointer';
+  });
   c.innerHTML=h;
   document.getElementById('prevM').disabled=(cy===td.getFullYear()&&cm<=td.getMonth());
 }
