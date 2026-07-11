@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Jaya Bina Services</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Poppins',sans-serif;background:#111;color:#e0e0e0;min-height:100vh}
+    .header{background:#1a1a1a;border-bottom:2px solid #2E7D32;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+    .header h1{font-size:1.2rem;color:#4CAF50}
+    .header .stats{display:flex;gap:20px;font-size:.82rem}
+    .header .stats span{color:#888}.header .stats strong{color:#fff;font-size:1rem}
+    .container{max-width:1200px;margin:0 auto;padding:24px}
+    .refresh-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .refresh-bar .info{font-size:.78rem;color:#888}
+    .btn{background:#2E7D32;color:#fff;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.85rem;transition:all .15s}
+    .btn:hover{background:#388E3C}
+    .btn-sm{padding:6px 14px;font-size:.75rem}
+    .btn-danger{background:#c62828}.btn-danger:hover{background:#e53935}
+    table{width:100%;border-collapse:collapse;background:#1a1a1a;border-radius:12px;overflow:hidden;font-size:.85rem}
+    th{background:#222;color:#4CAF50;padding:14px 16px;text-align:left;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}
+    td{padding:12px 16px;border-bottom:1px solid #2a2a2a}
+    tr:hover{background:#1e1e1e}
+    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700}
+    .badge-confirmed{background:#1B5E20;color:#A5D6A7}
+    .badge-pending{background:#5D4037;color:#FFCC80}
+    .badge-completed{background:#01579B;color:#B3E5FC}
+    .badge-cancelled{background:#B71C1C;color:#EF9A9A}
+    .empty{text-align:center;padding:60px 20px;color:#666}
+    .empty .eicon{font-size:3rem;margin-bottom:12px}
+    .loading-row td{text-align:center;padding:40px;color:#888}
+    .loading-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#4CAF50;margin:0 3px;animation:pulse 1.4s infinite}
+    .loading-dot:nth-child(2){animation-delay:.2s}.loading-dot:nth-child(3){animation-delay:.4s}
+    @keyframes pulse{0%,80%,100%{opacity:.3}40%{opacity:1}}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:100}
+    .modal.show{display:flex}
+    .modal-card{background:#1a1a1a;border-radius:16px;padding:28px;max-width:500px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+    .modal-card h3{color:#4CAF50;margin-bottom:16px}
+    .modal-card p{font-size:.88rem;color:#bbb;margin-bottom:8px;line-height:1.6}
+    .modal-card strong{color:#e0e0e0}
+    .modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Jaya Bina — Admin Panel</h1>
+  <div class="stats">
+    <span>Hari ini: <strong id="statToday">-</strong></span>
+    <span>Total: <strong id="statTotal">-</strong></span>
+    <span>Pending: <strong id="statPending">-</strong></span>
+  </div>
+</div>
+
+<div class="container">
+  <div class="refresh-bar">
+    <span class="info" id="refreshInfo">Loading...</span>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-sm" onclick="loadBookings()">&#8635; Refresh</button>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tarikh</th>
+        <th>Masa</th>
+        <th>Nama</th>
+        <th>Telefon</th>
+        <th>Alamat</th>
+        <th>Status</th>
+        <th>Tindakan</th>
+      </tr>
+    </thead>
+    <tbody id="bookingTable">
+      <tr class="loading-row"><td colspan="7"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="modal" id="detailModal">
+  <div class="modal-card">
+    <h3>Detail Booking</h3>
+    <div id="modalContent"></div>
+    <div class="modal-actions">
+      <button class="btn btn-sm" onclick="updateStatus('confirmed')">&#10003; Confirm</button>
+      <button class="btn btn-sm" onclick="updateStatus('completed')">&#10004; Selesai</button>
+      <button class="btn btn-sm btn-danger" onclick="updateStatus('cancelled')">&#10007; Batal</button>
+      <button class="btn btn-sm" style="background:#555" onclick="document.getElementById('detailModal').classList.remove('show')">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var SB_URL='https://thbscwlcyhcnqsppoyfn.supabase.co';
+var SB_KEY='sb_publishable_jFrl83f8l_tcWTulTL5lkQ_bLnCVpYR';
+var currentBookingId=null;
+
+async function sbFetch(table,query){
+  var url=SB_URL+'/rest/v1/'+table+query;
+  var r=await fetch(url,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+  if(!r.ok)throw new Error(await r.text());
+  return r.json();
+}
+
+async function sbPatch(table,id,body){
+  var url=SB_URL+'/rest/v1/'+table+'?id=eq.'+id;
+  var r=await fetch(url,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error(await r.text());
+  return r.json();
+}
+
+function fmtDate(d){if(!d)return '-';var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
+function fmtTime(t){return t==='9am'?'9:00 AM':(t==='11am'?'11:00 AM':(t==='2pm'?'2:00 PM':'4:00 PM'))}
+function statusBadge(s){
+  if(s==='confirmed')return '<span class="badge badge-confirmed">Disahkan</span>';
+  if(s==='completed')return '<span class="badge badge-completed">Selesai</span>';
+  if(s==='cancelled')return '<span class="badge badge-cancelled">Dibatalkan</span>';
+  return '<span class="badge badge-pending">Pending</span>';
+}
+
+async function loadBookings(){
+  var tbody=document.getElementById('bookingTable');
+  tbody.innerHTML='<tr class="loading-row"><td colspan="7"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></td></tr>';
+  try{
+    var data=await sbFetch('bookings','?select=*&order=booking_date.asc,booking_time.asc');
+    if(!data.length){tbody.innerHTML='<tr><td colspan="7"><div class="empty"><div class="eicon">&#128203;</div><p>Tiada booking lagi.</p></div></td></tr>';updateStats(data);return}
+    var html='';
+    data.forEach(function(b){
+      html+='<tr>';
+      html+='<td>'+fmtDate(b.booking_date)+'</td>';
+      html+='<td>'+fmtTime(b.booking_time)+'</td>';
+      html+='<td><strong>'+b.customer_name.replace(/</g,'&lt;')+'</strong></td>';
+      html+='<td><a href="https://wa.me/6'+b.customer_phone.replace(/[^0-9]/g,'').slice(1)+'" target="_blank" style="color:#4CAF50">'+b.customer_phone.replace(/</g,'&lt;')+'</a></td>';
+      html+='<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+b.customer_address.replace(/</g,'&lt;')+'">'+b.customer_address.replace(/</g,'&lt;')+'</td>';
+      html+='<td>'+statusBadge(b.status)+'</td>';
+      html+='<td><button class="btn btn-sm" onclick="showDetail(\''+b.id+'\')">&#128065; Lihat</button></td>';
+      html+='</tr>';
+    });
+    tbody.innerHTML=html;
+    updateStats(data);
+    document.getElementById('refreshInfo').textContent='Last update: '+new Date().toLocaleTimeString('ms-MY');
+  }catch(e){
+    tbody.innerHTML='<tr><td colspan="7"><div class="empty"><div class="eicon">&#9888;</div><p>Gagal load: '+e.message+'</p></div></td></tr>';
+  }
+}
+
+function updateStats(data){
+  var today=new Date().toISOString().split('T')[0];
+  var todayCount=data.filter(function(b){return b.booking_date===today}).length;
+  document.getElementById('statToday').textContent=todayCount;
+  document.getElementById('statTotal').textContent=data.length;
+  document.getElementById('statPending').textContent=data.filter(function(b){return b.status==='pending_payment'}).length;
+}
+
+async function showDetail(id){
+  currentBookingId=id;
+  try{
+    var data=await sbFetch('bookings','?select=*&id=eq.'+id);
+    var b=data[0];
+    document.getElementById('modalContent').innerHTML='\
+      <p><strong>Nama:</strong> '+b.customer_name+'</p>\
+      <p><strong>Telefon:</strong> <a href="https://wa.me/6'+b.customer_phone.replace(/[^0-9]/g,'').slice(1)+'" target="_blank" style="color:#4CAF50">'+b.customer_phone+'</a></p>\
+      <p><strong>Alamat:</strong> '+b.customer_address+'</p>\
+      <p><strong>Tarikh:</strong> '+fmtDate(b.booking_date)+' | <strong>Masa:</strong> '+fmtTime(b.booking_time)+'</p>\
+      <p><strong>Deposit:</strong> RM'+b.deposit_amount+' | <strong>Jumlah:</strong> RM'+b.amount+'</p>\
+      <p><strong>Status Bayaran:</strong> '+b.payment_status+'</p>\
+      <p><strong>Status Booking:</strong> '+b.status+'</p>\
+      <p><strong>Ref:</strong> <code>'+b.id+'</code></p>';
+    document.getElementById('detailModal').classList.add('show');
+  }catch(e){alert('Error: '+e.message)}
+}
+
+async function updateStatus(status){
+  if(!currentBookingId)return;
+  try{
+    await sbPatch('bookings',currentBookingId,{status:status,updated_at:new Date().toISOString()});
+    document.getElementById('detailModal').classList.remove('show');
+    loadBookings();
+  }catch(e){alert('Error: '+e.message)}
+}
+
+loadBookings();
+setInterval(loadBookings,30000);
+</script>
+</body>
+</html>

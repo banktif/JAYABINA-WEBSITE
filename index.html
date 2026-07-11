@@ -534,21 +534,98 @@ var secs=document.querySelectorAll('section[id]');
 var nlinks=document.querySelectorAll('.nav-links a');
 window.addEventListener('scroll',function(){var sy=window.pageYOffset,cur='';secs.forEach(function(s){if(sy>=s.offsetTop-80)cur=s.getAttribute('id')});nlinks.forEach(function(l){l.classList.remove('active');if(l.getAttribute('href')==='#'+cur)l.classList.add('active')})},{passive:true});
 
-// CALENDAR
+// SUPABASE CONFIG
+var SB_URL='https://thbscwlcyhcnqsppoyfn.supabase.co';
+var SB_KEY='sb_publishable_jFrl83f8l_tcWTulTL5lkQ_bLnCVpYR';
+async function sbCall(fn,body){
+  var r=await fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok){var e=await r.text();throw new Error(fn+' failed: '+e)}
+  return r.json();
+}
+
+// CALENDAR (real Supabase)
 var td=new Date();
 var cm=td.getMonth(),cy=td.getFullYear(),sd=null,ss=null;
-function genBk(y,m){var bk={},d=new Date(y,m,1),ts=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0');while(d.getMonth()===m){var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');if(ds<=ts){d.setDate(d.getDate()+1);continue}var h=0;[ds,'s'].join('').split('').forEach(function(c){h=((h<<5)-h)+c.charCodeAt(0);h|=0});var sb=Math.abs(h%5);bk[ds]={t:sb,s:{9:sb>0,11:sb>1,2:sb>2,4:sb>3}};d.setDate(d.getDate()+1)}return bk}
-var bd={};function rb(){bd=genBk(cy,cm)}rb();
-function rCal(){var c=document.getElementById('cal'),l=document.getElementById('calMth'),mn=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];l.textContent=mn[cm]+' '+cy;var fd=new Date(cy,cm,1).getDay(),dim=new Date(cy,cm+1,0).getDate(),days=['Ahd','Isn','Sel','Rab','Kha','Jum','Sab'],h='';days.forEach(function(d){h+='<div class="dh">'+d+'</div>'});for(var i=0;i<fd;i++)h+='<div class="day e"></div>';var ts=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0');var mn2=new Date(td);mn2.setDate(mn2.getDate()+1);var mins=mn2.getFullYear()+'-'+String(mn2.getMonth()+1).padStart(2,'0')+'-'+String(mn2.getDate()).padStart(2,'0');var mx=new Date(td);mx.setDate(mx.getDate()+30);var maxs=mx.getFullYear()+'-'+String(mx.getMonth()+1).padStart(2,'0')+'-'+String(mx.getDate()).padStart(2,'0');for(var d=1;d<=dim;d++){var dobj=new Date(cy,cm,d),ds=dobj.getFullYear()+'-'+String(dobj.getMonth()+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),cls=['day'];if(ds<mins||ds>maxs)cls.push('d');else if(bd[ds]&&bd[ds].t>=4)cls.push('d');else if(bd[ds]&&bd[ds].t>0)cls.push('part');if(ds===ts)cls.push('today');if(sd===ds)cls.push('sel');var oc='';if(cls.indexOf('d')===-1)oc='onclick="selectDate(\''+ds+'\','+d+','+(cm+1)+','+cy+')"';h+='<div class="'+cls.join(' ')+'" '+oc+'>'+d+'</div>'}c.innerHTML=h;document.getElementById('prevM').disabled=(cy===td.getFullYear()&&cm<=td.getMonth())}
-function selectDate(ds,day,m,y){sd=ds;document.getElementById('selDt').textContent='Tarikh: '+day+'/'+m+'/'+y;document.getElementById('selDt').classList.add('show');ss=null;document.querySelectorAll('#slots .slot').forEach(function(s){s.classList.remove('on')});uSlots();rCal()}
-function uSlots(){var sl=document.querySelectorAll('#slots .slot');sl.forEach(function(s){s.classList.remove('off','on');if(!sd){s.classList.add('off');return}var ts2=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0');if(sd<=ts2){s.classList.add('off');return}var bk=bd[sd];if(bk){var sk=s.dataset.slot==='9am'?9:(s.dataset.slot==='11am'?11:(s.dataset.slot==='2pm'?2:4));if(bk.s&&bk.s[sk])s.classList.add('off')}})}
+var bookedDates={};
+function rCal(){
+  var c=document.getElementById('cal'),l=document.getElementById('calMth'),mn=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+  l.textContent=mn[cm]+' '+cy;
+  var fd=new Date(cy,cm,1).getDay(),dim=new Date(cy,cm+1,0).getDate(),days=['Ahd','Isn','Sel','Rab','Kha','Jum','Sab'],h='';
+  days.forEach(function(d){h+='<div class="dh">'+d+'</div>'});
+  for(var i=0;i<fd;i++)h+='<div class="day e"></div>';
+  var ts=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0');
+  var mn2=new Date(td);mn2.setDate(mn2.getDate()+1);var mins=mn2.getFullYear()+'-'+String(mn2.getMonth()+1).padStart(2,'0')+'-'+String(mn2.getDate()).padStart(2,'0');
+  var mx=new Date(td);mx.setDate(mx.getDate()+30);var maxs=mx.getFullYear()+'-'+String(mx.getMonth()+1).padStart(2,'0')+'-'+String(mx.getDate()).padStart(2,'0');
+  for(var d=1;d<=dim;d++){
+    var dobj=new Date(cy,cm,d),ds=dobj.getFullYear()+'-'+String(dobj.getMonth()+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),cls=['day'];
+    if(ds<mins||ds>maxs)cls.push('d');
+    else if(bookedDates[ds]&&bookedDates[ds].full)cls.push('d');
+    else if(bookedDates[ds]&&bookedDates[ds].partial)cls.push('part');
+    if(ds===ts)cls.push('today');
+    if(sd===ds)cls.push('sel');
+    var oc='';if(cls.indexOf('d')===-1)oc='onclick="selectDate(\''+ds+'\')"';
+    else oc='onclick=""';
+    h+='<div class="'+cls.join(' ')+'" onclick="'+oc.replace(/"/g,'&quot;')+'">'+d+'</div>';
+  }
+  c.innerHTML=h;
+  document.getElementById('prevM').disabled=(cy===td.getFullYear()&&cm<=td.getMonth());
+}
+document.getElementById('prevM').addEventListener('click',function(){if(cm===0){cm=11;cy--}else cm--;rCal();uSlots()});
+document.getElementById('nextM').addEventListener('click',function(){if(cm===11){cm=0;cy++}else cm++;rCal();uSlots()});
+
+// REAL SLOT CHECK via Supabase
+async function uSlots(){
+  var sl=document.querySelectorAll('#slots .slot');sl.forEach(function(s){s.classList.add('off');s.classList.remove('on')});
+  if(!sd)return;
+  var ts2=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0');
+  if(sd<=ts2)return;
+  try{var data=await sbCall('get_available_slots',{p_date:sd});
+    data.forEach(function(row){
+      var slotEl=document.querySelector('#slots .slot[data-slot="'+row.time_slot+'"]');
+      if(slotEl&&row.available){slotEl.classList.remove('off')}
+    });
+  }catch(e){console.warn('Slot fetch:',e);sl.forEach(function(s){s.classList.remove('off')})}
+}
+async function selectDate(ds){
+  sd=ds;document.getElementById('selDt').textContent='Tarikh dipilih';
+  document.getElementById('selDt').classList.add('show');
+  ss=null;document.querySelectorAll('#slots .slot').forEach(function(s){s.classList.remove('on')});
+  await uSlots();rCal();
+}
+
 document.getElementById('slots').addEventListener('click',function(e){var s=e.target.closest('.slot');if(!s||s.classList.contains('off'))return;if(!sd){alert('Pilih tarikh dulu.');return}document.querySelectorAll('#slots .slot').forEach(function(x){x.classList.remove('on')});s.classList.add('on');ss=s.dataset.slot});
-document.getElementById('prevM').addEventListener('click',function(){if(cm===0){cm=11;cy--}else cm--;rb();rCal();uSlots()});
-document.getElementById('nextM').addEventListener('click',function(){if(cm===11){cm=0;cy++}else cm++;rb();rCal();uSlots()});
 rCal();uSlots();
 
-// BOOKING SUBMIT
-document.getElementById('btnBook').addEventListener('click',function(){var n=document.getElementById('cn').value.trim(),p=document.getElementById('cp').value.trim(),a=document.getElementById('ca').value.trim(),v=true,en=document.getElementById('ecn'),ep=document.getElementById('ecp'),ea=document.getElementById('eca');en.style.display='none';ep.style.display='none';ea.style.display='none';if(!n){en.style.display='block';v=false}if(!p||!/^01\d{8,9}$/.test(p)){ep.style.display='block';v=false}if(!a||a.length<10){ea.style.display='block';v=false}if(!sd){alert('Pilih tarikh dulu.');v=false}if(!ss){alert('Pilih slot masa dulu.');v=false}if(!v)return;var btn=this;btn.disabled=true;btn.classList.add('loading');btn.textContent='Memproses...';var ssl=ss==='9am'?'9:00 AM':(ss==='11am'?'11:00 AM':(ss==='2pm'?'2:00 PM':'4:00 PM'));var dp=sd.split('-'),dl=dp[2]+'/'+dp[1]+'/'+dp[0];setTimeout(function(){btn.style.display='none';document.querySelector('.price-box').style.display='none';document.querySelectorAll('.book-step,.fg,.cal-nav,.cal,.sel-date,.slots').forEach(function(x){x.style.display='none'});document.getElementById('confirmMsg').classList.add('show');document.getElementById('cmText').innerHTML='Terima kasih <strong>'+n.replace(/</g,'&lt;')+'</strong>!<br>Slot kau: <strong>'+dl+', '+ssl+'</strong>.<br>Nombor: <strong>'+p.replace(/</g,'&lt;')+'</strong> — kami akan hubungi segera.';document.getElementById('bookCard').querySelector('h3').textContent='&#9989; Tempahan Berjaya'},1500)});
+// REAL BOOKING via Supabase
+document.getElementById('btnBook').addEventListener('click',async function(){
+  var n=document.getElementById('cn').value.trim(),p=document.getElementById('cp').value.trim(),a=document.getElementById('ca').value.trim(),v=true;
+  var en=document.getElementById('ecn'),ep=document.getElementById('ecp'),ea=document.getElementById('eca');
+  en.style.display='none';ep.style.display='none';ea.style.display='none';
+  if(!n){en.style.display='block';v=false}
+  if(!p||!/^01\d{8,9}$/.test(p)){ep.style.display='block';v=false}
+  if(!a||a.length<10){ea.style.display='block';v=false}
+  if(!sd){alert('Pilih tarikh dulu.');v=false}
+  if(!ss){alert('Pilih slot masa dulu.');v=false}
+  if(!v)return;
+  var btn=this;btn.disabled=true;btn.classList.add('loading');btn.textContent='Menghubungi server...';
+
+  try{
+    var bookingId=await sbCall('create_booking',{p_name:n,p_phone:p,p_address:a,p_date:sd,p_time:ss});
+    var ssl=ss==='9am'?'9:00 AM':(ss==='11am'?'11:00 AM':(ss==='2pm'?'2:00 PM':'4:00 PM'));
+    var dp=sd.split('-'),dl=dp[2]+'/'+dp[1]+'/'+dp[0];
+    btn.style.display='none';
+    document.querySelector('.price-box').style.display='none';
+    document.querySelectorAll('.book-step,.fg,.cal-nav,.cal,.sel-date,.slots').forEach(function(x){x.style.display='none'});
+    document.getElementById('cal').style.display='none';
+    document.getElementById('confirmMsg').classList.add('show');
+    document.getElementById('cmText').innerHTML='Terima kasih <strong>'+n.replace(/</g,'&lt;')+'</strong>!<br>Booking berjaya: <strong>'+dl+', '+ssl+'</strong>.<br>Ref: '+bookingId+'<br><br>Kami akan hubungi anda di <strong>'+p.replace(/</g,'&lt;')+'</strong> dalam masa 24 jam.';
+    document.getElementById('bookCard').querySelector('h3').textContent='&#9989; Tempahan Berjaya';
+  }catch(e){
+    if(e.message.indexOf('not available')>-1){alert('Maaf, slot ni dah ditempah. Sila pilih slot lain.');}
+    else{alert('Maaf, ada masalah teknikal. Sila WhatsApp kami. Error: '+e.message);}
+    btn.disabled=false;btn.classList.remove('loading');btn.textContent='&#128179; Bayar Deposit RM150 \u2192';
+  }
+});
 
 // FAQ ACCORDION
 document.querySelectorAll('.faq-q').forEach(function(b){b.addEventListener('click',function(){var o=this.classList.contains('open');document.querySelectorAll('.faq-q').forEach(function(x){x.classList.remove('open');x.nextElementSibling.classList.remove('show')});if(!o){this.classList.add('open');this.nextElementSibling.classList.add('show')}})});
