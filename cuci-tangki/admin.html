@@ -299,6 +299,42 @@
     .login-box .err{color:var(--danger);font-size:.7rem;margin-bottom:6px;display:none}
     .login-box button{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:14px;font-weight:700;font-size:.88rem;cursor:pointer;transition:all .2s;font-family:var(--font);box-shadow:0 4px 12px var(--accent-glow);letter-spacing:-.1px}
     .login-box button:active{transform:scale(.97);opacity:.9}
+
+    /* ═══════════ SPACING NORMALIZATION (consistent margins/padding) ═══════════ */
+    body{line-height:1.5}
+    /* Content container padding */
+    @media(max-width:1023px){
+      .d-main{padding:0}
+      .stats-grid{padding:16px 16px 0;gap:10px}
+      .sec{padding:14px 16px 10px}
+      .list{padding:0 16px 20px}
+    }
+    @media(min-width:1024px){
+      .d-main{padding:28px 32px}
+      .d-hdr{margin-bottom:24px}
+      .stats-grid{padding:0;margin-bottom:20px}
+      .sec{padding:0 0 14px}
+    }
+    /* Unified card radius + shadow */
+    .kpi,.panel,.bk-card,.sGrp,.d-card,.stat{border-radius:16px}
+    /* Unified card padding */
+    .panel,.sGrp{padding:18px}
+    .bk-card{padding:16px 18px}
+    /* Consistent card-header spacing */
+    .panel-h{margin-bottom:14px}
+    .sGrpH{margin-bottom:16px;padding-bottom:12px}
+    /* Consistent grid gaps */
+    .dash-grid{gap:12px}
+    .panels{gap:14px;margin-bottom:14px}
+    .bk-grid{gap:14px}
+    /* Section title row consistent */
+    .sec{align-items:center}
+    .sec-title{line-height:1}
+    /* List/table rows consistent vertical rhythm */
+    .mrow{padding:11px 0}
+    .m-row{padding:11px 0}
+    /* Modal body breathing room */
+    .m-sheet h3{margin-bottom:16px}
   </style>
 </head>
 <body>
