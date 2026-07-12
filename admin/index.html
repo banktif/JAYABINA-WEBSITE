@@ -352,6 +352,26 @@
     .sLbl{margin-bottom:8px;letter-spacing:.2px;font-size:.72rem}
     .sInp,.mv-sel{padding:12px 14px;font-size:.85rem;border-radius:11px;line-height:1.4}
     .sInp:focus,.mv-sel:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+    /* CRM */
+    .crm-bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+    .crm-search{flex:1;min-width:200px;padding:12px 14px;border:1px solid var(--border-strong);border-radius:12px;background:var(--bg);color:var(--text);font-family:var(--font);font-size:.85rem}
+    .crm-search:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+    .cust-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--elevated);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:border-color .12s}
+    .cust-row:hover{border-color:var(--accent)}
+    .cust-main{flex:1;min-width:0}
+    .cust-name{font-weight:700;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cust-sub{font-size:.72rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
+    .cust-sub svg{width:.9em;height:.9em}
+    .cust-stat{text-align:right;font-size:.68rem;color:var(--text3);white-space:nowrap;line-height:1.4}
+    .cust-stat b{color:var(--text);font-size:.82rem}
+    .pager{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px;padding-bottom:10px}
+    .pager button{padding:8px 16px;border-radius:10px;border:1px solid var(--border-strong);background:var(--elevated);color:var(--text2);font-family:var(--font);font-weight:600;font-size:.75rem;cursor:pointer}
+    .pager button:disabled{opacity:.4;cursor:not-allowed}
+    .cbadge{padding:3px 10px;border-radius:20px;font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;flex-shrink:0}
+    .cbadge.active{background:var(--accent-light);color:var(--accent)}
+    .cbadge.vip{background:var(--warning-light);color:var(--warning)}
+    .cbadge.inactive{background:var(--bg);color:var(--text3)}
+    .cbadge.blacklist{background:var(--danger-light);color:var(--danger)}
     /* Menu theming */
     .drawer{background:var(--menu-bg)}
     .hdr,.bnav{background:var(--menu-bg)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
@@ -386,6 +406,7 @@
   <button class="d-nav-item" id="dsDone" onclick="showBookings('completed')"><span class="dni"><i data-lucide="check-check"></i></span> Completed</button>
   <button class="d-nav-item" id="dsSchedule" onclick="showSchedule()"><span class="dni"><i data-lucide="calendar"></i></span> Schedule</button>
   <button class="d-nav-item" id="dsStaff" onclick="showStaff()"><span class="dni"><i data-lucide="users"></i></span> Staff</button>
+  <button class="d-nav-item" id="dsCustomers" onclick="showCustomers()"><span class="dni"><i data-lucide="contact"></i></span> Customers</button>
   <button class="d-nav-item" id="dsReports" onclick="showReports()"><span class="dni"><i data-lucide="bar-chart-3"></i></span> Reports</button>
   <button class="d-nav-item" id="dsSettings" onclick="showSettings()"><span class="dni"><i data-lucide="settings"></i></span> Settings</button>
   <button class="d-nav-item" id="dsBackup" onclick="showBackup()"><span class="dni"><i data-lucide="database-backup"></i></span> Backup</button>
@@ -439,6 +460,7 @@
     <button class="drawer-item" onclick="showBookings('completed');toggleDrawer()"><span><i data-lucide="check-check"></i></span> Completed</button>
     <button class="drawer-item" onclick="showSchedule();toggleDrawer()"><span><i data-lucide="calendar"></i></span> Schedule</button>
     <button class="drawer-item" onclick="showStaff();toggleDrawer()"><span><i data-lucide="users"></i></span> Staff</button>
+    <button class="drawer-item" onclick="showCustomers();toggleDrawer()"><span><i data-lucide="contact"></i></span> Customers</button>
     <button class="drawer-item" onclick="showReports();toggleDrawer()"><span><i data-lucide="bar-chart-3"></i></span> Reports</button>
     <button class="drawer-item" onclick="showSettings();toggleDrawer()"><span><i data-lucide="settings"></i></span> Settings</button>
     <button class="drawer-item" onclick="showBackup();toggleDrawer()"><span><i data-lucide="database-backup"></i></span> Backup</button>
@@ -603,7 +625,83 @@ function clearNav(){document.querySelectorAll('.d-nav-item,.bnav-item').forEach(
 function setNav(id){var el=document.getElementById(id);if(el)el.classList.add('active');}
 function setHeader(title,sub){var t=document.getElementById('dTitle'),s=document.getElementById('dSub');if(t)t.textContent=title;if(s)s.textContent=sub;}
 function showBookings(filter){currentView='bookings';setChrome(true);setHeader('Bookings','All customer bookings');document.getElementById('secTitle').textContent='Bookings';location.hash='#bookings';if(filter)location.hash='#pending';load(filter);}
-function refreshView(){if(currentView==='staff')showStaff();else if(currentView==='settings')showSettings();else if(currentView==='schedule')showSchedule();else if(currentView==='dashboard')showDashboard();else if(currentView==='reports')showReports();else if(currentView==='backup')showBackup();else load(cf);}
+function refreshView(){if(currentView==='staff')showStaff();else if(currentView==='settings')showSettings();else if(currentView==='schedule')showSchedule();else if(currentView==='dashboard')showDashboard();else if(currentView==='reports')showReports();else if(currentView==='backup')showBackup();else if(currentView==='customers')showCustomers();else load(cf);}
+
+// ═══════════ CUSTOMER CRM ═══════════
+var custState={q:'',page:0,per:25,total:0,timer:null};
+function custBadge(s){var m={active:'Active',vip:'VIP',inactive:'Inactive',blacklist:'Blacklist'};return '<span class="cbadge '+s+'">'+(m[s]||s)+'</span>';}
+async function showCustomers(){
+  currentView='customers';setChrome(false);clearNav();setNav('dsCustomers');
+  setHeader('Customers','CRM - manage your customers');location.hash='#customers';
+  var l=document.getElementById('list');
+  l.innerHTML='<div class="crm-bar"><input id="custSearch" class="crm-search" placeholder="Search name or phone..." value="'+esc(custState.q)+'"><span id="custCount" style="font-size:.75rem;color:var(--text3);font-weight:600"></span></div><div id="custList"><div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div></div><div class="pager" id="custPager"></div>';
+  var si=document.getElementById('custSearch');
+  si.oninput=function(){clearTimeout(custState.timer);custState.timer=setTimeout(function(){custState.q=si.value.trim();custState.page=0;loadCustomers();},350);};
+  si.focus();
+  loadCustomers();
+}
+async function loadCustomers(){
+  var el=document.getElementById('custList');if(!el)return;
+  el.innerHTML='<div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div>';
+  try{
+    var from=custState.page*custState.per,to=from+custState.per-1;
+    var qy=SB.from('customers').select('*',{count:'exact'});
+    if(custState.q){var q=custState.q.replace(/[%,()]/g,'');qy=qy.or('name.ilike.%'+q+'%,phone.ilike.%'+q+'%');}
+    qy=qy.order('last_booking_date',{ascending:false,nullsFirst:false}).range(from,to);
+    var res=await qy;if(res.error)throw res.error;
+    custState.total=res.count||0;
+    var data=res.data||[];
+    var cc=document.getElementById('custCount');if(cc)cc.textContent=custState.total.toLocaleString()+' customers';
+    if(!data.length){el.innerHTML='<div class="empty" style="padding:40px"><div class="eicon"><i data-lucide="contact"></i></div><h2>No customers</h2><p>'+(custState.q?'No match for "'+esc(custState.q)+'".':'Customers appear here after bookings.')+'</p></div>';document.getElementById('custPager').innerHTML='';return;}
+    var h='';
+    data.forEach(function(c){
+      h+='<div class="cust-row" onclick="openCustomer(\''+c.id+'\')"><div class="cust-main"><div class="cust-name">'+esc(c.name||'(no name)')+'</div><div class="cust-sub"><i data-lucide="phone"></i> '+esc(c.phone)+(c.last_booking_date?' &middot; last '+fd(c.last_booking_date):'')+'</div></div><div class="cust-stat"><b>'+c.total_bookings+'</b> job'+(c.total_bookings===1?'':'s')+'<br>RM'+esc(c.total_spent)+'</div>'+custBadge(c.status)+'</div>';
+    });
+    el.innerHTML=h;
+    // pager
+    var pages=Math.ceil(custState.total/custState.per),cur=custState.page+1;
+    var p='<button onclick="custGo(-1)"'+(custState.page<=0?' disabled':'')+'>&#8249; Prev</button><span style="font-size:.78rem;color:var(--text2);font-weight:600">Page '+cur+' / '+pages+'</span><button onclick="custGo(1)"'+(cur>=pages?' disabled':'')+'>Next &#8250;</button>';
+    document.getElementById('custPager').innerHTML=p;
+  }catch(e){el.innerHTML='<div class="empty" style="padding:30px"><div class="eicon"><i data-lucide="alert-triangle"></i></div><h2>Error</h2><p>'+esc(e.message)+'</p></div>';}
+}
+function custGo(d){var pages=Math.ceil(custState.total/custState.per);var n=custState.page+d;if(n<0||n>=pages)return;custState.page=n;loadCustomers();window.scrollTo(0,0);}
+async function openCustomer(id){
+  document.getElementById('mTitle').innerHTML='<span class="m-dot"></span>Customer';
+  document.getElementById('mBody').innerHTML='<div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div>';
+  document.getElementById('mActs').innerHTML='';
+  document.getElementById('modal').classList.add('show');
+  try{
+    var cr=await SB.from('customers').select('*').eq('id',id).single();var c=cr.data;if(!c)throw new Error('Not found');
+    var bk=(await SB.from('bookings').select('*').eq('customer_id',id).order('booking_date',{ascending:false}).limit(50)).data||[];
+    document.getElementById('mTitle').innerHTML='<span class="m-dot"></span>'+esc(c.name||c.phone);
+    function row(k,v){return '<div class="m-row"><span class="mk">'+k+'</span><span class="mv">'+v+'</span></div>';}
+    var ph=waNum(c.phone);
+    var hist='';
+    bk.forEach(function(b){hist+='<div class="mrow" style="cursor:pointer" onclick="showModal(\''+b.id+'\')"><span class="mslot">'+ft(b.booking_time)+'</span><div class="mb"><div class="mn">'+fd(b.booking_date)+'</div><div class="ma">RM'+esc(b.deposit_amount)+' deposit</div></div>'+badge(b.status)+'</div>';});
+    var body=
+      row('Phone','<a class="m-wa" href="https://wa.me/'+ph+'" target="_blank"><i data-lucide="message-circle"></i> '+esc(c.phone)+'</a>')+
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0">'+
+      '<div class="kpi green" style="padding:10px 12px"><div class="kpi-v" style="font-size:1.2rem">'+c.total_bookings+'</div><div class="kpi-l">Bookings</div></div>'+
+      '<div class="kpi blue" style="padding:10px 12px"><div class="kpi-v" style="font-size:1.2rem">'+c.completed_bookings+'</div><div class="kpi-l">Completed</div></div>'+
+      '<div class="kpi amber" style="padding:10px 12px"><div class="kpi-v" style="font-size:1.15rem">RM'+esc(c.total_spent)+'</div><div class="kpi-l">Spent</div></div>'+
+      '</div>'+
+      row('First / Last',(c.first_booking_date?fd(c.first_booking_date):'-')+' &rarr; '+(c.last_booking_date?fd(c.last_booking_date):'-'))+
+      '<div style="margin:12px 0 4px;font-size:.72rem;color:var(--text3);font-weight:600">Name</div><input id="custName" class="mv-sel" value="'+esc(c.name)+'">'+
+      '<div style="margin:10px 0 4px;font-size:.72rem;color:var(--text3);font-weight:600">Email</div><input id="custEmail" class="mv-sel" value="'+esc(c.email)+'">'+
+      '<div style="margin:10px 0 4px;font-size:.72rem;color:var(--text3);font-weight:600">Address</div><textarea id="custAddr" class="mv-sel" rows="2">'+esc(c.address)+'</textarea>'+
+      '<div style="margin:10px 0 4px;font-size:.72rem;color:var(--text3);font-weight:600">Status</div><select id="custStatus" class="mv-sel"><option value="active"'+(c.status==='active'?' selected':'')+'>Active</option><option value="vip"'+(c.status==='vip'?' selected':'')+'>VIP</option><option value="inactive"'+(c.status==='inactive'?' selected':'')+'>Inactive</option><option value="blacklist"'+(c.status==='blacklist'?' selected':'')+'>Blacklist</option></select>'+
+      '<div style="margin:10px 0 4px;font-size:.72rem;color:var(--text3);font-weight:600">Tags (comma separated)</div><input id="custTags" class="mv-sel" value="'+esc((c.tags||[]).join(', '))+'" placeholder="vip, repeat, condo">'+
+      '<div style="margin:10px 0 4px;font-size:.72rem;color:var(--text3);font-weight:600">Notes</div><textarea id="custNotes" class="mv-sel" rows="3">'+esc(c.notes)+'</textarea>'+
+      '<div style="margin:14px 0 6px;font-size:.72rem;color:var(--text3);font-weight:700">Booking History ('+bk.length+')</div>'+(hist||'<div style="font-size:.75rem;color:var(--text3)">No bookings.</div>');
+    document.getElementById('mBody').innerHTML=body;
+    document.getElementById('mActs').innerHTML='<button class="m-btn accept" onclick="saveCustomer(\''+id+'\')">Save</button><button class="m-btn" style="background:#25D366;color:#fff" onclick="window.open(\'https://wa.me/'+ph+'\',\'_blank\')"><i data-lucide="message-circle"></i> WhatsApp</button><button class="m-btn close" onclick="closeModal()">Close</button>';
+  }catch(e){document.getElementById('mBody').innerHTML='<div style="padding:20px;color:var(--danger)">'+esc(e.message)+'</div>';}
+}
+async function saveCustomer(id){
+  var tags=document.getElementById('custTags').value.split(',').map(function(t){return t.trim()}).filter(function(t){return t});
+  var upd={name:document.getElementById('custName').value.trim(),email:document.getElementById('custEmail').value.trim(),address:document.getElementById('custAddr').value.trim(),status:document.getElementById('custStatus').value,tags:tags,notes:document.getElementById('custNotes').value.trim(),updated_at:new Date().toISOString()};
+  try{var {error}=await SB.from('customers').update(upd).eq('id',id);if(error)throw error;closeModal();loadCustomers();}catch(e){alert('Error: '+e.message);}
+}
 
 // ═══════════ BACKUP ═══════════
 async function callBackup(action){
@@ -1237,6 +1335,7 @@ async function checkAccess(){
     else if(h==='#staff')showStaff();
     else if(h==='#reports')showReports();
     else if(h==='#settings')showSettings();
+    else if(h==='#customers')showCustomers();
     else if(h==='#backup')showBackup();
     else showDashboard();
   }catch(e){showLogin()}
