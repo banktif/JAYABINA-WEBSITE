@@ -603,12 +603,17 @@ async function showBackup(){
     var st=((await callBackup('status')).body.data)||{};
     var priv={};try{var pv=await SB.from('private_settings').select('key,value').in('key',['gdrive_client_email','gdrive_private_key','gdrive_folder_id']);(pv.data||[]).forEach(function(r){priv[r.key]=r.value});}catch(e){}
     var driveOn=st.drive_configured==='true';
-    var h='<div class="panels">'+bkPanel('Database Backup','database',st.backup_last_db_at,st.backup_last_db_status)+bkPanel('Code Backup (GitLab)','git-branch',st.backup_last_code_at,st.backup_last_code_status)+'</div>';
+    function freqSel(id,val){var o=['hourly','daily','weekly','monthly'];var s='<select id="'+id+'" class="mv-sel">';o.forEach(function(f){s+='<option value="'+f+'"'+((val||'daily')===f?' selected':'')+'>'+f.charAt(0).toUpperCase()+f.slice(1)+'</option>'});return s+'</select>';}
+    var h='<div class="panels">'+bkPanel('Supabase Storage','database',st.backup_last_storage_at,st.backup_last_storage_status)+bkPanel('Google Drive','hard-drive',st.backup_last_drive_at,driveOn?(st.backup_last_drive_status||'Waiting'):'Not configured')+bkPanel('Code Backup (GitLab)','git-branch',st.backup_last_code_at,st.backup_last_code_status)+'</div>';
     h+='<div class="sGrp"><div class="sGrpH">Run Backup Now</div><div style="display:flex;gap:10px;flex-wrap:wrap">';
     h+='<button class="btn-primary" style="width:auto" onclick="backupNow(\'db\')"><i data-lucide="database"></i> Backup Database</button>';
     h+='<button class="btn-primary" style="width:auto;background:var(--accent2)" onclick="backupNow(\'code\')"><i data-lucide="git-branch"></i> Backup Code to GitLab</button>';
     h+='</div><div id="bkMsg" style="font-size:.78rem;color:var(--text3);margin-top:10px"></div></div>';
-    h+='<div class="sGrp"><div class="sGrpH">Auto Backup</div><div style="font-size:.82rem">&#9989; Runs daily (3 AM) automatically. Database &rarr; Supabase Storage'+(driveOn?' + Google Drive':'')+'. Code &rarr; GitLab (all repos).</div></div>';
+    h+='<div class="sGrp"><div class="sGrpH">Backup Frequency</div><div style="display:grid;gap:12px;max-width:640px">';
+    h+='<div><div class="sLbl">Supabase Storage</div>'+freqSel('freqStorage',st.backup_freq_storage)+'</div>';
+    h+='<div><div class="sLbl">Google Drive</div>'+freqSel('freqDrive',st.backup_freq_drive)+'</div>';
+    h+='<button class="btn-primary" style="width:auto" onclick="saveFreq()"><i data-lucide="save"></i> Save Frequency</button><div id="bkFreqMsg" style="font-size:.75rem;color:var(--text3)"></div>';
+    h+='<div style="font-size:.72rem;color:var(--text3)">Auto-backup runs on this schedule. Older backups auto-delete (keep last 48) on both Storage &amp; Drive. Code &rarr; GitLab runs daily.</div></div></div>';
     h+='<div class="sGrp"><div class="sGrpH">Google Drive '+(driveOn?'&#9989; Connected':'&#9888; Not configured')+'</div><div style="display:grid;gap:12px;max-width:640px">';
     h+='<div><div class="sLbl">Service Account Email</div><input id="gdEmail" class="sInp" value="'+esc(priv.gdrive_client_email||'')+'" placeholder="name@project.iam.gserviceaccount.com"></div>';
     h+='<div><div class="sLbl">Private Key</div><textarea id="gdKey" class="sInp" rows="4" placeholder="-----BEGIN PRIVATE KEY-----">'+esc(priv.gdrive_private_key||'')+'</textarea></div>';
@@ -623,9 +628,17 @@ async function showBackup(){
 }
 async function backupNow(kind){
   var msg=document.getElementById('bkMsg');msg.style.color='var(--text3)';msg.textContent=(kind==='db'?'Backing up database...':'Triggering code backup...');
-  var r=await callBackup(kind);
+  var token=await authToken();
+  var res=await fetch('https://thbscwlcyhcnqsppoyfn.supabase.co/functions/v1/backup',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(kind==='db'?{action:'db',force:true}:{action:'code'})});
+  var r={ok:res.ok,body:await res.json()};
   if(r.ok){msg.style.color='var(--accent)';msg.textContent=(kind==='db'?'Database backup done.':'Code backup triggered (GitHub Actions running).');setTimeout(showBackup,1400);}
   else{msg.style.color='var(--danger)';msg.textContent='Error: '+(r.body.error||'failed');}
+}
+async function saveFreq(){
+  var m=document.getElementById('bkFreqMsg');m.style.color='var(--text3)';m.textContent='Saving...';
+  var now=new Date().toISOString();
+  var rows=[{key:'backup_freq_storage',value:document.getElementById('freqStorage').value,updated_at:now},{key:'backup_freq_drive',value:document.getElementById('freqDrive').value,updated_at:now}];
+  try{var {error}=await SB.from('app_settings').upsert(rows);if(error)throw error;m.style.color='var(--accent)';m.textContent='Frequency saved.';}catch(e){m.style.color='var(--danger)';m.textContent='Error: '+e.message;}
 }
 async function saveBackupCfg(){
   var m=document.getElementById('bkCfgMsg');m.style.color='var(--text3)';m.textContent='Saving...';

@@ -94,6 +94,23 @@ async function fetchAll(sb: ReturnType<typeof admin>, table: string): Promise<an
 
 const TABLES = ["app_settings", "profiles", "bookings", "slots", "tasks", "task_photos"];
 const KEEP_BACKUPS = 48;
+const FREQ_HOURS: Record<string, number> = { hourly: 1, daily: 24, weekly: 168, monthly: 720 };
+function isDue(lastAt: string, freq: string): boolean {
+  if (!lastAt) return true;
+  const h = FREQ_HOURS[freq] || 24;
+  return (Date.now() - new Date(lastAt).getTime()) >= (h * 3600 * 1000 - 300000);
+}
+async function driveList(token: string, folderId: string) {
+  const q = folderId ? `'${folderId}' in parents and trashed=false` : "trashed=false";
+  const url = "https://www.googleapis.com/drive/v3/files?q=" + encodeURIComponent(q) +
+    "&orderBy=" + encodeURIComponent("createdTime desc") + "&fields=files(id,name)&pageSize=500&supportsAllDrives=true&includeItemsFromAllDrives=true";
+  const res = await fetch(url, { headers: { Authorization: "Bearer " + token } });
+  const d = await res.json();
+  return (d.files || []) as { id: string; name: string }[];
+}
+async function driveDelete(token: string, id: string) {
+  await fetch("https://www.googleapis.com/drive/v3/files/" + id + "?supportsAllDrives=true", { method: "DELETE", headers: { Authorization: "Bearer " + token } });
+}
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
@@ -106,55 +123,73 @@ Deno.serve(async (req: Request) => {
 
   try {
     if (action === "db") {
-      const dump: Record<string, unknown> = { _meta: { project: "jayaclean", at: new Date().toISOString() } };
-      let total = 0;
-      for (const t of TABLES) {
-        const rows = await fetchAll(sb, t);
-        dump[t] = rows;
-        total += rows.length;
-      }
-      const content = JSON.stringify(dump);
-      const gz = await gzipBytes(content);
-      const sizeKB = Math.round(gz.length / 1024);
-      const ts = new Date().toISOString().replace(/[:.]/g, "-").replace("Z", "");
-      const fname = `db-backup-${ts}.json.gz`;
-      const path = `db/${fname}`;
-      const up = await sb.storage.from("backups").upload(path, gz, { contentType: "application/gzip", upsert: true });
-      if (up.error) throw new Error("storage: " + up.error.message);
-
-      // Retention: keep only the most recent KEEP_BACKUPS files
-      try {
-        const { data: files } = await sb.storage.from("backups").list("db", { limit: 1000, sortBy: { column: "name", order: "desc" } });
-        if (files && files.length > KEEP_BACKUPS) {
-          await sb.storage.from("backups").remove(files.slice(KEEP_BACKUPS).map((f: any) => "db/" + f.name));
-        }
-      } catch (_e) { /* retention best-effort */ }
-
-      let drive = "skipped";
+      const force = body.force === true;
+      // config + last-run
+      const { data: cfg } = await sb.from("app_settings").select("key,value").in("key", ["backup_freq_storage", "backup_freq_drive", "backup_last_storage_at", "backup_last_drive_at"]);
+      const C: Record<string, string> = {};
+      (cfg || []).forEach((r: any) => (C[r.key] = r.value));
+      const freqStorage = C.backup_freq_storage || "daily";
+      const freqDrive = C.backup_freq_drive || "daily";
+      // drive creds
       const priv: Record<string, string> = {};
       const pr = await sb.from("private_settings").select("key,value").in("key", ["gdrive_client_email", "gdrive_private_key", "gdrive_folder_id"]);
       (pr.data || []).forEach((r: any) => (priv[r.key] = r.value));
       const email = priv.gdrive_client_email || "";
       const pkey = priv.gdrive_private_key || "";
       const folder = priv.gdrive_folder_id || Deno.env.get("GDRIVE_FOLDER_ID") || "";
-      if (email && pkey) {
+      const driveConfigured = !!(email && pkey);
+
+      const doStorage = force || isDue(C.backup_last_storage_at, freqStorage);
+      const doDrive = driveConfigured && (force || isDue(C.backup_last_drive_at, freqDrive));
+      if (!doStorage && !doDrive) return json({ status: "ok", data: { skipped: true, reason: "not due" } });
+
+      // Build dump once
+      const dump: Record<string, unknown> = { _meta: { project: "jayaclean", at: new Date().toISOString() } };
+      let total = 0;
+      for (const t of TABLES) { const rows = await fetchAll(sb, t); dump[t] = rows; total += rows.length; }
+      const content = JSON.stringify(dump);
+      const gz = await gzipBytes(content);
+      const sizeKB = Math.round(gz.length / 1024);
+      const ts = new Date().toISOString().replace(/[:.]/g, "-").replace("Z", "");
+      const fname = `db-backup-${ts}.json.gz`;
+      const now = new Date().toISOString();
+      const result: Record<string, unknown> = { rows: total, sizeKB };
+
+      if (doStorage) {
+        const up = await sb.storage.from("backups").upload("db/" + fname, gz, { contentType: "application/gzip", upsert: true });
+        if (up.error) { await setKV(sb, "backup_last_storage_status", "error: " + up.error.message); }
+        else {
+          try {
+            const { data: files } = await sb.storage.from("backups").list("db", { limit: 1000, sortBy: { column: "name", order: "desc" } });
+            if (files && files.length > KEEP_BACKUPS) await sb.storage.from("backups").remove(files.slice(KEEP_BACKUPS).map((f: any) => "db/" + f.name));
+          } catch (_e) { /* best effort */ }
+          await setKV(sb, "backup_last_storage_at", now);
+          await setKV(sb, "backup_last_storage_status", `ok (${total} rows, ${sizeKB} KB)`);
+        }
+        result.storage = up.error ? ("error: " + up.error.message) : "ok";
+      }
+
+      if (doDrive) {
         try {
           const tk = await googleTokenFromSA({ client_email: email, private_key: pkey });
           await driveUpload(tk, folder, fname, gz);
-          drive = "ok";
-        } catch (e) { drive = "error: " + (e as Error).message; }
-      } else if (Deno.env.get("GOOGLE_SA_JSON")) {
-        try {
-          const saj = JSON.parse(Deno.env.get("GOOGLE_SA_JSON")!);
-          const tk = await googleTokenFromSA({ client_email: saj.client_email, private_key: saj.private_key });
-          await driveUpload(tk, folder, fname, gz);
-          drive = "ok";
-        } catch (e) { drive = "error: " + (e as Error).message; }
+          // Drive retention: keep newest KEEP_BACKUPS backup files
+          try {
+            const files = (await driveList(tk, folder)).filter((f) => f.name.indexOf("db-backup-") === 0);
+            if (files.length > KEEP_BACKUPS) { for (const f of files.slice(KEEP_BACKUPS)) await driveDelete(tk, f.id); }
+          } catch (_e) { /* best effort */ }
+          await setKV(sb, "backup_last_drive_at", now);
+          await setKV(sb, "backup_last_drive_status", `ok (${sizeKB} KB)`);
+          result.drive = "ok";
+        } catch (e) {
+          await setKV(sb, "backup_last_drive_status", "error: " + (e as Error).message);
+          result.drive = "error: " + (e as Error).message;
+        }
       }
-      const status = `ok (${total} rows, ${sizeKB} KB gz, storage:ok, drive:${drive})`;
-      await setKV(sb, "backup_last_db_at", new Date().toISOString());
-      await setKV(sb, "backup_last_db_status", status);
-      return json({ status: "ok", data: { path, rows: total, sizeKB, drive } });
+
+      await setKV(sb, "backup_last_db_at", now);
+      await setKV(sb, "backup_last_db_status", `ok (${total} rows, ${sizeKB} KB gz)`);
+      return json({ status: "ok", data: result });
     }
 
     if (action === "list") {
@@ -184,7 +219,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (action === "status") {
-      const { data } = await sb.from("app_settings").select("key,value").in("key", ["backup_enabled", "backup_last_db_at", "backup_last_db_status", "backup_last_code_at", "backup_last_code_status"]);
+      const { data } = await sb.from("app_settings").select("key,value").in("key", ["backup_enabled", "backup_last_db_at", "backup_last_db_status", "backup_last_code_at", "backup_last_code_status", "backup_freq_storage", "backup_freq_drive", "backup_last_storage_at", "backup_last_storage_status", "backup_last_drive_at", "backup_last_drive_status"]);
       const m: Record<string, string> = {};
       (data || []).forEach((r: any) => (m[r.key] = r.value));
       const pr = await sb.from("private_settings").select("key,value").in("key", ["gdrive_client_email", "gdrive_private_key", "gdrive_folder_id"]);
