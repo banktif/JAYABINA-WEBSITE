@@ -132,18 +132,28 @@ if(!grapesjs||!grapesjs.plugins){alert('GrapesJS failed to load. Check internet 
 var sites=[],currentSite=null,editor=null,pat='',currentHTML='';
 var PASSWORD_HASH='';
 
-function toast(m,ok){var t=document.getElementById('toast');t.textContent=m;t.className='toast '+(ok?'ok':'err')+' show';setTimeout(function(){t.className='toast'},3000)}
+function toast(m,ok){var t=document.getElementById('toast');if(!t){alert(m);return}t.textContent=m;t.className='toast '+(ok?'ok':'err')+' show';setTimeout(function(){if(t)t.className='toast'},3000)}
 
-// ═══════════ PASSWORD GATE ═══════════
-async function sha256(m){var buf=new TextEncoder().encode(m);var hash=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(hash)).map(function(b){return b.toString(16).padStart(2,'0')}).join('')}
-
-async function checkPassword(){
-  var pw=document.getElementById('pwInput').value;
-  if(!pw)return;
-  var hash=await sha256(pw);
-  if(!PASSWORD_HASH){PASSWORD_HASH=hash;localStorage.setItem('editor_pw_hash',hash);unlockEditor();return}
-  if(hash===PASSWORD_HASH){unlockEditor();return}
-  document.getElementById('pwErr').style.display='block'
+async function fetchRepos(){
+  if(!pat){toast('Set GitHub PAT first - paste token then Save',false);return}
+  var btn=document.getElementById('fetchReposBtn');if(!btn)return
+  btn.disabled=true;btn.textContent='Loading...';
+  try{
+    var repos=[],page=1;
+    while(page<=5){
+      var r=await fetch('https://api.github.com/user/repos?per_page=100&sort=updated&page='+page,{headers:{Authorization:'Bearer '+pat}});
+      if(!r.ok){var msg='GitHub API error: ';try{var j=await r.json();msg+=j.message||r.status}catch(e){msg+=r.status}throw new Error(msg)}
+      var data=await r.json();
+      if(!data.length)break;
+      repos=repos.concat(data);page++;
+    }
+    if(!repos.length){toast('No repos found. Check your PAT has repo scope.',false);btn.disabled=false;btn.textContent='📂 Fetch My GitHub Repos';return}
+    var sel=document.getElementById('repoSelect');
+    sel.innerHTML='<option value="">Select repo to add...</option>';
+    repos.forEach(function(repo){sel.innerHTML+='<option value="'+repo.full_name+'">'+repo.full_name+(repo.description?' - '+repo.description.substring(0,50):'')+'</option>'});
+    sel.style.display='block';toast('Found '+repos.length+' repos. Pick one to add.',true);
+  }catch(e){toast('Failed: '+e.message,false)}
+  btn.disabled=false;btn.textContent='📂 Fetch My GitHub Repos';
 }
 
 function unlockEditor(){
