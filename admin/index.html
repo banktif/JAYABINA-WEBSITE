@@ -601,19 +601,19 @@ async function showBackup(){
   l.innerHTML='<div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div>';
   try{
     var st=((await callBackup('status')).body.data)||{};
-    var priv={};try{var pv=await SB.from('private_settings').select('key,value').in('key',['gdrive_client_email','gdrive_private_key','gdrive_folder_id']);(pv.data||[]).forEach(function(r){priv[r.key]=r.value});}catch(e){}
-    var driveOn=st.drive_configured==='true';
+    var priv={};try{var pv=await SB.from('private_settings').select('key,value');(pv.data||[]).forEach(function(r){priv[r.key]=r.value});}catch(e){}
+    var driveOn=st.drive_configured==='true';var r2On=st.r2_configured==='true';
     function freqSel(id,val){var o=['hourly','daily','weekly','monthly'];var s='<select id="'+id+'" class="mv-sel">';o.forEach(function(f){s+='<option value="'+f+'"'+((val||'daily')===f?' selected':'')+'>'+f.charAt(0).toUpperCase()+f.slice(1)+'</option>'});return s+'</select>';}
-    var h='<div class="panels">'+bkPanel('Supabase Storage','database',st.backup_last_storage_at,st.backup_last_storage_status)+bkPanel('Google Drive','hard-drive',st.backup_last_drive_at,driveOn?(st.backup_last_drive_status||'Waiting'):'Not configured')+bkPanel('Code Backup (GitLab)','git-branch',st.backup_last_code_at,st.backup_last_code_status)+'</div>';
+    var h='<div class="panels">'+bkPanel('Google Drive','hard-drive',st.backup_last_drive_at,driveOn?(st.backup_last_drive_status||'Waiting'):'Not configured')+bkPanel('Cloudflare R2','cloud',st.backup_last_r2_at,r2On?(st.backup_last_r2_status||'Waiting'):'Not configured')+bkPanel('Code Backup (GitLab)','git-branch',st.backup_last_code_at,st.backup_last_code_status)+'</div>';
     h+='<div class="sGrp"><div class="sGrpH">Run Backup Now</div><div style="display:flex;gap:10px;flex-wrap:wrap">';
     h+='<button class="btn-primary" style="width:auto" onclick="backupNow(\'db\')"><i data-lucide="database"></i> Backup Database</button>';
     h+='<button class="btn-primary" style="width:auto;background:var(--accent2)" onclick="backupNow(\'code\')"><i data-lucide="git-branch"></i> Backup Code to GitLab</button>';
     h+='</div><div id="bkMsg" style="font-size:.78rem;color:var(--text3);margin-top:10px"></div></div>';
     h+='<div class="sGrp"><div class="sGrpH">Backup Frequency</div><div style="display:grid;gap:12px;max-width:640px">';
-    h+='<div><div class="sLbl">Supabase Storage</div>'+freqSel('freqStorage',st.backup_freq_storage)+'</div>';
     h+='<div><div class="sLbl">Google Drive</div>'+freqSel('freqDrive',st.backup_freq_drive)+'</div>';
+    h+='<div><div class="sLbl">Cloudflare R2</div>'+freqSel('freqR2',st.backup_freq_r2)+'</div>';
     h+='<button class="btn-primary" style="width:auto" onclick="saveFreq()"><i data-lucide="save"></i> Save Frequency</button><div id="bkFreqMsg" style="font-size:.75rem;color:var(--text3)"></div>';
-    h+='<div style="font-size:.72rem;color:var(--text3)">Auto-backup runs on this schedule. Older backups auto-delete (keep last 48) on both Storage &amp; Drive. Code &rarr; GitLab runs daily.</div></div></div>';
+    h+='<div style="font-size:.72rem;color:var(--text3)">Auto-backup runs on this schedule. Older backups auto-delete (keep last 48) on both Google Drive &amp; Cloudflare R2. Code &rarr; GitLab runs daily. Supabase Storage is NOT used (to protect your 1 GB quota).</div></div></div>';
     h+='<div class="sGrp"><div class="sGrpH">Google Drive '+(driveOn?'&#9989; Connected':'&#9888; Not configured')+'</div><div style="display:grid;gap:12px;max-width:640px">';
     h+='<div><div class="sLbl">Service Account Email</div><input id="gdEmail" class="sInp" value="'+esc(priv.gdrive_client_email||'')+'" placeholder="name@project.iam.gserviceaccount.com"></div>';
     h+='<div><div class="sLbl">Private Key</div><textarea id="gdKey" class="sInp" rows="4" placeholder="-----BEGIN PRIVATE KEY-----">'+esc(priv.gdrive_private_key||'')+'</textarea></div>';
@@ -621,6 +621,14 @@ async function showBackup(){
     h+='<button class="btn-primary" style="width:auto" onclick="saveBackupCfg()"><i data-lucide="save"></i> Save Google Drive Settings</button>';
     h+='<div id="bkCfgMsg" style="font-size:.75rem;color:var(--text3)"></div></div>';
     h+='<div style="font-size:.72rem;color:var(--text3);margin-top:12px;line-height:1.7">One-time setup: (1) Google Cloud Console &rarr; create a <strong>Service Account</strong> + JSON key. (2) Enable the <strong>Google Drive API</strong>. (3) From the JSON, copy <code>client_email</code> and <code>private_key</code> into the fields above. (4) In Google Drive, share your backup folder with that Service Account email as <strong>Editor</strong>, then paste the folder ID.</div></div>';
+    h+='<div class="sGrp"><div class="sGrpH">Cloudflare R2 '+(r2On?'&#9989; Connected':'&#9888; Not configured')+'</div><div style="display:grid;gap:12px;max-width:640px">';
+    h+='<div><div class="sLbl">Account ID</div><input id="r2Account" class="sInp" value="'+esc(priv.r2_account_id||'')+'" placeholder="Cloudflare account ID"></div>';
+    h+='<div><div class="sLbl">Access Key ID</div><input id="r2Key" class="sInp" value="'+esc(priv.r2_access_key||'')+'" placeholder="R2 access key id"></div>';
+    h+='<div><div class="sLbl">Secret Access Key</div><input id="r2Secret" type="password" class="sInp" value="'+esc(priv.r2_secret_key||'')+'" placeholder="R2 secret access key"></div>';
+    h+='<div><div class="sLbl">Bucket Name</div><input id="r2Bucket" class="sInp" value="'+esc(priv.r2_bucket||'')+'" placeholder="e.g. jayaclean-backup"></div>';
+    h+='<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-primary" style="width:auto" onclick="saveR2()"><i data-lucide="save"></i> Save R2</button><button class="d-btn" onclick="testR2()">Test Connection</button></div>';
+    h+='<div id="bkR2Msg" style="font-size:.75rem;color:var(--text3)"></div>';
+    h+='<div style="font-size:.72rem;color:var(--text3);margin-top:8px;line-height:1.7">Setup: Cloudflare dashboard &rarr; <strong>R2</strong> &rarr; create a bucket. Then R2 &rarr; <strong>Manage API Tokens</strong> &rarr; create token (Object Read &amp; Write) &rarr; copy <strong>Access Key ID</strong> + <strong>Secret</strong>. Account ID is shown in the R2 overview (S3 API endpoint <code>&lt;account&gt;.r2.cloudflarestorage.com</code>). 10 GB free, no egress fees.</div></div>';
     h+='<div class="sGrp"><div class="sGrpH">Recent Database Backups</div><div id="bkList"><div style="font-size:.78rem;color:var(--text3)">Loading...</div></div></div>';
     l.innerHTML=h;
     loadBackupList();
@@ -637,8 +645,25 @@ async function backupNow(kind){
 async function saveFreq(){
   var m=document.getElementById('bkFreqMsg');m.style.color='var(--text3)';m.textContent='Saving...';
   var now=new Date().toISOString();
-  var rows=[{key:'backup_freq_storage',value:document.getElementById('freqStorage').value,updated_at:now},{key:'backup_freq_drive',value:document.getElementById('freqDrive').value,updated_at:now}];
+  var rows=[{key:'backup_freq_drive',value:document.getElementById('freqDrive').value,updated_at:now},{key:'backup_freq_r2',value:document.getElementById('freqR2').value,updated_at:now}];
   try{var {error}=await SB.from('app_settings').upsert(rows);if(error)throw error;m.style.color='var(--accent)';m.textContent='Frequency saved.';}catch(e){m.style.color='var(--danger)';m.textContent='Error: '+e.message;}
+}
+async function saveR2(){
+  var m=document.getElementById('bkR2Msg');m.style.color='var(--text3)';m.textContent='Saving...';
+  var now=new Date().toISOString();
+  var rows=[
+    {key:'r2_account_id',value:document.getElementById('r2Account').value.trim(),updated_at:now},
+    {key:'r2_access_key',value:document.getElementById('r2Key').value.trim(),updated_at:now},
+    {key:'r2_secret_key',value:document.getElementById('r2Secret').value.trim(),updated_at:now},
+    {key:'r2_bucket',value:document.getElementById('r2Bucket').value.trim(),updated_at:now}
+  ];
+  try{var {error}=await SB.from('private_settings').upsert(rows);if(error)throw error;m.style.color='var(--accent)';m.textContent='Saved. R2 will be used on the next backup.';setTimeout(showBackup,1200);}catch(e){m.style.color='var(--danger)';m.textContent='Error: '+e.message;}
+}
+async function testR2(){
+  var m=document.getElementById('bkR2Msg');m.style.color='var(--text3)';m.textContent='Testing R2 connection... (save first if you changed values)';
+  var r=await callBackup('test_r2');
+  if(r.ok){m.style.color='var(--accent)';m.textContent='R2 reachable & writable.';}
+  else{m.style.color='var(--danger)';m.textContent='R2 error: '+(r.body.error||'failed');}
 }
 async function saveBackupCfg(){
   var m=document.getElementById('bkCfgMsg');m.style.color='var(--text3)';m.textContent='Saving...';
