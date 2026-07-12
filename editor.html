@@ -257,21 +257,10 @@ function buildEditor(html){
       {name:'Tablet',width:'768px',widthMedia:'768px'},
       {name:'Mobile',width:'375px',widthMedia:'375px'}
     ]},
-    panels:{defaults:[
-      {id:'panel-switcher',buttons:[
-        {id:'show-blocks',active:true,label:'Blocks',command:'show-blocks'},
-        {id:'show-styles',active:true,label:'Style',command:'show-styles'},
-        {id:'show-layers',active:true,label:'Layers',command:'show-layers'},
-        {id:'show-traits',active:true,label:'Traits',command:'show-traits'}
-      ]}
-    ]},
     showOffsets:true,
     showStylesOnChange:true,
     clearOnRender:true
   });
-
-  // Open all panels
-  editor.Panels.getPanel('views-container').get('buttons').get('show-blocks').set('active',true);
 
   // Add extra custom blocks on top of preset defaults
   editor.on('load',function(){
