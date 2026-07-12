@@ -31,6 +31,8 @@
   --radius-lg:16px;
   --shadow:0 1px 2px rgba(22,101,52,.04),0 2px 6px rgba(22,101,52,.06);
   --shadow-lg:0 12px 34px rgba(22,101,52,.10);
+  --menu-bg:#e7f3ea;
+  --menu-overlay:rgba(231,243,234,.86);
 }
 
 /* ---------- DARK (forced via html.dark) ---------- */
@@ -56,6 +58,8 @@ html.dark{
   --danger-light:rgba(240,89,94,.12);
   --shadow:0 1px 2px rgba(0,0,0,.3),0 2px 8px rgba(0,0,0,.35);
   --shadow-lg:0 14px 40px rgba(0,0,0,.5);
+  --menu-bg:#0e2118;
+  --menu-overlay:rgba(14,33,24,.9);
 }
 
 /* ---------- DARK (system pref, unless page forces light/dark) ---------- */
@@ -82,6 +86,8 @@ html.dark{
     --danger-light:rgba(240,89,94,.12);
     --shadow:0 1px 2px rgba(0,0,0,.3),0 2px 8px rgba(0,0,0,.35);
     --shadow-lg:0 14px 40px rgba(0,0,0,.5);
+  --menu-bg:#0e2118;
+  --menu-overlay:rgba(14,33,24,.9);
   }
 }
 
