@@ -279,6 +279,12 @@ function buildEditor(html){
   editor.on('load',function(){
     if(styleCSS)editor.setStyle(styleCSS);
     editor.addComponents(bodyHTML);
+    // Force scrollbars on canvas
+    setTimeout(function(){
+      document.querySelectorAll('.gjs-cv-canvas,.gjs-cv-canvas__frames,.gjs-frame-wrapper').forEach(function(el){
+        el.style.overflow='auto';el.style.overflowX='auto';el.style.overflowY='auto'
+      });
+    },300);
 
     var bm=editor.Blocks;
     bm.add('Layout',{id:'hero',label:'★ Hero',category:'Extra',content:'<section style="padding:100px 0;text-align:center;background:#f5f5f5"><div class="container" style="max-width:1100px;margin:0 auto;padding:0 20px"><h1 style="font-size:3rem;font-weight:800;margin-bottom:16px">Hero Title</h1><p style="font-size:1.2rem;color:#666;margin-bottom:24px">Hero subtitle</p><a href="#" style="display:inline-block;padding:16px 36px;background:#2E7D32;color:#fff;border-radius:50px;text-decoration:none;font-weight:700">Get Started</a></div></section>'});
