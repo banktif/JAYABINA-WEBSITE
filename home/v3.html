@@ -1,30 +1,2000 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ms">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>JAYACLEAN — Cuci Tangki Air (Versi 3)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Servis Cuci Tangki Air Rumah | JayaBina</title>
+  <meta name="description" content="Masa ambil wuduk, air nampak bersih. Tapi bila tengok dalam tangki, terus rasa lain. Servis cuci tangki JayaBina RM300 dengan deposit RM150.">
+  <link rel="canonical" href="https://cuci.jayabina.com/">
+  <meta name="theme-color" content="#2f7d4b">
+  <meta property="og:title" content="Bila Tengok Dalam Tangki, Terus Tak Lalu Nak Kumur">
+  <meta property="og:description" content="Servis cuci tangki air rumah RM300. Bayar deposit RM150 untuk sahkan tempahan.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cuci.jayabina.com/">
+  <meta property="og:site_name" content="JayaBina">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Poppins',sans-serif;background:linear-gradient(180deg,#f0fdf4,#fff);min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:#14532d}
-    .box{max-width:520px}
-    .logo{width:72px;height:72px;border-radius:20px;background:#166534;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:800;margin:0 auto 20px}
-    h1{font-size:1.8rem;margin-bottom:10px}
-    p{color:#557;line-height:1.7;margin-bottom:8px}
-    .tag{display:inline-block;background:#dcfce7;color:#166534;font-weight:700;font-size:.8rem;padding:6px 14px;border-radius:50px;margin-bottom:16px}
-    .note{margin-top:20px;font-size:.8rem;color:#999}
+    :root {
+      color-scheme: light;
+      --ink: #202725;
+      --ink-2: #3f4a46;
+      --muted: #69736f;
+      --paper: #f4f6f4;
+      --white: #ffffff;
+      --soft: #edf4ef;
+      --green: #47a866;
+      --green-dark: #2f7d4b;
+      --green-soft: #dff1e5;
+      --yellow: #f3c94f;
+      --yellow-soft: #fff5c9;
+      --yellow-deep: #7a5900;
+      --line: #d9e0dc;
+      --dark: #202b26;
+      --placeholder: #cfd7d2;
+      --placeholder-dark: #56615c;
+      --radius: 8px;
+      --shadow: 0 20px 55px rgba(32, 39, 37, .13);
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --space-12: 48px;
+      --space-16: 64px;
+      --space-20: 80px;
+      --container: 1120px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 78px;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.55;
+      overflow-x: hidden;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button,
+    a {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: rgba(47, 125, 75, .16);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    h1,
+    h2,
+    h3 {
+      overflow-wrap: anywhere;
+      text-wrap: balance;
+    }
+
+    p,
+    figure {
+      margin-top: 0;
+    }
+
+    p {
+      text-wrap: pretty;
+    }
+
+    .page {
+      overflow: clip;
+    }
+
+    .container {
+      width: min(var(--container), calc(100% - var(--space-16)));
+      margin-inline: auto;
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+
+    .top-strip {
+      background: #29312e;
+      color: #e5ece8;
+      font-size: 14px;
+    }
+
+    .top-strip .container {
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .top-strip strong {
+      color: #c6edd1;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, .97);
+      border-bottom: 1px solid rgba(32, 39, 37, .09);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav .container {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius);
+      background: var(--green-dark);
+      color: var(--white);
+      font-weight: 900;
+    }
+
+    .brand-text {
+      display: grid;
+      gap: 1px;
+      min-width: 0;
+    }
+
+    .brand-text strong {
+      font-size: 17px;
+      line-height: 1.15;
+    }
+
+    .brand-text small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: var(--ink-2);
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+    }
+
+    .nav-links a:not(.btn):hover {
+      color: var(--green-dark);
+    }
+
+    .btn {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-5);
+      background: var(--green-dark);
+      color: var(--white);
+      font-weight: 850;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .16s ease, background .16s ease, border-color .16s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: #25663d;
+    }
+
+    .btn:focus-visible,
+    summary:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible {
+      outline: 3px solid rgba(243, 201, 79, .72);
+      outline-offset: 3px;
+    }
+
+    .btn.accent {
+      background: var(--yellow);
+      color: var(--ink);
+    }
+
+    .btn.accent:hover {
+      background: #e5b930;
+    }
+
+    .btn.secondary {
+      background: var(--white);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .btn.secondary:hover {
+      background: #f5f8f6;
+      border-color: var(--green);
+    }
+
+    .hero {
+      position: relative;
+      min-height: 680px;
+      display: grid;
+      align-items: center;
+      overflow: hidden;
+      background: var(--placeholder-dark);
+      color: var(--white);
+      isolation: isolate;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: rgba(24, 34, 29, .78);
+    }
+
+    .hero-visual {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      margin: 0;
+      border: 0;
+      background: var(--placeholder-dark);
+    }
+
+    .hero-visual .slot-no {
+      position: absolute;
+      top: 28px;
+      right: 28px;
+      color: rgba(255, 255, 255, .18);
+      font-size: 86px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .hero-shot-brief {
+      position: absolute;
+      right: max(20px, calc((100vw - var(--container)) / 2));
+      bottom: 24px;
+      z-index: 3;
+      width: min(330px, calc(100% - 40px));
+      border: 1px dashed rgba(255, 255, 255, .48);
+      border-radius: var(--radius);
+      background: rgba(31, 42, 37, .9);
+      padding: 14px;
+    }
+
+    .hero-shot-brief span {
+      display: block;
+      margin-bottom: 5px;
+      color: #f8db77;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .hero-shot-brief strong {
+      display: block;
+      line-height: 1.3;
+    }
+
+    .hero-shot-brief small {
+      display: block;
+      margin-top: 5px;
+      color: #dde7e1;
+      line-height: 1.4;
+    }
+
+    .hero .container {
+      position: relative;
+      z-index: 2;
+      padding-block: var(--space-20) 128px;
+    }
+
+    .hero-copy {
+      max-width: 790px;
+    }
+
+    .eyebrow,
+    .section-kicker {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 14px;
+      color: var(--yellow-deep);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .hero .eyebrow {
+      color: #f8db77;
+    }
+
+    .eyebrow::before,
+    .section-kicker::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: var(--yellow);
+    }
+
+    h1 {
+      max-width: 880px;
+      margin-bottom: 20px;
+      font-size: 64px;
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+
+    h1 .highlight {
+      color: #f8db77;
+    }
+
+    .hero-lead {
+      max-width: 720px;
+      margin-bottom: 16px;
+      color: #eef4f0;
+      font-size: 20px;
+      line-height: 1.46;
+    }
+
+    .hero-reassurance {
+      max-width: 670px;
+      margin-bottom: 26px;
+      padding-left: 14px;
+      border-left: 4px solid var(--yellow);
+      color: #dfe8e3;
+      font-weight: 700;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .proof-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .proof-row span {
+      border: 1px solid rgba(255, 255, 255, .25);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .09);
+      padding: 8px 10px;
+      color: #edf5f0;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .section {
+      padding: 88px 0;
+    }
+
+    .section.white {
+      background: var(--white);
+    }
+
+    .section.soft {
+      background: var(--soft);
+    }
+
+    .section.dark {
+      background: var(--dark);
+      color: var(--white);
+    }
+
+    .section-head {
+      max-width: 790px;
+      margin-bottom: var(--space-10);
+    }
+
+    .section h2,
+    .booking-copy h2,
+    .final-copy h2 {
+      margin-bottom: 14px;
+      font-size: 44px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .section-head p,
+    .booking-copy > p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .dark .section-head p {
+      color: #d8e2dc;
+    }
+
+    .dark .section-kicker {
+      color: #f8db77;
+    }
+
+    .story-split {
+      display: grid;
+      grid-template-columns: minmax(0, .84fr) minmax(520px, 1.16fr);
+      gap: 32px;
+      align-items: center;
+    }
+
+    .story-split > *,
+    .standard-grid > *,
+    .offer-layout > *,
+    .location-wrap > *,
+    .booking-grid > * {
+      min-width: 0;
+    }
+
+    .story-copy h2 {
+      margin-bottom: 16px;
+    }
+
+    .story-copy p {
+      color: var(--ink-2);
+      font-size: 18px;
+    }
+
+    .story-callout {
+      margin: 22px 0 0;
+      padding: 18px 0 0;
+      border-top: 4px solid var(--yellow);
+      font-size: 24px;
+      line-height: 1.28;
+      font-weight: 900;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .image-slot {
+      position: relative;
+      min-width: 0;
+      margin: 0;
+      overflow: hidden;
+      border: 1px dashed #8b9791;
+      border-radius: var(--radius);
+      background: var(--placeholder);
+      aspect-ratio: 4 / 3;
+      color: var(--ink);
+    }
+
+    .image-slot.tall {
+      aspect-ratio: 4 / 5;
+    }
+
+    .image-slot.wide {
+      aspect-ratio: 16 / 9;
+    }
+
+    .image-slot .slot-no {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      color: rgba(32, 39, 37, .34);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .image-slot figcaption {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      left: 12px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .92);
+      padding: 12px;
+    }
+
+    .image-slot figcaption strong,
+    .image-slot figcaption small {
+      display: block;
+    }
+
+    .image-slot figcaption strong {
+      line-height: 1.25;
+    }
+
+    .image-slot figcaption small {
+      margin-top: 4px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .dark .image-slot {
+      border-color: #85918b;
+      background: #4a5650;
+      color: var(--white);
+    }
+
+    .dark .image-slot .slot-no {
+      color: rgba(255, 255, 255, .5);
+    }
+
+    .dark .image-slot figcaption {
+      background: rgba(31, 42, 37, .94);
+    }
+
+    .dark .image-slot figcaption small {
+      color: #d3ded7;
+    }
+
+    .daily-rail {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .daily-rail .image-slot {
+      aspect-ratio: 4 / 5;
+    }
+
+    .sign-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .sign {
+      min-height: 160px;
+      border-top: 4px solid var(--green);
+      background: var(--white);
+      padding: 18px;
+    }
+
+    .sign b {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .sign span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .sign-note {
+      margin: 22px 0 0;
+      color: var(--ink-2);
+      font-weight: 800;
+    }
+
+    .process-media {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr .8fr;
+      grid-template-areas:
+        "main second third"
+        "main fourth fourth";
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+
+    .process-media .image-slot:nth-child(1) {
+      grid-area: main;
+      aspect-ratio: auto;
+      min-height: 520px;
+    }
+
+    .process-media .image-slot:nth-child(2) {
+      grid-area: second;
+    }
+
+    .process-media .image-slot:nth-child(3) {
+      grid-area: third;
+    }
+
+    .process-media .image-slot:nth-child(4) {
+      grid-area: fourth;
+      aspect-ratio: 16 / 7;
+    }
+
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .process-step {
+      padding: 20px;
+      border-right: 1px solid var(--line);
+    }
+
+    .process-step:last-child {
+      border-right: 0;
+    }
+
+    .process-step span {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--green-dark);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .process-step h3 {
+      margin-bottom: 6px;
+      font-size: 19px;
+      line-height: 1.2;
+    }
+
+    .process-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .standard-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, .75fr) minmax(0, 1.25fr);
+      gap: var(--space-10);
+      align-items: center;
+    }
+
+    .standard-copy h2 {
+      margin-bottom: var(--space-4);
+    }
+
+    .standard-copy > p {
+      color: #d9e3dd;
+      font-size: 18px;
+    }
+
+    .commitment-list {
+      display: grid;
+      gap: 0;
+      margin-top: var(--space-6);
+      border-top: 1px solid rgba(255, 255, 255, .18);
+    }
+
+    .commitment {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: var(--space-5);
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .18);
+    }
+
+    .commitment strong {
+      color: #c5ecd0;
+    }
+
+    .commitment span {
+      color: #e2e9e5;
+    }
+
+    .offer-layout {
+      display: grid;
+      grid-template-columns: minmax(0, .86fr) minmax(420px, 1.14fr);
+      gap: var(--space-12);
+      align-items: center;
+    }
+
+    .offer-copy h2 {
+      margin-bottom: var(--space-4);
+    }
+
+    .offer-copy > p {
+      max-width: 620px;
+      margin-bottom: var(--space-6);
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .offer-total {
+      display: flex;
+      align-items: end;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .offer-total strong {
+      color: var(--ink);
+      font-size: 64px;
+      line-height: .95;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .offer-total span {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .payment-panel {
+      border: 1px solid #cdd8d1;
+      border-radius: var(--radius);
+      background: var(--white);
+      padding: var(--space-6);
+      box-shadow: var(--shadow);
+    }
+
+    .payment-panel > strong {
+      display: block;
+      margin-bottom: var(--space-4);
+      font-size: 18px;
+    }
+
+    .payment-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .payment-part {
+      min-height: 142px;
+      display: grid;
+      align-content: space-between;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--green);
+      border-radius: var(--radius);
+      background: var(--paper);
+      padding: var(--space-4);
+    }
+
+    .payment-part:last-child {
+      border-top-color: var(--yellow);
+    }
+
+    .payment-part span,
+    .payment-part small {
+      color: var(--muted);
+    }
+
+    .payment-part span {
+      font-size: 13px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .payment-part strong {
+      margin-block: var(--space-2);
+      color: var(--ink);
+      font-size: 36px;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .included-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3) var(--space-5);
+      margin: 0;
+      padding: var(--space-5) 0 0;
+      border-top: 1px solid var(--line);
+      list-style: none;
+      color: var(--ink-2);
+    }
+
+    .included-list li {
+      position: relative;
+      padding-left: var(--space-5);
+    }
+
+    .included-list li::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 0;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .location-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, .72fr) minmax(520px, 1.28fr);
+      gap: 34px;
+      align-items: center;
+    }
+
+    .location-copy h2 {
+      margin-bottom: 14px;
+    }
+
+    .location-copy p {
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .location-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 9px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .location-grid li {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--white);
+      padding: 10px 12px;
+      color: var(--ink-2);
+      font-weight: 800;
+    }
+
+    .location-grid li::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      flex: 0 0 auto;
+      margin-right: 9px;
+      border-radius: 50%;
+      background: var(--yellow);
+    }
+
+    .booking-section {
+      background: var(--white);
+      padding: 88px 0;
+    }
+
+    .booking-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, .78fr) minmax(0, 1.22fr);
+      gap: 30px;
+      align-items: stretch;
+    }
+
+    .booking-copy {
+      display: grid;
+      align-content: start;
+      gap: 18px;
+    }
+
+    .booking-copy .image-slot {
+      width: 100%;
+      margin: 0;
+    }
+
+    .booking-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .booking-card h3 {
+      margin-bottom: 6px;
+      font-size: 25px;
+      line-height: 1.2;
+    }
+
+    .booking-card > p {
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .two-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--ink-2);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid #ccd6d0;
+      border-radius: var(--radius);
+      background: var(--white);
+      color: var(--ink);
+      padding: 11px 12px;
+      outline: 0;
+      font-size: 16px;
+    }
+
+    textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--green);
+    }
+
+    .deposit-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid #cfe3d5;
+      border-radius: var(--radius);
+      background: var(--green-soft);
+      padding: 12px;
+      font-size: 14px;
+    }
+
+    .deposit-summary strong {
+      color: var(--green-dark);
+      font-size: 22px;
+    }
+
+    .deposit-summary span {
+      display: grid;
+      gap: 2px;
+    }
+
+    .deposit-summary b,
+    .deposit-summary small {
+      display: block;
+    }
+
+    .deposit-summary small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .form-hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .booking-message {
+      display: none;
+      margin: 0;
+      border-radius: var(--radius);
+      background: var(--yellow-soft);
+      padding: 10px 12px;
+      color: #664b00;
+      font-size: 13px;
+    }
+
+    .booking-message.visible {
+      display: block;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    details {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      padding: 17px;
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    details p {
+      margin: 10px 0 0;
+      color: var(--muted);
+    }
+
+    .final-cta {
+      background: var(--dark);
+      color: var(--white);
+      padding: 72px 0 94px;
+    }
+
+    .final-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .final-copy p {
+      max-width: 720px;
+      margin: 0;
+      color: #dce5df;
+      font-size: 18px;
+    }
+
+    .footer {
+      background: #171d1b;
+      color: #d5dcd8;
+      padding: 24px 0;
+      font-size: 13px;
+    }
+
+    .footer .container {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .sticky-cta {
+      position: fixed;
+      z-index: 70;
+      right: 12px;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid rgba(32, 39, 37, .12);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .97);
+      padding: 9px;
+      box-shadow: 0 16px 42px rgba(32, 39, 37, .2);
+      transition: transform .2s ease, opacity .2s ease;
+    }
+
+    .sticky-cta.is-hidden {
+      transform: translateY(120%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sticky-cta span {
+      color: var(--ink-2);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    @media (max-width: 1020px) {
+      .container {
+        width: calc(100% - var(--space-12));
+      }
+
+      h1 {
+        font-size: 52px;
+      }
+
+      .section h2,
+      .booking-copy h2,
+      .final-copy h2 {
+        font-size: 38px;
+      }
+
+      .story-split,
+      .standard-grid,
+      .offer-layout,
+      .location-wrap,
+      .booking-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .story-split {
+        align-items: start;
+      }
+
+      .sign-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .process-media {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+          "main second"
+          "third fourth";
+      }
+
+      .process-media .image-slot:nth-child(1) {
+        min-height: 390px;
+      }
+
+      .process-media .image-slot:nth-child(4) {
+        aspect-ratio: 4 / 3;
+      }
+
+      .location-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      html {
+        scroll-padding-top: 66px;
+      }
+
+      .container {
+        width: calc(100% - var(--space-10));
+      }
+
+      .top-strip .container {
+        min-height: 38px;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .top-strip span {
+        display: none;
+      }
+
+      .nav .container {
+        min-height: 62px;
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+      }
+
+      .brand-text small {
+        display: none;
+      }
+
+      .nav-links {
+        gap: 0;
+      }
+
+      .nav-links a:not(.btn) {
+        display: none;
+      }
+
+      .nav-links .btn {
+        min-height: 44px;
+        padding: 9px 13px;
+        font-size: 13px;
+      }
+
+      .hero {
+        min-height: 690px;
+      }
+
+      .hero .container {
+        padding-block: 48px 164px;
+      }
+
+      .hero-visual .slot-no {
+        top: 18px;
+        right: 14px;
+        font-size: 58px;
+      }
+
+      .hero-shot-brief {
+        right: var(--space-5);
+        bottom: 16px;
+        width: calc(100% - var(--space-10));
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 40px;
+        line-height: 1.08;
+      }
+
+      .hero-lead {
+        font-size: 18px;
+        line-height: 1.45;
+      }
+
+      .hero-reassurance {
+        font-size: 14px;
+      }
+
+      .hero-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .hero-actions .btn {
+        width: 100%;
+      }
+
+      .proof-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .proof-row span:last-child {
+        grid-column: 1 / -1;
+      }
+
+      .section,
+      .booking-section {
+        padding: var(--space-16) 0;
+      }
+
+      .section h2,
+      .booking-copy h2,
+      .final-copy h2 {
+        font-size: 32px;
+        line-height: 1.14;
+      }
+
+      .section-head {
+        margin-bottom: var(--space-8);
+      }
+
+      .section-head p,
+      .booking-copy > p,
+      .story-copy p,
+      .standard-copy > p,
+      .offer-copy > p,
+      .location-copy p {
+        font-size: 16px;
+      }
+
+      .story-split {
+        gap: 24px;
+      }
+
+      .story-callout {
+        font-size: 21px;
+      }
+
+      .compare-grid,
+      .process-media,
+      .process-steps,
+      .faq-grid,
+      .two-fields {
+        grid-template-columns: 1fr;
+      }
+
+      .process-media {
+        grid-template-areas:
+          "main"
+          "second"
+          "third"
+          "fourth";
+      }
+
+      .process-media .image-slot:nth-child(1) {
+        min-height: 0;
+        aspect-ratio: 4 / 3;
+      }
+
+      .process-media .image-slot:nth-child(4) {
+        aspect-ratio: 4 / 3;
+      }
+
+      .daily-rail {
+        grid-auto-flow: column;
+        grid-auto-columns: 82%;
+        grid-template-columns: none;
+        gap: 10px;
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        scroll-snap-type: inline mandatory;
+        padding-bottom: 8px;
+        scrollbar-width: none;
+      }
+
+      .daily-rail::-webkit-scrollbar {
+        display: none;
+      }
+
+      .daily-rail .image-slot {
+        scroll-snap-align: start;
+      }
+
+      .sign-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sign {
+        min-height: 0;
+      }
+
+      .process-step {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        padding-inline: 0;
+      }
+
+      .process-step:last-child {
+        border-bottom: 0;
+      }
+
+      .commitment {
+        grid-template-columns: 1fr;
+        gap: 5px;
+      }
+
+      .offer-layout {
+        gap: var(--space-8);
+      }
+
+      .offer-total strong {
+        font-size: 52px;
+      }
+
+      .payment-panel {
+        padding: var(--space-5);
+      }
+
+      .payment-part {
+        min-height: 132px;
+        padding: var(--space-3);
+      }
+
+      .payment-part strong {
+        font-size: 30px;
+      }
+
+      .included-list {
+        grid-template-columns: 1fr;
+      }
+
+      .location-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .location-grid li {
+        min-height: 46px;
+        padding: 9px;
+        font-size: 13px;
+      }
+
+      .booking-card {
+        padding: var(--space-5);
+      }
+
+      .final-cta {
+        padding: var(--space-16) 0 120px;
+      }
+
+      .final-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .final-grid .btn {
+        width: 100%;
+      }
+
+      .sticky-cta {
+        right: 10px;
+        left: 10px;
+        display: flex;
+        padding-bottom: calc(9px + env(safe-area-inset-bottom));
+      }
+    }
+
+    @media (max-width: 390px) {
+      .container {
+        width: calc(100% - var(--space-8));
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .section h2,
+      .booking-copy h2,
+      .final-copy h2 {
+        font-size: 30px;
+      }
+
+      .hero-shot-brief {
+        right: var(--space-4);
+        width: calc(100% - var(--space-8));
+      }
+
+      .location-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sticky-cta span {
+        max-width: 120px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .btn,
+      .sticky-cta {
+        transition: none;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="box">
-    <div class="logo">JC</div>
-    <div class="tag">VERSI 3 — CODEX</div>
-    <h1>Homepage Versi 3</h1>
-    <p>Ini placeholder untuk versi homepage yang dijana oleh <b>Codex</b>.</p>
-    <p>Gantikan kandungan fail <code>home/v3.html</code> dengan versi Codex anda, kemudian pilih "Versi 3" di Admin &rarr; Settings &rarr; Homepage &rarr; Publish to Live.</p>
-    <p class="note">Sila pastikan versi ini mengandungi borang tempahan + skrip yang perlu jika mahu fungsi booking berfungsi.</p>
+  <div class="page">
+    <div class="top-strip">
+      <div class="container">
+        <strong>Harga servis RM300.</strong>
+        <span>Deposit RM150 (50%) untuk sahkan tempahan.</span>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Navigasi utama">
+      <div class="container">
+        <a class="brand" href="#top" aria-label="JayaBina Cuci Tangki Air">
+          <span class="brand-mark">JB</span>
+          <span class="brand-text">
+            <strong>JayaBina</strong>
+            <small>Servis cuci tangki air rumah</small>
+          </span>
+        </a>
+        <div class="nav-links">
+          <a href="#kenapa">Kenapa semak</a>
+          <a href="#cara">Cara kerja</a>
+          <a href="#harga">Harga</a>
+          <a href="#lokasi">Lokasi</a>
+          <a class="btn" href="#booking">Tempah RM150</a>
+        </div>
+      </div>
+    </nav>
+
+    <header id="top" class="hero">
+      <figure class="hero-visual" data-image-slot="01" role="img" aria-label="Placeholder gambar orang sedang kumur ketika mengambil wuduk">
+        <span class="slot-no">01</span>
+      </figure>
+      <div class="hero-shot-brief">
+        <span>Placeholder gambar 01</span>
+        <strong>Orang sedang kumur ketika ambil wuduk</strong>
+        <small>Close-up natural. Air di tapak tangan, ekspresi tenang. Tinggalkan ruang gelap di kiri untuk headline.</small>
+      </div>
+      <div class="container">
+        <div class="hero-copy">
+          <p class="eyebrow">Cuba bayangkan sekejap...</p>
+          <h1>Masa ambil wuduk, air nampak bersih. Bila tengok dalam tangki... <span class="highlight">terus tak lalu nak kumur.</span></h1>
+          <p class="hero-lead">Air yang sama kita guna untuk mandi anak, masak nasi dan masuk mulut tiap-tiap hari. Dari paip nampak jernih. Tapi dasar tangki, kita tak pernah tengok.</p>
+          <p class="hero-reassurance">Bukan nak takutkan. Cuma benda yang keluarga guna hari-hari, elok kita tengok keadaan sebenar.</p>
+          <div class="hero-actions">
+            <a class="btn accent" href="#booking">Tempah dengan RM150</a>
+            <a class="btn secondary" href="#kenapa">Tengok kenapa perlu semak</a>
+          </div>
+          <div class="proof-row" aria-label="Janji proses ringkas">
+            <span>Harga RM300</span>
+            <span>Deposit 50%</span>
+            <span>Baki RM150 selepas servis</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="kenapa" class="section white">
+        <div class="container story-split">
+          <div class="story-copy">
+            <span class="section-kicker">Yang kita nampak cuma separuh cerita</span>
+            <h2>Paip nampak okay. Dasar tangki belum tentu.</h2>
+            <p>Kita nampak air yang keluar. Kita tak nampak apa yang mendap, melekat atau terkumpul dalam tangki.</p>
+            <p>Tak perlu tunggu air jadi kuning. Tak perlu panik juga. Buka dan periksa dulu.</p>
+            <div class="story-callout">Bila dah nampak sendiri, kita boleh buat keputusan dengan tenang.</div>
+          </div>
+          <div class="compare-grid" aria-label="Cadangan dua gambar perbandingan">
+            <figure class="image-slot tall" data-image-slot="02" role="img" aria-label="Placeholder gambar air jernih di tapak tangan">
+              <span class="slot-no">GAMBAR 02</span>
+              <figcaption>
+                <strong>Yang kita nampak</strong>
+                <small>Air jernih mengalir ke tapak tangan atau gelas.</small>
+              </figcaption>
+            </figure>
+            <figure class="image-slot tall" data-image-slot="03" role="img" aria-label="Placeholder gambar pandangan atas dasar tangki">
+              <span class="slot-no">GAMBAR 03</span>
+              <figcaption>
+                <strong>Yang kita tak nampak</strong>
+                <small>Pandangan atas dasar tangki sebenar sebelum dicuci.</small>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="section dark">
+        <div class="container">
+          <div class="section-head">
+            <span class="section-kicker">Satu tangki, banyak kegunaan</span>
+            <h2>Air yang sama masuk dalam rutin paling dekat dengan hati kita.</h2>
+            <p>Kumur masa wuduk. Mandikan anak. Masak untuk orang rumah. Sebab itu rasa lega datang bila kita dah tengok dan tahu tangki itu dijaga.</p>
+          </div>
+          <div class="daily-rail">
+            <figure class="image-slot" data-image-slot="04" role="img" aria-label="Placeholder gambar ibu atau ayah memandikan anak">
+              <span class="slot-no">GAMBAR 04</span>
+              <figcaption>
+                <strong>Mandi anak</strong>
+                <small>Momen natural ibu atau ayah mandikan anak kecil.</small>
+              </figcaption>
+            </figure>
+            <figure class="image-slot" data-image-slot="05" role="img" aria-label="Placeholder gambar membasuh beras untuk keluarga">
+              <span class="slot-no">GAMBAR 05</span>
+              <figcaption>
+                <strong>Masak untuk keluarga</strong>
+                <small>Tangan sedang basuh beras atau sediakan makanan.</small>
+              </figcaption>
+            </figure>
+            <figure class="image-slot" data-image-slot="06" role="img" aria-label="Placeholder gambar tangan dan muka ketika berwuduk">
+              <span class="slot-no">GAMBAR 06</span>
+              <figcaption>
+                <strong>Ambil wuduk</strong>
+                <small>Close-up tangan, muka dan aliran air yang bersih.</small>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="section soft">
+        <div class="container">
+          <div class="section-head">
+            <span class="section-kicker">Bila patut semak?</span>
+            <h2>Kalau ada tanda ni, jangan buat tak tahu.</h2>
+            <p>Satu tanda belum tentu bermaksud tangki teruk. Tapi cukup untuk kita periksa.</p>
+          </div>
+          <div class="sign-grid">
+            <div class="sign">
+              <b>Tak ingat bila kali terakhir buka</b>
+              <span>Kalau jawapannya "entah", itu tanda paling mudah.</span>
+            </div>
+            <div class="sign">
+              <b>Air mula berbau atau berubah</b>
+              <span>Jangan teka punca. Semak tangki dan saluran.</span>
+            </div>
+            <div class="sign">
+              <b>Filter cepat kotor</b>
+              <span>Bukan bukti muktamad, tapi elok diperiksa.</span>
+            </div>
+            <div class="sign">
+              <b>Nampak lendir atau mendapan</b>
+              <span>Keadaan sebenar lebih penting daripada andaian.</span>
+            </div>
+          </div>
+          <p class="sign-note">Rasa was-was tak selesa. Tengok sendiri lebih melegakan.</p>
+        </div>
+      </section>
+
+      <section id="cara" class="section white">
+        <div class="container">
+          <div class="section-head">
+            <span class="section-kicker">Cara kerja JayaBina</span>
+            <h2>Tak payah percaya cakap kami bulat-bulat. Tengok kerja.</h2>
+            <p>Setiap tahap ada bukti. Setiap perubahan harga perlu persetujuan.</p>
+          </div>
+
+          <div class="process-media" aria-label="Cadangan gambar proses kerja">
+            <figure class="image-slot" data-image-slot="07" role="img" aria-label="Placeholder gambar penutup tangki dibuka untuk pemeriksaan">
+              <span class="slot-no">GAMBAR 07</span>
+              <figcaption>
+                <strong>Pemeriksaan awal</strong>
+                <small>Penutup tangki dibuka dan keadaan awal dirakam.</small>
+              </figcaption>
+            </figure>
+            <figure class="image-slot" data-image-slot="08" role="img" aria-label="Placeholder gambar dasar tangki sebelum dicuci">
+              <span class="slot-no">GAMBAR 08</span>
+              <figcaption>
+                <strong>Sebelum cuci</strong>
+                <small>Close-up keadaan dasar dan dinding sebenar.</small>
+              </figcaption>
+            </figure>
+            <figure class="image-slot" data-image-slot="09" role="img" aria-label="Placeholder gambar proses mencuci tangki">
+              <span class="slot-no">GAMBAR 09</span>
+              <figcaption>
+                <strong>Masa cuci</strong>
+                <small>Proses buang mendapan dan cuci dinding.</small>
+              </figcaption>
+            </figure>
+            <figure class="image-slot" data-image-slot="10" role="img" aria-label="Placeholder gambar tangki selepas dibilas">
+              <span class="slot-no">GAMBAR 10</span>
+              <figcaption>
+                <strong>Selepas bilas</strong>
+                <small>Sudut yang sama untuk perbandingan yang jujur.</small>
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="process-steps">
+            <article class="process-step">
+              <span>01</span>
+              <h3>Hantar gambar</h3>
+              <p>Kami semak tangki, akses dan kapasiti.</p>
+            </article>
+            <article class="process-step">
+              <span>02</span>
+              <h3>Sahkan tempahan</h3>
+              <p>Harga RM300. Deposit RM150.</p>
+            </article>
+            <article class="process-step">
+              <span>03</span>
+              <h3>Cuci dan bilas</h3>
+              <p>Kerja ikut keadaan yang ditemui.</p>
+            </article>
+            <article class="process-step">
+              <span>04</span>
+              <h3>Tengok hasil</h3>
+              <p>Dapat foto sebelum dan selepas.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section dark">
+        <div class="container standard-grid">
+          <figure class="image-slot tall" data-image-slot="11" role="img" aria-label="Placeholder potret pengasas atau juruteknik JayaBina">
+            <span class="slot-no">GAMBAR 11</span>
+            <figcaption>
+              <strong>Orang sebenar yang datang servis</strong>
+              <small>Potret kemas juruteknik JayaBina bersama peralatan kerja.</small>
+            </figcaption>
+          </figure>
+          <div class="standard-copy">
+            <span class="section-kicker">Standard kerja JayaBina</span>
+            <h2>Tak perlu percaya cakap kami. Minta bukti.</h2>
+            <p>Anda tahu apa yang akan dibuat, berapa yang perlu dibayar dan bagaimana hasil kerja ditunjukkan.</p>
+            <div class="commitment-list">
+              <div class="commitment">
+                <strong>Sebelum kerja</strong>
+                <span>Skop diterangkan. Harga RM300 dan deposit RM150 dipaparkan jelas.</span>
+              </div>
+              <div class="commitment">
+                <strong>Semasa kerja</strong>
+                <span>Keadaan tangki dirakam supaya anda nampak apa yang ditemui.</span>
+              </div>
+              <div class="commitment">
+                <strong>Selepas siap</strong>
+                <span>Anda terima foto sebelum dan selepas. Bukan sekadar dengar "dah bersih".</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="harga" class="section soft">
+        <div class="container offer-layout">
+          <div class="offer-copy">
+            <span class="section-kicker">Harga terus terang</span>
+            <h2>Satu servis. Satu harga. Tak perlu pening pilih pakej.</h2>
+            <p>Tempahan disahkan dengan deposit 50%. Baki dibayar selepas servis selesai.</p>
+            <div class="offer-total">
+              <strong>RM300</strong>
+              <span>jumlah servis</span>
+            </div>
+            <a class="btn" href="#booking">Tempah dengan deposit RM150</a>
+          </div>
+          <div class="payment-panel" aria-label="Pecahan bayaran servis">
+            <strong>Pecahan bayaran 50/50</strong>
+            <div class="payment-split">
+              <div class="payment-part">
+                <span>Semasa tempahan</span>
+                <strong>RM150</strong>
+                <small>Deposit 50%</small>
+              </div>
+              <div class="payment-part">
+                <span>Selepas servis</span>
+                <strong>RM150</strong>
+                <small>Baki 50%</small>
+              </div>
+            </div>
+            <ul class="included-list">
+              <li>Pemeriksaan keadaan tangki</li>
+              <li>Cuci dinding dan dasar</li>
+              <li>Proses bilas</li>
+              <li>Foto sebelum dan selepas</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="lokasi" class="section white">
+        <div class="container location-wrap">
+          <div class="location-copy">
+            <span class="section-kicker">Semakan kawasan servis</span>
+            <h2>Rumah anda dekat kawasan ni?</h2>
+            <p>Hantar alamat dulu. Liputan dan slot hanya confirm lepas lokasi penuh disemak.</p>
+          </div>
+          <!-- Sahkan senarai kawasan ini dengan operasi sebelum publish. -->
+          <ul class="location-grid" aria-label="Kawasan untuk semakan servis">
+            <li>Shah Alam</li>
+            <li>Klang</li>
+            <li>Setia Alam</li>
+            <li>Subang Jaya</li>
+            <li>Puchong</li>
+            <li>Petaling Jaya</li>
+            <li>Cheras</li>
+            <li>Kajang</li>
+            <li>Bangi</li>
+            <li>Putrajaya</li>
+            <li>Cyberjaya</li>
+            <li>Ampang</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="booking" class="booking-section">
+        <div class="container booking-grid">
+          <div class="booking-copy">
+            <div>
+              <span class="section-kicker">Tempahan ringkas</span>
+              <h2>Nak tahu tangki rumah anda macam mana?</h2>
+              <p>Hantar butiran ringkas. Harga servis RM300 dan deposit tempahan ialah RM150.</p>
+            </div>
+            <figure class="image-slot wide" data-image-slot="12" role="img" aria-label="Placeholder gambar pemilik rumah melihat foto sebelum dan selepas">
+              <span class="slot-no">GAMBAR 12</span>
+              <figcaption>
+                <strong>Bukti di tangan pelanggan</strong>
+                <small>Pemilik rumah tengok foto sebelum dan selepas pada telefon.</small>
+              </figcaption>
+            </figure>
+          </div>
+
+          <aside class="booking-card" aria-labelledby="booking-title">
+            <h3 id="booking-title">Tempah servis RM300</h3>
+            <p>Bayar RM150 sekarang. Baki RM150 selepas servis.</p>
+            <!-- Isi data-endpoint dan data-whatsapp sebelum laman diterbitkan. -->
+            <form class="form-grid" id="bookingForm" data-endpoint="" data-whatsapp="">
+              <div class="two-fields">
+                <label>Nama
+                  <input name="name" autocomplete="name" required placeholder="Contoh: Hafiz">
+                </label>
+                <label>No. WhatsApp
+                  <input name="phone" autocomplete="tel" inputmode="tel" required placeholder="Contoh: 6012xxxxxxx">
+                </label>
+              </div>
+              <label>Kawasan rumah
+                <input name="area" required placeholder="Contoh: Shah Alam">
+              </label>
+              <label>Tarikh pilihan
+                <input name="date" type="date" required>
+              </label>
+              <input name="package" type="hidden" value="standard">
+              <label>Keadaan tangki
+                <textarea name="notes" placeholder="Contoh: 1 tangki 1000L atas bumbung, tak ingat kali terakhir cuci"></textarea>
+              </label>
+              <div class="deposit-summary">
+                <span><b>Deposit 50%</b><small>Daripada harga RM300</small></span>
+                <strong id="depositAmount">RM150</strong>
+              </div>
+              <button class="btn" type="submit">Teruskan tempahan RM150</button>
+              <p class="form-hint">Deposit RM150 ditolak daripada jumlah RM300. Baki RM150 dibayar selepas servis.</p>
+              <p class="booking-message" id="bookingMessage" role="status"></p>
+            </form>
+          </aside>
+        </div>
+      </section>
+
+      <section id="faq" class="section soft">
+        <div class="container">
+          <div class="section-head">
+            <span class="section-kicker">Soalan biasa</span>
+            <h2>Tanya dulu. Biar rasa yakin.</h2>
+          </div>
+          <div class="faq-grid">
+            <details>
+              <summary>Apa yang termasuk dalam harga RM300?</summary>
+              <p>Pemeriksaan keadaan tangki, cucian dinding dan dasar, proses bilas, serta foto sebelum dan selepas.</p>
+            </details>
+            <details>
+              <summary>Lepas cuci terus selamat diminum?</summary>
+              <p>Tidak semestinya. Cucian tangki bukan ujian makmal atau rawatan air minuman.</p>
+            </details>
+            <details>
+              <summary>Berapa kerap kena periksa?</summary>
+              <p>Ikut keadaan tangki, persekitaran dan bekalan air. Kalau tak ingat bila kali terakhir dibuka, mula dengan pemeriksaan.</p>
+            </details>
+            <details>
+              <summary>Kalau tangki susah naik?</summary>
+              <p>Kami semak keselamatan dulu. Kerja tak diteruskan kalau akses tak selamat atau perlukan skop lain tanpa persetujuan.</p>
+            </details>
+            <details>
+              <summary>Macam mana bayaran 50/50?</summary>
+              <p>Bayar deposit RM150 untuk sahkan tempahan. Baki RM150 dibayar selepas servis selesai.</p>
+            </details>
+            <details>
+              <summary>Boleh bayar guna Bayarcash?</summary>
+              <p>Ya, selepas sambungan pembayaran diaktifkan. Kalau belum aktif, tempahan disahkan melalui WhatsApp.</p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="final-cta">
+        <div class="container final-grid">
+          <div class="final-copy">
+            <h2>Kalau dah terfikir, "entah macam mana dalam tangki rumah aku..." jangan biar jadi teka-teki.</h2>
+            <p>Semak dulu. Tengok keadaan sebenar. Lepas itu decide dengan tenang.</p>
+          </div>
+          <a class="btn accent" href="#booking">Saya nak semak</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <span>JayaBina | Servis cuci tangki air rumah</span>
+        <span>cuci.jayabina.com | Proses jelas, bukti kerja sebenar</span>
+      </div>
+    </footer>
+
+    <div class="sticky-cta" aria-label="Tindakan pantas">
+      <span>Deposit 50%: RM150</span>
+      <a class="btn" href="#booking">Tempah</a>
+    </div>
   </div>
+
+  <script>
+    (function () {
+      const form = document.getElementById("bookingForm");
+      const message = document.getElementById("bookingMessage");
+      const dateInput = form.querySelector('input[name="date"]');
+      const stickyCta = document.querySelector(".sticky-cta");
+      const bookingSection = document.getElementById("booking");
+      const SERVICE_PRICE = 300;
+      const DEPOSIT_AMOUNT = 150;
+
+      const timezoneOffset = new Date().getTimezoneOffset() * 60000;
+      dateInput.min = new Date(Date.now() - timezoneOffset).toISOString().slice(0, 10);
+
+      function showMessage(text) {
+        message.textContent = text;
+        message.classList.add("visible");
+      }
+
+      function toPayload() {
+        const data = new FormData(form);
+        return {
+          name: String(data.get("name") || "").trim(),
+          phone: String(data.get("phone") || "").trim(),
+          area: String(data.get("area") || "").trim(),
+          date: String(data.get("date") || "").trim(),
+          package: "standard",
+          package_label: "Servis Cuci Tangki Air RM300",
+          service_price: SERVICE_PRICE,
+          deposit_amount: DEPOSIT_AMOUNT,
+          notes: String(data.get("notes") || "").trim(),
+          source: "cuci.jayabina.com"
+        };
+      }
+
+      function openWhatsapp(payload) {
+        const phone = String(form.dataset.whatsapp || "").replace(/\D/g, "");
+        if (!phone) {
+          return false;
+        }
+
+        const text = [
+          "Saya nak semak dan tempah servis cuci tangki air JayaBina.",
+          "",
+          "Nama: " + payload.name,
+          "Telefon: " + payload.phone,
+          "Kawasan: " + payload.area,
+          "Tarikh pilihan: " + payload.date,
+          "Servis: " + payload.package_label,
+          "Harga: RM" + payload.service_price,
+          "Deposit 50%: RM" + payload.deposit_amount,
+          "Baki selepas servis: RM" + (payload.service_price - payload.deposit_amount),
+          "Keadaan tangki: " + (payload.notes || "-")
+        ].join("\n");
+
+        window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(text), "_blank", "noopener");
+        return true;
+      }
+
+      if ("IntersectionObserver" in window && stickyCta && bookingSection) {
+        const observer = new IntersectionObserver(function (entries) {
+          stickyCta.classList.toggle("is-hidden", entries[0].isIntersecting);
+        }, { threshold: 0.12 });
+        observer.observe(bookingSection);
+      }
+
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const payload = toPayload();
+        const endpoint = form.dataset.endpoint;
+        const submit = form.querySelector('button[type="submit"]');
+
+        if (!endpoint) {
+          const opened = openWhatsapp(payload);
+          showMessage(opened
+            ? "Butiran tempahan dibuka di WhatsApp untuk semakan."
+            : "Tempahan online sedang disediakan. Sila hubungi JayaBina melalui nombor WhatsApp yang dipaparkan.");
+          return;
+        }
+
+        submit.disabled = true;
+        submit.textContent = "Sedang dihantar...";
+
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.message || "Tempahan gagal dihantar.");
+          }
+
+          if (result.payment_url) {
+            window.location.href = result.payment_url;
+            return;
+          }
+
+          showMessage("Butiran diterima. Kami akan hubungi anda untuk semakan.");
+        } catch (error) {
+          const opened = openWhatsapp(payload);
+          showMessage(opened
+            ? "Pembayaran belum dapat dibuka. Butiran dibuka di WhatsApp."
+            : "Tempahan belum dapat dihantar. Sila hubungi JayaBina melalui WhatsApp.");
+        } finally {
+          submit.disabled = false;
+          submit.textContent = "Teruskan tempahan RM150";
+        }
+      });
+    })();
+  </script>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HomeAndConstructionBusiness",
+      "name": "JayaBina Cuci Tangki Air",
+      "description": "Servis cuci tangki air rumah dengan proses kerja telus dan tempahan deposit.",
+      "priceRange": "RM300",
+      "url": "https://cuci.jayabina.com/"
+    }
+  </script>
 </body>
 </html>
