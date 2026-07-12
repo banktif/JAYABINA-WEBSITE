@@ -121,7 +121,7 @@ function protectReason(repo,file){
   if(/(^|\/)(admin|worker|customer|dashboard|login|staff|app|api)(\/|$)/.test(file))return 'App/system pages are protected.';
   var base=file.split('/').pop();
   if(['admin.html','worker.html','customer.html','login.html','staff.html','dashboard.html','manifest.json','sw.js','theme.css'].indexOf(base)>-1)return 'System file is protected.';
-  if(/jayaclean-salespage$/i.test(repo)&&file!=='index.html')return 'In the JAYACLEAN repo, only the sales page (index.html) is editable.';
+  if(/jayaclean-salespage$/i.test(repo)&&!(file==='index.html'||/^home\/[a-z0-9_.-]+\.html?$/.test(file)))return 'In the JAYACLEAN repo, only the sales page (index.html) or home/*.html variants are editable.';
   return null;
 }
 

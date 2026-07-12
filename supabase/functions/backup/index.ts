@@ -229,6 +229,28 @@ Deno.serve(async (req: Request) => {
       catch (e) { return json({ error: (e as Error).message }, 400); }
     }
 
+    if (action === "publish_home") {
+      const ghpat = Deno.env.get("GH_PAT");
+      if (!ghpat) return json({ error: "GH_PAT not configured" }, 400);
+      const version = String(body.version || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+      if (["v1", "v2", "v3"].indexOf(version) < 0) return json({ error: "invalid version" }, 400);
+      const repo = "banktif/jayaclean-salespage";
+      const ghHeaders = { Authorization: "Bearer " + ghpat, Accept: "application/vnd.github+json", "User-Agent": "jayaclean-home" };
+      const srcR = await fetch("https://api.github.com/repos/" + repo + "/contents/home/" + version + ".html", { headers: ghHeaders });
+      const src = await srcR.json();
+      if (!src.content) return json({ error: "source home/" + version + ".html not found" }, 404);
+      const idxR = await fetch("https://api.github.com/repos/" + repo + "/contents/index.html", { headers: ghHeaders });
+      const idx = await idxR.json();
+      const putR = await fetch("https://api.github.com/repos/" + repo + "/contents/index.html", {
+        method: "PUT",
+        headers: Object.assign({ "Content-Type": "application/json" }, ghHeaders),
+        body: JSON.stringify({ message: "Publish homepage " + version + " to live", content: (src.content || "").replace(/\n/g, ""), sha: idx.sha, branch: "master" }),
+      });
+      if (!putR.ok) return json({ error: "publish failed", detail: (await putR.text()).slice(0, 150) }, 502);
+      await setKV(sb, "active_homepage", version);
+      return json({ status: "ok", data: { published: version } });
+    }
+
     if (action === "code") {
       const ghpat = Deno.env.get("GH_PAT");
       if (!ghpat) return json({ error: "GH_PAT not configured" }, 400);

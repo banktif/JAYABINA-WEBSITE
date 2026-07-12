@@ -1108,6 +1108,13 @@ async function showSettings(){
     }
     function grp(title,items){var s='<div class="sGrp"><div class="sGrpH">'+title+'</div><div class="sFields">';items.forEach(function(i){s+=i});return s+'</div></div>'}
     var h='<div style="display:grid;gap:16px;max-width:700px">';
+    h+='<div class="sGrp"><div class="sGrpH">Homepage Version (Main Domain)</div><div class="sFields">'+
+      '<div style="font-size:.8rem;color:var(--text2)">Live now: <b id="hpLive" style="color:var(--accent)">'+esc(map['active_homepage']||'v1')+'</b></div>'+
+      '<div><label class="sLbl">Select version</label><select id="hpSel" class="mv-sel"><option value="v1"'+((map['active_homepage']||'v1')==='v1'?' selected':'')+'>Version 1 — DeepSeek</option><option value="v2"'+(map['active_homepage']==='v2'?' selected':'')+'>Version 2 — Claude</option><option value="v3"'+(map['active_homepage']==='v3'?' selected':'')+'>Version 3 — Codex</option></select></div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="d-btn" onclick="previewHome()"><i data-lucide="eye"></i> Preview</button><button class="btn-primary" style="width:auto" onclick="publishHome()"><i data-lucide="rocket"></i> Publish to Live</button></div>'+
+      '<div id="hpMsg" style="font-size:.75rem;color:var(--text3)"></div>'+
+      '<div style="font-size:.72rem;color:var(--text3);line-height:1.7">3 versions stored in <code>/home/</code> (v1 DeepSeek, v2 Claude, v3 Codex). Publish copies the selected version to the main domain homepage (<code>index.html</code>). Works on any domain — including future <b>www.jayaclean.com</b>.</div>'+
+      '</div></div>';
     h+=grp('Business',[fld('business_name'),fld('wa_business_number')]);
     h+=grp('Payment / Bank',[fld('bank_name'),fld('bank_account_no'),fld('bank_account_holder'),fld('qr_image_url'),fld('price_total','Price Total (RM)','text'),fld('price_deposit','Deposit (RM)','text'),fld('price_balance','Balance (RM)','text'),'<div><label class="sLbl">Bank QR Image</label><button class="btn-primary" style="width:auto;padding:10px 16px;font-size:.72rem" onclick="uploadQR()"><i data-lucide="upload"></i> Upload QR</button><div id="qrMsg" style="font-size:.72rem;color:var(--text3);margin-top:6px"></div></div>']);
     h+=grp('WhatsApp Templates (Malay)',[fld('wa_tmpl_baki','Bank Transfer (Manual)','textarea'),fld('wa_tmpl_balance_link','Payment Link (Bayarcash)','textarea'),fld('wa_tmpl_staff','Staff Assignment','textarea')]);
@@ -1130,6 +1137,19 @@ function grpEditorSites(map){
   return '';
 }
 function addEditorSite(){}
+function previewHome(){var v=document.getElementById('hpSel').value;window.open('/home/'+v+'.html','_blank');}
+async function publishHome(){
+  var v=document.getElementById('hpSel').value,m=document.getElementById('hpMsg');
+  if(!confirm('Publish '+v+' as the LIVE homepage (main domain)? This overwrites index.html.'))return;
+  m.style.color='var(--text3)';m.textContent='Publishing...';
+  try{
+    var token=await authToken();
+    var res=await fetch('https://thbscwlcyhcnqsppoyfn.supabase.co/functions/v1/backup',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'publish_home',version:v})});
+    var r=await res.json();
+    if(res.ok){m.style.color='var(--accent)';m.textContent='Published '+v+'! Main domain deploying (~1 min).';var hl=document.getElementById('hpLive');if(hl)hl.textContent=v;}
+    else{m.style.color='var(--danger)';m.textContent='Error: '+(r.error||'failed');}
+  }catch(e){m.style.color='var(--danger)';m.textContent='Error: '+e.message;}
+}
 function uploadQR(){
   var cn=settings.cloud_name,up=settings.upload_preset;
   var cnEl=document.querySelector('[data-key="cloud_name"]'),upEl=document.querySelector('[data-key="upload_preset"]');
