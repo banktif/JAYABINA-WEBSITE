@@ -73,6 +73,8 @@ Current entry point: `cf-api/src/index.ts`. It manually normalizes the URL, hand
 - **Step 4 attempt E — SKIPPED:** application typecheck, Worker tests and dry-run all passed once, but the mandatory second snapshot run detected nondeterminism in SQLite seed timestamps, R2 object names and gzip byte size. The baseline was not stable, so all harness files and snapshots were reverted. The next attempt must normalize only those runtime-generated fields before comparison.
 - **Step 4 attempt F — PASS:** explicit ESM, idempotent fixtures and narrow dynamic-field normalization produced stable snapshots on two consecutive runs. The suite executes in the Cloudflare Workers runtime with isolated local D1/R2 bindings and never contacts production.
 
+- **Step 5 Hono entrypoint attempt A — SKIPPED:** routing the legacy dispatcher through one Hono catch-all failed the required gates. TypeScript reported that `app.fetch()` may return either `Response` or `Promise<Response>`, and the contract snapshot showed Hono's default error boundary replacing the legacy JSON/security-header error response with plain-text `Internal Server Error`. The source change was fully reverted. This catch-all approach is skipped; later Hono routes must retain the legacy outer error boundary explicitly.
+
 ## Baseline contract suite
 
 - Runtime: official Cloudflare Vitest integration using the project Wrangler configuration.
