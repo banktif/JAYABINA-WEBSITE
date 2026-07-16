@@ -21,11 +21,11 @@ Object storage: Cloudflare R2 `jayaclean-backups`
 | Step | Status | Verification | Commit | Notes |
 |---|---|---|---|---|
 | 1. Audit routes and bindings | PASS | Route inventory + Worker dry-run | `9efc7ac` | 41 HTTP contracts plus hourly scheduled backup identified. |
-| 2. Backup production D1 | PASS | Full export restored into isolated local D1; sanitized R2 archive downloaded and parsed | pending | No production business rows were changed. |
+| 2. Backup production D1 | PASS | Full export restored into isolated local D1; sanitized R2 archive downloaded and parsed | `d4dd474` | No production business rows were changed. |
 | 3. Install Hono + Drizzle and introspect schema | PASS | Typecheck + 2 schema parity tests + Drizzle SQL export + Worker dry-run | `8db513e` | Runtime bindings remain `DB` and `BACKUP_R2`. |
-| 4. Baseline snapshot tests | PASS | 41-route-group contract snapshot stable across two consecutive Worker-runtime runs | pending | Dynamic timestamps, backup names and gzip bytes are normalized; status, headers, structure and business values remain exact. |
-| 5. Refactor route groups | IN PROGRESS | Snapshot equality after every route-group commit | pending | Health now runs through Hono + Drizzle; remaining groups retain the verified legacy fallback until migrated. |
-| 6. Full regression and final summary | PENDING | All tests + dry-run + production smoke checks | pending | Deploy only after all checks pass. |
+| 4. Baseline snapshot tests | PASS | 41-route-group contract snapshot stable across two consecutive Worker-runtime runs | `329600a` | Dynamic timestamps, backup names and gzip bytes are normalized; status, headers, structure and business values remain exact. |
+| 5. Refactor route groups | PASS | Snapshot equality after every route-group commit | `2de29f1`–`ddc7e9a` | All route groups now run through Hono; Drizzle owns data access except one documented compatibility skip. |
+| 6. Full regression and final summary | IN PROGRESS | All tests + dry-run + production smoke checks | pending | Local full regression is green; production deploy and read-only smoke checks remain. |
 
 ## Route audit
 
