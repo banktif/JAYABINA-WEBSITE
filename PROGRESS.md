@@ -20,8 +20,8 @@ Object storage: Cloudflare R2 `jayaclean-backups`
 
 | Step | Status | Verification | Commit | Notes |
 |---|---|---|---|---|
-| 1. Audit routes and bindings | PASS | Route inventory + clean worktree baseline | pending | 41 HTTP contracts plus hourly scheduled backup identified. |
-| 2. Backup production D1 | PENDING | Export integrity + SHA-256 + sanitized R2 backup | pending | No production rows will be changed by tests. |
+| 1. Audit routes and bindings | PASS | Route inventory + Worker dry-run | `9efc7ac` | 41 HTTP contracts plus hourly scheduled backup identified. |
+| 2. Backup production D1 | PASS | Full export restored into isolated local D1; sanitized R2 archive downloaded and parsed | pending | No production business rows were changed. |
 | 3. Install Hono + Drizzle and introspect schema | PENDING | Typecheck + schema parity test + Worker dry-run | pending | Runtime bindings remain `DB` and `BACKUP_R2`. |
 | 4. Baseline snapshot tests | PENDING | Legacy handler contract snapshots | pending | Snapshots must cover success, auth failure, validation and not-found behavior. |
 | 5. Refactor route groups | PENDING | Snapshot equality after every route-group commit | pending | One route group per commit where practical. |
@@ -58,6 +58,17 @@ Current entry point: `cf-api/src/index.ts`. It manually normalizes the URL, hand
 ## Failures and skipped steps
 
 None.
+
+## Backup evidence
+
+- Full D1 export: `C:\Users\USER\Downloads\Jayaclean-private-backups\jayaclean-db-pre-hono-20260716-152304.sql`
+- Export size: 29,099 bytes
+- Export SHA-256: `35E834F2C235A8ED30AA5A7F0C2108B043AD0A7E63B424BDA77885B1654478E6`
+- Restore verification was performed in an isolated temporary local D1 and the temporary database was removed afterward.
+- Restored counts: profiles 2, app settings 42, bookings 21, slots 9, tasks 2, task photos 0, customers 7, backup log 1.
+- Sanitized R2 archive: `db-backup-2026-07-16T07-27-03-456Z.json.gz`
+- R2 verification: signed download returned HTTP 200; gzip and JSON parsed successfully with the expected table counts.
+- The full export is outside the Git repository because it contains production-only fields. It must never be committed.
 
 ## Final summary
 
