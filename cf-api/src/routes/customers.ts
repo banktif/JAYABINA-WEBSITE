@@ -13,8 +13,8 @@ export async function handleCustomers(req: Request, env: Env, path: string): Pro
 
       const search = url.searchParams.get('search') || '';
       const status = url.searchParams.get('status') || '';
-      const page = parseInt(url.searchParams.get('page') || '1');
-      const limit = parseInt(url.searchParams.get('limit') || '20');
+      const page = Math.max(1, parseInt(url.searchParams.get('page') || '1') || 1);
+      const limit = Math.min(100, Math.max(1, parseInt(url.searchParams.get('limit') || '20') || 20));
       const offset = (page - 1) * limit;
       const requestedOrder = url.searchParams.get('order') || 'last_booking_date';
       const safeOrder = ['last_booking_date', 'total_bookings', 'total_spent', 'name', 'created_at'];
@@ -38,7 +38,7 @@ export async function handleCustomers(req: Request, env: Env, path: string): Pro
 
       const result = await env.DB.prepare(q).bind(...params).all();
       const total = (result.results[0] as any)?.total_count || 0;
-      return ok({ data: result.results, total, page, limit });
+      return ok({ data: result.results.map(normalizeCustomer), total, page, limit });
     } catch (e: any) {
       return err(e.msg || 'Error', e.status || 400);
     }
@@ -51,7 +51,7 @@ export async function handleCustomers(req: Request, env: Env, path: string): Pro
       const payload = await requireAuth(req, env);
       requireAdmin(payload);
       const customer = await env.DB.prepare('SELECT * FROM customers WHERE id = ?').bind(getMatch[1]).first();
-      return customer ? ok(customer) : err('Not found', 404);
+      return customer ? ok(normalizeCustomer(customer)) : err('Not found', 404);
     } catch (e: any) {
       return err(e.msg || 'Error', e.status || 400);
     }
@@ -64,6 +64,10 @@ export async function handleCustomers(req: Request, env: Env, path: string): Pro
       requireAdmin(payload);
       const body = await req.json() as any;
       const customerId = getMatch[1];
+      const existing = await env.DB.prepare('SELECT id FROM customers WHERE id = ?').bind(customerId).first();
+      if (!existing) return err('Customer not found', 404);
+      if (body.status !== undefined && !['active', 'inactive', 'vip', 'blacklist'].includes(body.status)) return err('Invalid customer status');
+      if (body.tags !== undefined && !Array.isArray(body.tags)) return err('Customer tags must be an array');
 
       const sets: string[] = ['updated_at = ?'];
       const params: any[] = [nowISO()];
@@ -78,7 +82,7 @@ export async function handleCustomers(req: Request, env: Env, path: string): Pro
       params.push(customerId);
       await env.DB.prepare(`UPDATE customers SET ${sets.join(', ')} WHERE id = ?`).bind(...params).run();
       const updated = await env.DB.prepare('SELECT * FROM customers WHERE id = ?').bind(customerId).first();
-      return ok(updated);
+      return ok(normalizeCustomer(updated));
     } catch (e: any) {
       return err(e.msg || 'Error', e.status || 400);
     }
@@ -97,4 +101,14 @@ export async function handleCustomers(req: Request, env: Env, path: string): Pro
   }
 
   return err('Not found', 404);
+}
+
+function normalizeCustomer(row: any): any {
+  if (!row) return row;
+  let tags: string[] = [];
+  if (Array.isArray(row.tags)) tags = row.tags.map(String);
+  else if (typeof row.tags === 'string' && row.tags) {
+    try { const parsed = JSON.parse(row.tags); if (Array.isArray(parsed)) tags = parsed.map(String); } catch {}
+  }
+  return { ...row, tags };
 }

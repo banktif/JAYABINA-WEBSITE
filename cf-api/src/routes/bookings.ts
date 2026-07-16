@@ -27,7 +27,8 @@ export async function handleBookings(req: Request, env: Env, path: string): Prom
       const params: any[] = [];
 
       if (payload && payload.role === 'staff') {
-        conds.push(`id IN (SELECT booking_id FROM tasks WHERE assigned_to = '${payload.sub}')`);
+        conds.push('id IN (SELECT booking_id FROM tasks WHERE assigned_to = ?)');
+        params.push(payload.sub);
       }
 
       // Anon: must have customer_phone filter
@@ -79,6 +80,9 @@ export async function handleBookings(req: Request, env: Env, path: string): Prom
 
     if (!customer_name || !customer_phone || !customer_address || !booking_date || !booking_time) {
       return err('Missing required fields: customer_name, customer_phone, customer_address, booking_date, booking_time');
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(booking_date)) || String(booking_date) < malaysiaDateKey()) {
+      return err('Booking date must be today or later');
     }
 
     const maxSlots = parseInt(await getSetting(env.DB, 'max_slots_per_day') || '4');
@@ -142,12 +146,38 @@ export async function handleBookings(req: Request, env: Env, path: string): Prom
       const bookingId = patchMatch[1];
       const body = await req.json() as any;
       const now = nowISO();
+      const current = await env.DB.prepare('SELECT * FROM bookings WHERE id = ?').bind(bookingId).first<any>();
+      if (!current) return err('Booking not found', 404);
 
       // Check access
       if (payload.role !== 'admin') {
         const hasAccess = await env.DB.prepare('SELECT 1 FROM tasks WHERE booking_id = ? AND assigned_to = ?')
           .bind(bookingId, payload.sub).first();
         if (!hasAccess) return err('Access denied', 403);
+      }
+
+      if (body.status !== undefined && !['pending_payment', 'confirmed', 'completed', 'cancelled'].includes(body.status)) {
+        return err('Invalid booking status');
+      }
+      if (current.status === 'completed' && body.status === 'cancelled') {
+        return err('A completed booking cannot be cancelled', 409);
+      }
+      if (body.payment_status !== undefined && !['pending', 'paid', 'failed', 'refunded'].includes(body.payment_status)) {
+        return err('Invalid payment status');
+      }
+      const nextDate = body.booking_date !== undefined ? String(body.booking_date) : current.booking_date;
+      const nextTime = body.booking_time !== undefined ? String(body.booking_time) : current.booking_time;
+      if (body.booking_date !== undefined && (!/^\d{4}-\d{2}-\d{2}$/.test(nextDate) || nextDate < malaysiaDateKey())) {
+        return err('Booking date must be today or later');
+      }
+      if (body.booking_time !== undefined) {
+        const allowedSlots = (await getSetting(env.DB, 'slots') || '9am,11am,2pm,4pm').split(',').map(s => s.trim()).filter(Boolean);
+        if (!allowedSlots.includes(nextTime)) return err('Invalid booking time');
+      }
+      if (body.booking_date !== undefined || body.booking_time !== undefined || body.status === 'confirmed') {
+        const conflict = await env.DB.prepare('SELECT booking_id FROM slots WHERE date = ? AND time_slot = ? AND is_booked = 1 AND booking_id <> ?')
+          .bind(nextDate, nextTime, bookingId).first();
+        if (conflict) return err('This time slot is already booked', 409);
       }
 
       const sets: string[] = ['updated_at = ?'];
@@ -157,7 +187,7 @@ export async function handleBookings(req: Request, env: Env, path: string): Prom
         sets.push('status = ?'); params.push(body.status);
         // Trigger: on confirmed, create task if none
         if (body.status === 'confirmed') {
-          const existingTask = await env.DB.prepare('SELECT id FROM tasks WHERE booking_id = ?').bind(bookingId).first();
+          const existingTask = await env.DB.prepare('SELECT id, assigned_to, status FROM tasks WHERE booking_id = ?').bind(bookingId).first<any>();
           if (!existingTask) {
             const taskId = uuid();
             await env.DB.prepare('INSERT INTO tasks (id, booking_id, status) VALUES (?, ?, ?)')
@@ -168,6 +198,9 @@ export async function handleBookings(req: Request, env: Env, path: string): Prom
             if (autoEnabled === 'true') {
               await autoAssignTask(env.DB, taskId);
             }
+          } else if (existingTask.status === 'cancelled') {
+            await env.DB.prepare('UPDATE tasks SET status = ?, completed_at = NULL, updated_at = ? WHERE id = ?')
+              .bind(existingTask.assigned_to ? 'assigned' : 'unassigned', now, existingTask.id).run();
           }
         }
       }
@@ -184,22 +217,26 @@ export async function handleBookings(req: Request, env: Env, path: string): Prom
       await env.DB.prepare(`UPDATE bookings SET ${sets.join(', ')} WHERE id = ?`).bind(...params).run();
 
       if (body.booking_date !== undefined || body.booking_time !== undefined) {
-        const current = await env.DB.prepare('SELECT booking_date, booking_time FROM bookings WHERE id = ?')
-          .bind(bookingId).first<{booking_date: string; booking_time: string}>();
-        if (current) {
-          await env.DB.prepare('UPDATE slots SET date = ?, time_slot = ? WHERE booking_id = ?')
-            .bind(current.booking_date, current.booking_time, bookingId).run();
+        const slot = await env.DB.prepare('SELECT id FROM slots WHERE booking_id = ?').bind(bookingId).first<{id: string}>();
+        if (slot) {
+          await env.DB.prepare('UPDATE slots SET date = ?, time_slot = ? WHERE booking_id = ?').bind(nextDate, nextTime, bookingId).run();
+        } else {
+          await env.DB.prepare('INSERT INTO slots (id, date, time_slot, is_booked, booking_id) VALUES (?,?,?,?,?)')
+            .bind(uuid(), nextDate, nextTime, body.status === 'cancelled' || current.status === 'cancelled' ? 0 : 1, bookingId).run();
         }
       }
       if (body.status === 'cancelled') {
         await env.DB.prepare('UPDATE slots SET is_booked = 0 WHERE booking_id = ?').bind(bookingId).run();
+        await env.DB.prepare("UPDATE tasks SET status = 'cancelled', updated_at = ? WHERE booking_id = ? AND status <> 'completed'")
+          .bind(now, bookingId).run();
       } else if (body.status === 'confirmed') {
         await env.DB.prepare('UPDATE slots SET is_booked = 1 WHERE booking_id = ?').bind(bookingId).run();
       }
       if (body.status === 'completed') {
-        const bk = await env.DB.prepare('SELECT customer_id FROM bookings WHERE id = ?').bind(bookingId).first<{customer_id: string | null}>();
-        if (bk?.customer_id) await refreshCustomerStats(env.DB, bk.customer_id);
+        await env.DB.prepare("UPDATE tasks SET status = 'completed', completed_at = COALESCE(completed_at, ?), updated_at = ? WHERE booking_id = ?")
+          .bind(now, now, bookingId).run();
       }
+      if (current.customer_id && (body.status !== undefined || body.payment_status !== undefined)) await refreshCustomerStats(env.DB, current.customer_id);
 
       const updated = await env.DB.prepare('SELECT * FROM bookings WHERE id = ?').bind(bookingId).first();
       return ok(updated);
@@ -376,6 +413,10 @@ function urlForReq(req: Request): string {
   return `${url.protocol}//${url.host}`;
 }
 
+function malaysiaDateKey(): string {
+  return new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().split('T')[0];
+}
+
 async function refreshCustomerStats(db: D1Database, customerId: string): Promise<void> {
   const stats = await db.prepare(`
     SELECT
@@ -397,14 +438,29 @@ async function refreshCustomerStats(db: D1Database, customerId: string): Promise
   }
 }
 
-async function autoAssignTask(db: D1Database, taskId: string): Promise<void> {
+async function autoAssignTask(db: D1Database, taskId: string): Promise<boolean> {
   const rule = await getSetting(db, 'auto_assign_rule') || 'round_robin';
   const task = await db.prepare('SELECT * FROM tasks WHERE id = ? AND assigned_to IS NULL').bind(taskId).first();
-  if (!task) return;
+  if (!task) return false;
 
   let staff: { id: string } | null = null;
 
-  if (rule === 'least_loaded') {
+  if (rule === 'area_based') {
+    const job = await db.prepare('SELECT b.customer_address FROM tasks t JOIN bookings b ON b.id = t.booking_id WHERE t.id = ?')
+      .bind(taskId).first<{customer_address: string}>();
+    if (job?.customer_address) {
+      const rows = await db.prepare(`
+        SELECT p.id FROM profiles p
+        WHERE p.role = 'staff' AND p.is_active = 1 AND p.service_area <> ''
+          AND lower(?) LIKE '%' || lower(p.service_area) || '%'
+        ORDER BY (SELECT COUNT(*) FROM tasks t WHERE t.assigned_to = p.id AND t.status IN ('assigned','in_progress','awaiting_review')) ASC
+        LIMIT 1
+      `).bind(job.customer_address).all();
+      staff = rows.results[0] as any;
+    }
+  }
+
+  if (!staff && rule === 'least_loaded') {
     const rows = await db.prepare(`
       SELECT p.id FROM profiles p
       WHERE p.role = 'staff' AND p.is_active = 1
@@ -412,7 +468,7 @@ async function autoAssignTask(db: D1Database, taskId: string): Promise<void> {
       LIMIT 1
     `).all();
     staff = rows.results[0] as any;
-  } else {
+  } else if (!staff) {
     // round_robin: staff assigned least recently (or never)
     const rows = await db.prepare(`
       SELECT p.id FROM profiles p
@@ -426,7 +482,9 @@ async function autoAssignTask(db: D1Database, taskId: string): Promise<void> {
   if (staff) {
     await db.prepare('UPDATE tasks SET assigned_to = ?, status = ?, updated_at = ? WHERE id = ?')
       .bind(staff.id, 'assigned', nowISO(), taskId).run();
+    return true;
   }
+  return false;
 }
 
 export async function handleDistributeUnassigned(req: Request, env: Env): Promise<Response> {
@@ -437,8 +495,7 @@ export async function handleDistributeUnassigned(req: Request, env: Env): Promis
     const tasks = await env.DB.prepare('SELECT id FROM tasks WHERE assigned_to IS NULL AND status = ?').bind('unassigned').all();
     let count = 0;
     for (const t of tasks.results) {
-      await autoAssignTask(env.DB, (t as any).id);
-      count++;
+      if (await autoAssignTask(env.DB, (t as any).id)) count++;
     }
     return ok({ assigned: count });
   } catch (e: any) {

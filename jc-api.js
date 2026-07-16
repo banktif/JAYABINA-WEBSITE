@@ -28,7 +28,7 @@
         if (!self._token) return null;
         try {
           var r = await self._fetch('GET', '/api/auth/me');
-          var d = await r.json();
+          var d = await parseResponse(r);
           return d.status === 'ok' ? d.data : null;
         } catch(e) { return null; }
       },
@@ -38,7 +38,7 @@
         if (creds.phone) body.phone = creds.phone;
         body.password = creds.password;
         var r = await self._fetch('POST', '/api/auth/login', body);
-        var d = await r.json();
+        var d = await parseResponse(r);
         if (d.status === 'ok' && d.data.token) {
           self._token = d.data.token;
           localStorage.setItem('jc_token', d.data.token);
@@ -63,8 +63,11 @@
     self.rpc = async function(fn, params) {
       if (fn === 'distribute_unassigned') {
         var r = await self._fetch('POST', '/api/tasks/distribute', {});
-        var d = await r.json();
-        return d && d.status === 'ok' ? d.data : d;
+        var d = await parseResponse(r);
+        if (d && d.status === 'ok') {
+          return { data: Number(d.data && d.data.assigned || 0), error: null };
+        }
+        return { data: null, error: normalizeError(d && d.error || d) };
       }
       throw new Error('Unknown RPC: ' + fn);
     };
@@ -78,6 +81,19 @@
     var r = await fetch(this._url + path, opts);
     return r;
   };
+
+  async function parseResponse(response) {
+    var text = await response.text();
+    if (!text) return response.ok ? { status: 'ok', data: null } : { error: 'Empty server response' };
+    try { return JSON.parse(text); }
+    catch(e) { return { error: 'Invalid server response (HTTP ' + response.status + ')' }; }
+  }
+
+  function normalizeError(value) {
+    if (value && value.message) return value;
+    if (typeof value === 'string') return { message: value };
+    return { message: value && value.error ? String(value.error) : 'Request failed' };
+  }
 
   // ---- QueryBuilder ----
   function QueryBuilder(client, table) {
@@ -207,13 +223,13 @@
         if (!token) {
           // Anon: use public endpoint (success.html style)
           var r = await c._fetch('GET', '/api/bookings/public?id=' + this._id);
-          var d = await r.json();
+          var d = await parseResponse(r);
           return this._wrap(d, t);
         }
       }
       if (t === 'customers' && this._id && this._single) {
         var r = await c._fetch('GET', '/api/customers/' + encodeURIComponent(this._id));
-        var d = await r.json();
+        var d = await parseResponse(r);
         return this._wrap(d, t);
       }
 
@@ -222,6 +238,7 @@
       for (var k in this._filters) {
         if (k === 'or') continue;
         if (t === 'bookings' && k === 'id' && String(this._filters[k]).indexOf(',') >= 0) { params.push('ids=' + encodeURIComponent(this._filters[k])); }
+        else if (t === 'bookings' && k === 'id') { params.push('ids=' + encodeURIComponent(this._filters[k])); }
         else if (t === 'bookings' && k === 'customer_phone') { params.push('customer_phone=' + encodeURIComponent(this._filters[k])); }
         else if (t === 'bookings' && k === 'customer_id') { params.push('customer_id=' + encodeURIComponent(this._filters[k])); }
         else if (t === 'bookings' && k === 'booking_date') { params.push('date=' + encodeURIComponent(this._filters[k])); }
@@ -249,7 +266,7 @@
 
       var qs = params.length ? '?' + params.join('&') : '';
       var r = await c._fetch('GET', apiPath + qs);
-      var d = await r.json();
+      var d = await parseResponse(r);
       return this._wrap(d, t);
     }
 
@@ -257,18 +274,18 @@
       if (this._action === 'update' && this._id) {
         // PATCH /api/booksings/:id
         var r = await c._fetch('PATCH', apiPath + '/' + this._id, this._data);
-        var d = await r.json();
+        var d = await parseResponse(r);
         return this._wrap(d, t);
       }
       if (this._action === 'insert' && t === 'slots') {
         // Slots are created through bookings; if direct insert needed:
         var r = await c._fetch('POST', '/api/bookings', this._data);
-        var d = await r.json();
+        var d = await parseResponse(r);
         return this._wrap(d, t);
       }
       // Standard POST
       var r = await c._fetch('POST', apiPath, this._data);
-      var d = await r.json();
+      var d = await parseResponse(r);
       return this._wrap(d, t);
     }
 
@@ -276,17 +293,17 @@
       // PUT for settings, POST for profiles/bulk
       if (t === 'app_settings') {
         var r = await c._fetch('PUT', apiPath, { settings: Array.isArray(this._data) ? this._data : Object.entries(this._data).map(function(e) { return { key: e[0], value: e[1] }; }) });
-        var d = await r.json();
+        var d = await parseResponse(r);
         return this._wrap(d, t);
       }
       if (t === 'private_settings') {
         var r = await c._fetch('PUT', apiPath, { settings: this._data });
-        var d = await r.json();
+        var d = await parseResponse(r);
         return this._wrap(d, t);
       }
       // profils
       var r = await c._fetch('POST', apiPath, this._data);
-      var d = await r.json();
+      var d = await parseResponse(r);
       return this._wrap(d, t);
     }
 
@@ -295,13 +312,13 @@
         var ids = String(this._filters.id).split(',').filter(Boolean);
         for (var i = 0; i < ids.length; i++) {
           var rr = await c._fetch('DELETE', apiPath + '/' + encodeURIComponent(ids[i]));
-          var dd = await rr.json();
+          var dd = await parseResponse(rr);
           if (!rr.ok) return this._wrap(dd, t);
         }
         return { data: ids, error: null };
       }
       var r = await c._fetch('DELETE', apiPath + '/' + this._id);
-      var d = await r.json();
+      var d = await parseResponse(r);
       return this._wrap(d, t);
     }
 
@@ -317,8 +334,8 @@
           error: null
         };
       }
-      if (this._single && d.data && !Array.isArray(d.data)) {
-        return { data: d.data, error: null };
+      if (this._single && d.data) {
+        return { data: Array.isArray(d.data) ? (d.data[0] || null) : d.data, error: null };
       }
       return {
         data: Array.isArray(d.data) ? d.data : (d.data ? [d.data] : []),
@@ -326,9 +343,6 @@
         error: null
       };
     }
-    if (this._single && d.data && !Array.isArray(d.data)) {
-      return { data: d.data, error: null };
-    }
-    return { data: null, error: d.error || d };
+    return { data: null, error: normalizeError(d && d.error || d) };
   };
 })();

@@ -11,8 +11,13 @@ export async function handleBackup(req: Request, env: Env, path: string): Promis
       await checkBackupAuth(req, env);
       const body = await req.json().catch(() => ({})) as any;
       const force = body.force === true;
-      if (!env.BACKUP_R2) return err('R2 backup binding is not configured', 503);
-      if (!force && !(await isBackupDue(env.DB))) {
+      const drive = await loadDriveConfig(env.DB);
+      const r2Configured = !!env.BACKUP_R2;
+      const driveConfigured = !!(drive.email && drive.privateKey);
+      if (!r2Configured && !driveConfigured) return err('No backup destination is configured', 503);
+      const doR2 = r2Configured && (force || await isBackupDue(env.DB, 'r2'));
+      const doDrive = driveConfigured && (force || await isBackupDue(env.DB, 'drive'));
+      if (!doR2 && !doDrive) {
         return ok({ skipped: true, reason: 'not due' });
       }
 
@@ -40,29 +45,50 @@ export async function handleBackup(req: Request, env: Env, path: string): Promis
       const compressed = await gzip(json);
       const filename = `db-backup-${now.replace(/[:.]/g, '-')}.json.gz`;
 
-      // Upload through the native Cloudflare R2 binding.
-      const r2Key = `db/${filename}`;
-      try {
-        await env.BACKUP_R2.put(r2Key, compressed, {
-          httpMetadata: { contentType: 'application/gzip' }
-        });
-        await recordBackupLog(env.DB, 'r2', filename, 'ok', compressed.byteLength);
-        await updateBackupStatus(env.DB, 'r2', now, `ok (${Math.round(compressed.byteLength / 1024)} KB)`);
-      } catch (e: any) {
-        await recordBackupLog(env.DB, 'r2', filename, 'error', 0, e.message || 'Upload failed');
-        await updateBackupStatus(env.DB, 'r2', now, `error: ${e.message || 'Upload failed'}`);
-        return err('R2 upload failed', 502);
+      const result: Record<string, unknown> = { filename, tables: tables.length, timestamp: now };
+      const failures: string[] = [];
+      let succeeded = 0;
+
+      if (doR2 && env.BACKUP_R2) {
+        const r2Key = `db/${filename}`;
+        try {
+          await env.BACKUP_R2.put(r2Key, compressed, { httpMetadata: { contentType: 'application/gzip' } });
+          await recordBackupLog(env.DB, 'r2', filename, 'ok', compressed.byteLength);
+          await updateBackupStatus(env.DB, 'r2', now, `ok (${Math.round(compressed.byteLength / 1024)} KB)`);
+          await pruneBackups(env, 'r2', 48);
+          result.r2 = 'ok'; succeeded++;
+        } catch (e: any) {
+          const message = e.message || 'Upload failed';
+          await recordBackupLog(env.DB, 'r2', filename, 'error', 0, message);
+          await updateBackupStatus(env.DB, 'r2', now, `error: ${message}`);
+          result.r2 = `error: ${message}`; failures.push('R2');
+        }
       }
 
-      // Prune old backups in R2 (keep 48)
-      await pruneBackups(env, 'r2', 48);
+      if (doDrive) {
+        try {
+          const token = await googleTokenFromSA(drive.email, drive.privateKey);
+          await driveUpload(token, drive.folderId, filename, compressed);
+          const files = (await driveList(token, drive.folderId)).filter(f => f.name.startsWith('db-backup-'));
+          for (const file of files.slice(48)) await driveDelete(token, file.id);
+          await recordBackupLog(env.DB, 'drive', filename, 'ok', compressed.byteLength);
+          await updateBackupStatus(env.DB, 'drive', now, `ok (${Math.round(compressed.byteLength / 1024)} KB)`);
+          result.drive = 'ok'; succeeded++;
+        } catch (e: any) {
+          const message = e.message || 'Upload failed';
+          await recordBackupLog(env.DB, 'drive', filename, 'error', 0, message);
+          await updateBackupStatus(env.DB, 'drive', now, `error: ${message}`);
+          result.drive = `error: ${message}`; failures.push('Google Drive');
+        }
+      }
 
       await env.DB.prepare(`INSERT INTO app_settings (key, value, updated_at) VALUES ('backup_last_db_at', ?, ?) ON CONFLICT(key) DO UPDATE SET value = ?, updated_at = ?`)
         .bind(now, now, now, now).run();
       await env.DB.prepare(`INSERT INTO app_settings (key, value, updated_at) VALUES ('backup_last_db_status', ?, ?) ON CONFLICT(key) DO UPDATE SET value = ?, updated_at = ?`)
         .bind('ok', now, 'ok', now).run();
 
-      return ok({ filename, tables: tables.length, timestamp: now });
+      if (!succeeded) return err(`${failures.join(' and ')} backup failed`, 502);
+      return ok(result);
     } catch (e: any) {
       return err(e.msg || 'Backup failed', e.status || 500);
     }
@@ -96,7 +122,8 @@ export async function handleBackup(req: Request, env: Env, path: string): Promis
   // GET /api/backup/status
   if (path === '/api/backup/status' && req.method === 'GET') {
     try {
-      await requireAuth(req, env);
+      const payload = await requireAuth(req, env);
+      requireAdmin(payload);
       const statusKeys = ['backup_last_db_at', 'backup_last_db_status', 'backup_last_drive_at', 'backup_last_drive_status',
         'backup_last_r2_at', 'backup_last_r2_status', 'backup_last_code_at', 'backup_last_code_status',
         'backup_freq_drive', 'backup_freq_r2'];
@@ -106,7 +133,8 @@ export async function handleBackup(req: Request, env: Env, path: string): Promis
       for (const r of rows.results as any[]) status[r.key] = r.value;
 
       const r2Configured = !!env.BACKUP_R2;
-      const driveConfigured = false;
+      const drive = await loadDriveConfig(env.DB);
+      const driveConfigured = !!(drive.email && drive.privateKey);
 
       return ok({ ...status, r2_configured: r2Configured, drive_configured: driveConfigured });
     } catch (e: any) {
@@ -125,6 +153,19 @@ export async function handleBackup(req: Request, env: Env, path: string): Promis
       return ok({ r2: 'reachable' });
     } catch (e: any) {
       return err(e.msg || e.message || 'R2 test failed', e.status || 500);
+    }
+  }
+
+  if (path === '/api/backup/test_drive' && req.method === 'POST') {
+    try {
+      await checkBackupAuth(req, env);
+      const drive = await loadDriveConfig(env.DB);
+      if (!drive.email || !drive.privateKey) return err('Google Drive service account is not configured', 503);
+      const token = await googleTokenFromSA(drive.email, drive.privateKey);
+      await driveList(token, drive.folderId);
+      return ok({ drive: 'reachable' });
+    } catch (e: any) {
+      return err(e.msg || e.message || 'Google Drive test failed', e.status || 500);
     }
   }
 
@@ -228,6 +269,85 @@ async function updateBackupStatus(db: D1Database, dest: string, ts: string, stat
   }
 }
 
+type DriveConfig = { email: string; privateKey: string; folderId: string };
+
+async function loadDriveConfig(db: D1Database): Promise<DriveConfig> {
+  return {
+    email: await getPrivateSetting(db, 'gdrive_client_email'),
+    privateKey: await getPrivateSetting(db, 'gdrive_private_key'),
+    folderId: await getPrivateSetting(db, 'gdrive_folder_id')
+  };
+}
+
+function b64url(bytes: Uint8Array): string {
+  let binary = '';
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function pemToDer(pem: string): ArrayBuffer {
+  const clean = pem.replace(/\\n/g, '\n').replace(/-----[^-]+-----/g, '').replace(/\s+/g, '');
+  const raw = atob(clean);
+  const bytes = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+  return bytes.buffer;
+}
+
+async function googleTokenFromSA(email: string, privateKey: string): Promise<string> {
+  const now = Math.floor(Date.now() / 1000);
+  const enc = (value: unknown) => b64url(new TextEncoder().encode(JSON.stringify(value)));
+  const unsigned = `${enc({ alg: 'RS256', typ: 'JWT' })}.${enc({
+    iss: email,
+    scope: 'https://www.googleapis.com/auth/drive.file',
+    aud: 'https://oauth2.googleapis.com/token',
+    iat: now,
+    exp: now + 3600
+  })}`;
+  const key = await crypto.subtle.importKey('pkcs8', pemToDer(privateKey), { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['sign']);
+  const signature = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, new TextEncoder().encode(unsigned));
+  const assertion = `${unsigned}.${b64url(new Uint8Array(signature))}`;
+  const response = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${encodeURIComponent(assertion)}`
+  });
+  const data = await response.json<any>();
+  if (!response.ok || !data.access_token) throw new Error(data.error_description || data.error || 'Google authentication failed');
+  return data.access_token;
+}
+
+async function driveUpload(token: string, folderId: string, filename: string, data: Uint8Array): Promise<void> {
+  const boundary = `jb-${crypto.randomUUID()}`;
+  const metadata: Record<string, unknown> = { name: filename };
+  if (folderId) metadata.parents = [folderId];
+  const before = new TextEncoder().encode(`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n--${boundary}\r\nContent-Type: application/gzip\r\n\r\n`);
+  const after = new TextEncoder().encode(`\r\n--${boundary}--`);
+  const body = new Uint8Array(before.length + data.length + after.length);
+  body.set(before); body.set(data, before.length); body.set(after, before.length + data.length);
+  const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': `multipart/related; boundary=${boundary}` },
+    body
+  });
+  if (!response.ok) throw new Error(`Drive upload failed (HTTP ${response.status})`);
+}
+
+async function driveList(token: string, folderId: string): Promise<Array<{id: string; name: string}>> {
+  const query = folderId ? `'${folderId.replace(/'/g, "\\'")}' in parents and trashed=false` : 'trashed=false';
+  const params = new URLSearchParams({ q: query, orderBy: 'createdTime desc', fields: 'files(id,name)', pageSize: '500', supportsAllDrives: 'true', includeItemsFromAllDrives: 'true' });
+  const response = await fetch(`https://www.googleapis.com/drive/v3/files?${params}`, { headers: { Authorization: `Bearer ${token}` } });
+  const data = await response.json<any>();
+  if (!response.ok) throw new Error(data.error?.message || `Drive list failed (HTTP ${response.status})`);
+  return data.files || [];
+}
+
+async function driveDelete(token: string, id: string): Promise<void> {
+  const response = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?supportsAllDrives=true`, {
+    method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!response.ok && response.status !== 404) throw new Error(`Drive cleanup failed (HTTP ${response.status})`);
+}
+
 async function pruneBackups(env: Env, prefix: string, keep: number): Promise<void> {
   if (!env.BACKUP_R2) return;
   const objects = await env.BACKUP_R2.list({ prefix: `db/`, limit: 200 });
@@ -239,9 +359,9 @@ async function pruneBackups(env: Env, prefix: string, keep: number): Promise<voi
   }
 }
 
-async function isBackupDue(db: D1Database): Promise<boolean> {
-  const frequency = await getSetting(db, 'backup_freq_r2') || 'daily';
-  const last = await getSetting(db, 'backup_last_r2_at');
+async function isBackupDue(db: D1Database, destination: 'r2' | 'drive'): Promise<boolean> {
+  const frequency = await getSetting(db, `backup_freq_${destination}`) || 'daily';
+  const last = await getSetting(db, `backup_last_${destination}_at`);
   if (!last) return true;
   const hours: Record<string, number> = { hourly: 1, daily: 24, weekly: 168, monthly: 720 };
   const dueMs = (hours[frequency] || 24) * 3600 * 1000 - 5 * 60 * 1000;

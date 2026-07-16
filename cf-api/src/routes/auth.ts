@@ -1,5 +1,5 @@
 import type { Env } from '../types';
-import { signJWT, verifyPassword, hashPassword, json, err, ok, uuid, nowISO } from '../utils/helpers';
+import { signJWT, verifyPassword, hashPassword, err, ok } from '../utils/helpers';
 import { requireAuth, requireAdmin } from '../utils/middleware';
 
 export async function handleAuth(req: Request, env: Env, path: string): Promise<Response> {
@@ -11,8 +11,8 @@ export async function handleAuth(req: Request, env: Env, path: string): Promise<
     let user;
 
     if (email) {
-      user = await env.DB.prepare('SELECT * FROM profiles WHERE email = ? AND is_active = 1')
-        .bind(email).first();
+      user = await env.DB.prepare('SELECT * FROM profiles WHERE lower(email) = lower(?) AND is_active = 1')
+        .bind(String(email).trim()).first();
     } else if (phone) {
       const digits = phone.replace(/\D/g, '');
       user = await env.DB.prepare('SELECT * FROM profiles WHERE phone = ? AND is_active = 1')
@@ -64,7 +64,7 @@ export async function handleAuth(req: Request, env: Env, path: string): Promise<
     try {
       const payload = await requireAuth(req, env);
       const { current_password, new_password } = await req.json() as any;
-      if (!new_password || (new_password as string).length < 6) return err('Password must be at least 6 characters');
+      if (!new_password || (new_password as string).length < 8) return err('Password must be at least 8 characters');
 
       const user = await env.DB.prepare('SELECT password FROM profiles WHERE id = ?').bind(payload.sub).first<{password: string}>();
       if (!user || !(await verifyPassword(current_password || '', user.password))) {
@@ -85,7 +85,7 @@ export async function handleAuth(req: Request, env: Env, path: string): Promise<
       const payload = await requireAuth(req, env);
       requireAdmin(payload);
       const { user_id, new_password } = await req.json() as any;
-      if (!new_password || (new_password as string).length < 6) return err('Password must be at least 6 characters');
+      if (!new_password || (new_password as string).length < 8) return err('Password must be at least 8 characters');
 
       const hashed = await hashPassword(new_password);
       await env.DB.prepare('UPDATE profiles SET password = ? WHERE id = ?').bind(hashed, user_id).run();

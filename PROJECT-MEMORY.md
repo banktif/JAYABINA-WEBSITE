@@ -11,6 +11,15 @@
 - One migrated staff account needs an Admin > Staff password reset before worker login.
 - Worker source lives in `cf-api/`; set secrets with `wrangler secret put`, never blank vars in `wrangler.jsonc`.
 
+### Strict production debug pass (2026-07-16)
+
+- Admin/API contracts were hardened: API errors are surfaced, zero values render correctly, revenue uses actual booking amounts, and responsive navigation refreshes the active view.
+- Booking/task/slot state transitions now stay synchronized; invalid transitions and conflicting slots are rejected server-side. Legacy cancelled-slot integrity was repaired with `cf-api/migrations/0002_integrity_repair.sql`.
+- Rapid navigation is protected by a view epoch guard so an older async response cannot overwrite the active module.
+- Staff passwords require at least 8 characters, staff assignment/status/photo rules are enforced server-side, and the balance-payment endpoint requires admin authentication.
+- Database backup supports native R2 plus optional Google Drive service-account upload. Code backup uses the Worker `GH_PAT` secret and GitHub Actions.
+- Production regression covers all admin modules, desktop/mobile navigation, modal state, R2 CRUD, auth/staff lifecycle, WhatsApp fallback, booking-task synchronization, and D1 integrity. Test rows were removed after verification.
+
 > Older Supabase sections below are historical context and do not override this section.
 
 > Full rules & schema: see `AGENTS.md`. Build progress: see `BUILD-PLAN.md`.
@@ -85,7 +94,7 @@ Root `admin.html`/`staff.html`/etc. = redirect stubs. `/login/` removed (login i
 `editor.html` supports **multiple sales pages** (add any GitHub repo via token). A safety guard (`protectReason()`) blocks editing app/system files on BOTH load & save: any `admin/worker/customer/dashboard/login/staff/app/api` path, app-named `.html`, `sw.js`/`theme.css`/`manifest.json`, non-HTML files, and (in `jayaclean-salespage` repo) anything except `index.html`. Save preserves original `<script>` tags. So you can edit many sales pages but it can NEVER overwrite the JAYACLEAN app.
 
 ## Pending / notes
-1. Enter Google Drive + Cloudflare R2 creds in Backup page to activate DB backups.
+1. Google Drive is optional and still needs its service-account credentials in Backup. Cloudflare R2 is already active through the native Worker binding.
 2. Replace 10 sales-page image placeholders + WhatsApp number already set (60139373275).
 3. Rotate shared tokens (GitHub/GitLab/Cloudflare/Bayarcash).
 4. Concurrent editing caused repeated overwrites — run ONE session at a time; editor now locked so it can't wipe admin.

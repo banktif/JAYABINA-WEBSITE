@@ -59,13 +59,36 @@ export async function handleTasks(req: Request, env: Env, path: string): Promise
       let nextStatus: string | null = null;
 
       if (body.assigned_to !== undefined && payload.role === 'admin') {
+        if (body.assigned_to) {
+          const assignee = await env.DB.prepare("SELECT id FROM profiles WHERE id = ? AND role = 'staff' AND is_active = 1")
+            .bind(body.assigned_to).first();
+          if (!assignee) return err('Selected staff account is not active', 400);
+        } else if (!['unassigned', 'assigned', 'cancelled'].includes(task.status)) {
+          return err('A job already in progress cannot be unassigned', 409);
+        }
         sets.push('assigned_to = ?'); params.push(body.assigned_to);
-        nextStatus = body.assigned_to ? 'assigned' : 'unassigned';
+        if (['unassigned', 'assigned', 'cancelled'].includes(task.status)) {
+          nextStatus = body.assigned_to ? 'assigned' : 'unassigned';
+        }
       }
 
       if (body.status !== undefined) {
+        const allowedStatuses = ['unassigned', 'assigned', 'in_progress', 'awaiting_review', 'completed', 'cancelled'];
+        if (!allowedStatuses.includes(body.status)) return err('Invalid task status');
         if (payload.role === 'staff' && !['in_progress', 'awaiting_review'].includes(body.status)) {
           return err('Staff can only start a job or submit it for review', 403);
+        }
+        if (payload.role === 'staff' && body.status === 'in_progress') {
+          if (task.status !== 'assigned') return err('Only an assigned job can be started', 409);
+          const before = await env.DB.prepare("SELECT COUNT(*) AS cnt FROM task_photos WHERE task_id = ? AND type = 'before'")
+            .bind(taskId).first<{cnt: number}>();
+          if (!before?.cnt) return err('Upload at least one before photo before starting the job', 409);
+        }
+        if (payload.role === 'staff' && body.status === 'awaiting_review') {
+          if (task.status !== 'in_progress') return err('Start the job before submitting it for review', 409);
+          const after = await env.DB.prepare("SELECT COUNT(*) AS cnt FROM task_photos WHERE task_id = ? AND type = 'after'")
+            .bind(taskId).first<{cnt: number}>();
+          if (!after?.cnt) return err('Upload at least one after photo before finishing the job', 409);
         }
         nextStatus = body.status;
         switch (body.status) {
@@ -94,6 +117,12 @@ export async function handleTasks(req: Request, env: Env, path: string): Promise
             const completedBooking = await env.DB.prepare('SELECT customer_id FROM bookings WHERE id = ?')
               .bind(task.booking_id).first<{customer_id: string | null}>();
             if (completedBooking?.customer_id) await refreshCustomerStats(env.DB, completedBooking.customer_id);
+            break;
+          case 'cancelled':
+            if (payload.role !== 'admin') return err('Admin only', 403);
+            await env.DB.prepare("UPDATE bookings SET status = 'cancelled', updated_at = ? WHERE id = ?")
+              .bind(now, task.booking_id).run();
+            await env.DB.prepare('UPDATE slots SET is_booked = 0 WHERE booking_id = ?').bind(task.booking_id).run();
             break;
         }
       }
@@ -147,6 +176,10 @@ export async function handleTaskPhotos(req: Request, env: Env, path: string): Pr
 
       if (!task_id || !type || !photoUrl) return err('Missing task_id, type, or url');
       if (!['before', 'after'].includes(type)) return err('Type must be "before" or "after"');
+      try {
+        const parsed = new URL(String(photoUrl));
+        if (parsed.protocol !== 'https:') return err('Photo URL must use HTTPS');
+      } catch { return err('Invalid photo URL'); }
 
       // Verify staff owns this task (or admin)
       if (payload.role === 'staff') {

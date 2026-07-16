@@ -1,6 +1,6 @@
 import type { Env } from './types';
 import { json, err, ok } from './utils/helpers';
-import { handleCors } from './utils/middleware';
+import { handleCors, requireAuth, requireAdmin } from './utils/middleware';
 import { handleAuth } from './routes/auth';
 import { handleBookings, handleCreateIntent, handleBayarcashCallback, handleDistributeUnassigned } from './routes/bookings';
 import { handleTasks, handleTaskPhotos } from './routes/tasks';
@@ -84,6 +84,12 @@ export default {
 };
 
 async function handleCreateBalanceIntent(req: Request, env: Env): Promise<Response> {
+  try {
+    const payload = await requireAuth(req, env);
+    requireAdmin(payload);
+  } catch (e: any) {
+    return err(e.msg || 'Unauthorized', e.status || 401);
+  }
   const { booking_id } = await req.json() as any;
   if (!booking_id) return err('Missing booking_id');
 

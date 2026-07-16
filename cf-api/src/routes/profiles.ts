@@ -34,21 +34,22 @@ export async function handleProfiles(req: Request, env: Env, path: string): Prom
       const body = await req.json() as any;
 
       if (!body.full_name || !body.phone) return err('full_name and phone required');
+      if (!body.password || String(body.password).length < 8) return err('Password must be at least 8 characters');
 
       const phoneDigits = body.phone.replace(/\D/g, '');
       const existing = await env.DB.prepare('SELECT id FROM profiles WHERE phone = ?').bind(phoneDigits).first();
       if (existing) return err('Phone number already exists', 409);
 
       const userId = uuid();
-      const password = body.password || 'jayaclean123';
-      const hashed = await hashPassword(password);
+      const hashed = await hashPassword(String(body.password));
+      const email = String(body.email || `${phoneDigits}@staff.jayabina.local`).trim().toLowerCase();
 
       await env.DB.prepare(`INSERT INTO profiles (id, full_name, phone, role, is_active, email, address, avatar_url, service_area, password)
         VALUES (?,?,?,?,?,?,?,?,?,?)`)
-        .bind(userId, body.full_name, phoneDigits, body.role || 'staff', body.is_active !== false ? 1 : 0,
-          body.email || `${phoneDigits}@staff.jayabina.local`, body.address || '', body.avatar_url || '', body.service_area || '', hashed).run();
+        .bind(userId, String(body.full_name).trim(), phoneDigits, 'staff', body.is_active !== false ? 1 : 0,
+          email, body.address || '', body.avatar_url || '', body.service_area || '', hashed).run();
 
-      return ok({ id: userId, phone: phoneDigits, full_name: body.full_name, role: body.role || 'staff' });
+      return ok({ id: userId, phone: phoneDigits, full_name: String(body.full_name).trim(), role: 'staff' });
     } catch (e: any) {
       return err(e.msg || 'Error', e.status || 400);
     }
@@ -61,6 +62,8 @@ export async function handleProfiles(req: Request, env: Env, path: string): Prom
       const payload = await requireAuth(req, env);
       const profileId = patchMatch[1];
       const body = await req.json() as any;
+      const existing = await env.DB.prepare('SELECT id FROM profiles WHERE id = ?').bind(profileId).first();
+      if (!existing) return err('Profile not found', 404);
 
       // Staff can only update own profile (limited fields)
       if (payload.role !== 'admin' && payload.sub !== profileId) {
@@ -79,7 +82,7 @@ export async function handleProfiles(req: Request, env: Env, path: string): Prom
       }
 
       // Fields anyone can update on their own profile
-      if (body.email !== undefined) { sets.push('email = ?'); params.push(body.email); }
+      if (body.email !== undefined) { sets.push('email = ?'); params.push(String(body.email).trim().toLowerCase()); }
       if (body.address !== undefined) { sets.push('address = ?'); params.push(body.address); }
       if (body.avatar_url !== undefined) { sets.push('avatar_url = ?'); params.push(body.avatar_url); }
 
@@ -106,13 +109,16 @@ export async function handleProfiles(req: Request, env: Env, path: string): Prom
 
       const results = [];
       for (const s of staff) {
+        if (!s || !s.full_name || !s.phone || !s.password || String(s.password).length < 8) {
+          results.push({ phone: s?.phone || '', error: 'Name, phone and password (min 8 characters) required' });
+          continue;
+        }
         const phoneDigits = s.phone.replace(/\D/g, '');
         const existing = await env.DB.prepare('SELECT id FROM profiles WHERE phone = ?').bind(phoneDigits).first();
         if (existing) { results.push({ phone: s.phone, error: 'Already exists' }); continue; }
 
         const userId = uuid();
-        const password = s.password || 'jayaclean123';
-        const hashed = await hashPassword(password);
+        const hashed = await hashPassword(String(s.password));
 
         await env.DB.prepare(`INSERT INTO profiles (id, full_name, phone, role, is_active, email, password)
           VALUES (?,?,?,?,?,?,?)`)
