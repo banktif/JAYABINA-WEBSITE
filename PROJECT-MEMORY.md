@@ -103,6 +103,7 @@ Root `admin.html`/`staff.html`/etc. = redirect stubs. `/login/` removed (login i
 - Customer/sales site: Pages project `jayaclean` on `https://cuci.jayabina.com`.
 - Admin portal: Pages project `jayabina-admin`; custom domain `https://admin.jayabina.com`.
 - API: Worker `jayaclean-api` backed by D1 `jayaclean-db` and R2 `jayaclean-backups`.
+- Admin > Website provides structured Hugo settings for site identity, company/contact details, SEO, navigation and the three homepage service cards. The Worker validates the complete payload and writes `site/hugo.toml`, `site/data/business.yaml`, `site/data/services.yaml` and `site/content/_index.md` as one atomic GitHub commit; Content & code remains available for advanced editing.
 - Supabase is no longer the production database or authentication service.
 - Admin branding is **JAYABINA Operations Portal**. Internal API/resource identifiers retain `jayaclean-*` names to avoid breaking production bindings.
 - Dedicated admin output is built with `build-admin.sh` or `build-admin.ps1` and includes noindex/no-store security headers.

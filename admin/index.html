@@ -21,7 +21,7 @@
   <link rel="manifest" href="/admin-manifest.json">
   <title>JAYABINA &mdash; Operations Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/theme.css?v=20260716-english1">
+  <link rel="stylesheet" href="/theme.css?v=20260716-hugo-settings1">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     html,body{overflow-x:hidden;scrollbar-width:none;-ms-overflow-style:none}
@@ -400,7 +400,7 @@
     .d-sidebar-footer button{color:rgba(255,255,255,.72)}
     .d-sidebar-footer button:hover{background:rgba(255,255,255,.09);color:#fff}
   </style>
-  <link rel="stylesheet" href="/admin-modern.css?v=20260716-english1">
+  <link rel="stylesheet" href="/admin-modern.css?v=20260716-hugo-settings1">
 </head>
 <body class="admin-app">
 
@@ -1141,7 +1141,7 @@ async function resetStaffPassword(id){
 }
 
 // WEBSITE / HUGO CONTENT MANAGER
-var websiteState={files:[],path:'',sha:'',dirty:false,viewId:0};
+var websiteState={files:[],path:'',sha:'',dirty:false,settings:null,settingsOriginal:null,settingsCommit:'',settingsDirty:false,tab:'settings',viewId:0};
 async function websiteRequest(path,opts){
   opts=opts||{};var token=await authToken();var headers=opts.headers||{};headers.Authorization='Bearer '+token;
   if(opts.body!==undefined)headers['Content-Type']='application/json';
@@ -1149,22 +1149,112 @@ async function websiteRequest(path,opts){
 }
 async function showWebsite(){
   var viewId=beginView('website');websiteState.viewId=viewId;setChrome(false);clearNav();setNav('dsWebsite');
-  setHeader('Website','Manage and publish the JAYABINA Hugo website');location.hash='#website';
+  setHeader('Website','Configure, edit and publish the JAYABINA Hugo website');location.hash='#website';
   var l=document.getElementById('list');
   l.innerHTML='<div class="site-overview">'+
     '<div class="kpi green"><div class="kpi-ic"><i data-lucide="globe-2"></i></div><div class="kpi-v" style="font-size:1rem">www.jayabina.com</div><div class="kpi-l">Live website</div></div>'+
     '<div class="kpi blue"><div class="kpi-ic"><i data-lucide="git-branch"></i></div><div class="kpi-v" id="siteConnect" style="font-size:1rem">Checking...</div><div class="kpi-l">GitHub source</div></div>'+
+    '<div class="kpi violet"><div class="kpi-ic"><i data-lucide="sliders-horizontal"></i></div><div class="kpi-v" id="siteConfigStatus" style="font-size:1rem">Loading...</div><div class="kpi-l">Website settings</div></div>'+
     '<div class="kpi amber"><div class="kpi-ic"><i data-lucide="cloud"></i></div><div class="kpi-v" style="font-size:1rem">Cloudflare</div><div class="kpi-l">Hugo publishing</div></div>'+
     '</div><div class="site-actions"><button class="d-btn acc" onclick="window.open(\'https://www.jayabina.com\',\'_blank\',\'noopener\')"><i data-lucide="external-link"></i> Open live site</button><button class="d-btn" onclick="window.open(\'https://github.com/banktif/jayaclean-salespage/tree/master/site\',\'_blank\',\'noopener\')"><i data-lucide="git-branch"></i> View source</button><button class="d-btn don" onclick="publishWebsite()"><i data-lucide="rocket"></i> Deploy now</button><button class="d-btn" onclick="newWebsiteArticle()"><i data-lucide="file-plus-2"></i> New article</button></div>'+
-    '<div class="site-shell"><aside class="site-browser panel"><div class="site-browser-head"><div><b>Hugo files</b><span>Safe, version-controlled editing</span></div></div><div id="siteFiles"><div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div></div></aside>'+
+    '<div class="site-tabs" role="tablist" aria-label="Website management"><button id="siteTabSettings" class="active" onclick="switchWebsiteTab(\'settings\')"><i data-lucide="settings-2"></i><span><b>Settings</b><small>Guided configuration</small></span></button><button id="siteTabContent" onclick="switchWebsiteTab(\'content\')"><i data-lucide="file-code-2"></i><span><b>Content &amp; code</b><small>Markdown, YAML and templates</small></span></button></div>'+
+    '<div id="siteSettingsView"><div id="siteSettings"><div class="panel site-settings-loading"><div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div><span>Loading website configuration...</span></div></div></div>'+
+    '<div id="siteContentView" style="display:none"><div class="site-shell"><aside class="site-browser panel"><div class="site-browser-head"><div><b>Hugo files</b><span>Safe, version-controlled editing</span></div></div><div id="siteFiles"><div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div></div></aside>'+
     '<section class="site-editor panel"><div class="site-editor-empty" id="siteEmpty"><i data-lucide="file-code-2"></i><b>Select a file to edit</b><span>Content is saved to GitHub and deployed through Cloudflare Pages.</span></div><div id="siteEditorForm" style="display:none"><div class="site-editor-head"><div><div class="site-editor-title" id="siteFileLabel">Hugo file</div><code id="siteFilePath"></code></div><span class="site-mode" id="siteFileMode">MD</span></div><textarea id="siteCode" class="site-code" spellcheck="false" aria-label="Hugo file content"></textarea><div class="site-editor-foot"><span id="siteEditorMsg">No unsaved changes.</span><div><button class="d-btn" onclick="reloadWebsiteFile()"><i data-lucide="rotate-ccw"></i> Reload</button><button class="d-btn acc" id="siteSaveBtn" onclick="saveWebsiteFile()"><i data-lucide="save"></i> Save &amp; publish</button></div></div></div></section></div>'+
-    '<div class="site-note"><i data-lucide="shield-check"></i><div><b>Protected publishing flow</b><span>Every save creates a GitHub commit. Hugo builds the website and Cloudflare publishes it; previous versions remain recoverable in Git history.</span></div></div>';
+    '</div><div class="site-note"><i data-lucide="shield-check"></i><div><b>Protected publishing flow</b><span>Settings are validated and saved as one GitHub commit. Hugo builds the website and Cloudflare publishes it; previous versions remain recoverable in Git history.</span></div></div>';
   try{
     var res=await websiteRequest('/files'),body=await res.json();if(!res.ok)throw new Error(body.error||'Unable to load website manager');
     if(!viewActive(viewId,'website'))return;websiteState.files=body.data.files||[];
     document.getElementById('siteConnect').textContent=body.data.connected?'Connected':'Not connected';
-    renderWebsiteFiles();if(websiteState.files.length)loadWebsiteFile(websiteState.files[0].path,true);
+    renderWebsiteFiles();
   }catch(e){if(viewActive(viewId,'website')){document.getElementById('siteConnect').textContent='Unavailable';document.getElementById('siteFiles').innerHTML='<div class="site-file-error">'+esc(errorMessage(e))+'</div>';}}
+  await loadWebsiteSettings();
+}
+function switchWebsiteTab(tab){
+  websiteState.tab=tab==='content'?'content':'settings';
+  var settingsView=document.getElementById('siteSettingsView'),contentView=document.getElementById('siteContentView');
+  var settingsTab=document.getElementById('siteTabSettings'),contentTab=document.getElementById('siteTabContent');
+  if(!settingsView||!contentView)return;
+  settingsView.style.display=websiteState.tab==='settings'?'':'none';contentView.style.display=websiteState.tab==='content'?'':'none';
+  settingsTab.classList.toggle('active',websiteState.tab==='settings');contentTab.classList.toggle('active',websiteState.tab==='content');
+  if(websiteState.tab==='content'&&!websiteState.path&&websiteState.files.length)loadWebsiteFile(websiteState.files[0].path,true);
+}
+async function loadWebsiteSettings(){
+  var el=document.getElementById('siteSettings'),status=document.getElementById('siteConfigStatus');if(!el)return;
+  el.innerHTML='<div class="panel site-settings-loading"><div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div><span>Loading website configuration...</span></div>';
+  try{
+    var res=await websiteRequest('/settings'),body=await res.json();if(!res.ok)throw new Error(body.error||'Unable to load website settings');
+    if(!viewActive(websiteState.viewId,'website'))return;websiteState.settings=body.data.settings;websiteState.settingsOriginal=JSON.parse(JSON.stringify(body.data.settings));websiteState.settingsCommit=body.data.commit_sha;websiteState.settingsDirty=false;
+    if(status)status.textContent='Complete';renderWebsiteSettings();
+  }catch(e){if(status)status.textContent='Unavailable';el.innerHTML='<div class="panel site-settings-error"><i data-lucide="circle-alert"></i><div><b>Unable to load settings</b><span>'+esc(errorMessage(e))+'</span></div><button class="d-btn" onclick="loadWebsiteSettings()"><i data-lucide="refresh-cw"></i> Try again</button></div>';}
+}
+function siteSettingField(root,index,field,label,value,opts){
+  opts=opts||{};var attr=' data-root="'+esc(root)+'" data-field="'+esc(field)+'"'+(index===null||index===undefined?'':' data-index="'+index+'"');
+  var max=opts.maxlength?' maxlength="'+opts.maxlength+'"':'',required=opts.required===false?'':' required',id='ssf-'+root+'-'+field+'-'+(index===null||index===undefined?'x':index),control='';
+  if(opts.type==='textarea')control='<textarea id="'+id+'" class="site-setting-input" rows="'+(opts.rows||3)+'"'+attr+max+required+' oninput="websiteSettingChanged(this)">'+esc(value||'')+'</textarea>';
+  else if(opts.type==='select'){control='<select id="'+id+'" class="site-setting-input"'+attr+' onchange="websiteSettingChanged(this)">';(opts.options||[]).forEach(function(option){control+='<option value="'+esc(option[0])+'"'+(String(value)===String(option[0])?' selected':'')+'>'+esc(option[1])+'</option>'});control+='</select>';}
+  else control='<input id="'+id+'" class="site-setting-input" type="'+(opts.type||'text')+'" value="'+esc(value===undefined?'':value)+'"'+attr+max+required+' oninput="websiteSettingChanged(this)">';
+  return '<div class="site-setting-field'+(opts.wide?' wide':'')+'"><label for="'+id+'">'+esc(label)+(opts.maxlength?'<span class="site-field-count">'+String(value||'').length+'/'+opts.maxlength+'</span>':'')+'</label>'+control+(opts.hint?'<small>'+esc(opts.hint)+'</small>':'')+'</div>';
+}
+function renderWebsiteSettings(){
+  var el=document.getElementById('siteSettings'),s=websiteState.settings;if(!el||!s)return;var g=s.general,seo=s.seo,h='';
+  h+='<div class="panel site-settings-intro"><div><span class="site-settings-eyebrow">HUGO CONFIGURATION</span><h2>Website settings</h2><p>Manage the public website without editing TOML or YAML. All fields below are validated before publishing.</p></div><div class="site-settings-version"><span>Source version</span><code>'+esc((websiteState.settingsCommit||'').slice(0,7)||'—')+'</code></div></div>';
+  h+='<div class="site-settings-layout"><aside class="site-settings-nav panel"><b>Settings sections</b><button onclick="jumpWebsiteSettings(\'siteIdentity\')"><i data-lucide="badge"></i> Site identity</button><button onclick="jumpWebsiteSettings(\'siteContact\')"><i data-lucide="phone"></i> Company &amp; contact</button><button onclick="jumpWebsiteSettings(\'siteSeo\')"><i data-lucide="search-check"></i> SEO</button><button onclick="jumpWebsiteSettings(\'siteNavigation\')"><i data-lucide="navigation"></i> Navigation</button><button onclick="jumpWebsiteSettings(\'siteServices\')"><i data-lucide="briefcase"></i> Service cards</button><button onclick="jumpWebsiteSettings(\'sitePublishing\')"><i data-lucide="rocket"></i> Publishing</button></aside><div class="site-settings-content">';
+  h+='<section class="panel site-settings-card" id="siteIdentity"><div class="site-settings-card-head"><span><i data-lucide="badge"></i></span><div><h3>Site identity</h3><p>Core website name, URL and language configuration.</p></div></div><div class="site-settings-grid">'+
+    siteSettingField('general',null,'site_title','Website title',g.site_title,{maxlength:80})+
+    siteSettingField('general',null,'brand','Public brand',g.brand,{maxlength:60})+
+    siteSettingField('general',null,'site_url','Public website URL',g.site_url,{type:'url',hint:'Use the canonical HTTPS address, including https://.'})+
+    siteSettingField('general',null,'domain','Domain',g.domain,{hint:'Domain only, without https://.'})+
+    siteSettingField('general',null,'locale','Locale',g.locale,{type:'select',options:[['ms-MY','Malay (Malaysia)'],['en-MY','English (Malaysia)']]})+
+    siteSettingField('general',null,'default_language','Content language',g.default_language,{type:'select',options:[['ms','Malay'],['en','English']]})+
+    '</div></section>';
+  h+='<section class="panel site-settings-card" id="siteContact"><div class="site-settings-card-head"><span><i data-lucide="building-2"></i></span><div><h3>Company &amp; contact</h3><p>Business details used across the header, footer, contact page and structured data.</p></div></div><div class="site-settings-grid">'+
+    siteSettingField('general',null,'legal_name','Legal company name',g.legal_name,{maxlength:120})+
+    siteSettingField('general',null,'company_number','Company number',g.company_number,{maxlength:40})+
+    siteSettingField('general',null,'phone_display','Display phone number',g.phone_display,{maxlength:40})+
+    siteSettingField('general',null,'phone_tel','Telephone link',g.phone_tel,{maxlength:24,hint:'International format, for example +60139373275.'})+
+    siteSettingField('general',null,'whatsapp','WhatsApp number',g.whatsapp,{maxlength:20,hint:'Digits only, including country code.'})+
+    siteSettingField('general',null,'service_area','Service area',g.service_area,{maxlength:180,wide:true})+
+    '</div></section>';
+  h+='<section class="panel site-settings-card" id="siteSeo"><div class="site-settings-card-head"><span><i data-lucide="search-check"></i></span><div><h3>Search engine optimisation</h3><p>Titles and descriptions shown by Google and when the homepage is shared.</p></div></div><div class="site-settings-grid one">'+
+    siteSettingField('seo',null,'homepage_title','Homepage SEO title',seo.homepage_title,{maxlength:90,wide:true})+
+    siteSettingField('seo',null,'homepage_description','Homepage meta description',seo.homepage_description,{type:'textarea',rows:3,maxlength:220,wide:true})+
+    siteSettingField('seo',null,'site_description','Default site description',seo.site_description,{type:'textarea',rows:3,maxlength:220,wide:true,hint:'Used when a page does not provide its own description.'})+
+    '</div><div class="site-seo-preview"><span>GOOGLE PREVIEW</span><b id="siteSeoTitlePreview">'+esc(seo.homepage_title)+'</b><small id="siteSeoUrlPreview">'+esc(g.site_url)+'</small><p id="siteSeoDescriptionPreview">'+esc(seo.homepage_description)+'</p></div></section>';
+  h+='<section class="panel site-settings-card" id="siteNavigation"><div class="site-settings-card-head with-action"><span><i data-lucide="navigation"></i></span><div><h3>Main navigation</h3><p>Links displayed in the website header.</p></div><button class="d-btn" onclick="addWebsiteNav()"><i data-lucide="plus"></i> Add link</button></div><div class="site-nav-editor">';
+  s.navigation.forEach(function(item,index){h+='<div class="site-nav-row"><span class="site-nav-handle"><i data-lucide="grip-vertical"></i></span>'+siteSettingField('navigation',index,'name','Label',item.name,{maxlength:40})+siteSettingField('navigation',index,'page_ref','Page path',item.page_ref,{hint:'Example: /tentang-kami/'})+siteSettingField('navigation',index,'weight','Order',item.weight,{type:'number'})+'<button class="site-nav-remove" onclick="removeWebsiteNav('+index+')" aria-label="Remove '+esc(item.name)+'"><i data-lucide="trash-2"></i></button></div>'});
+  h+='</div></section>';
+  h+='<section class="panel site-settings-card" id="siteServices"><div class="site-settings-card-head"><span><i data-lucide="briefcase"></i></span><div><h3>Homepage service cards</h3><p>Copy, links and images for the three services shown on the corporate homepage.</p></div></div><div class="site-service-editor">';
+  var icons={roof:'home',tank:'waves',paint:'paint-roller'},labels={roof:'Roof replacement',tank:'Water tank cleaning',paint:'House & office painting'};
+  s.services.forEach(function(service,index){h+='<details class="site-service-card"'+(index===0?' open':'')+'><summary><span><i data-lucide="'+icons[service.key]+'"></i></span><div><b>'+esc(labels[service.key])+'</b><small>'+esc(service.name)+'</small></div><i data-lucide="chevron-down"></i></summary><div class="site-service-fields">'+siteSettingField('services',index,'name','Service name',service.name,{maxlength:80})+siteSettingField('services',index,'kicker','Kicker',service.kicker,{maxlength:80})+siteSettingField('services',index,'title','Card headline',service.title,{type:'textarea',rows:2,maxlength:180,wide:true})+siteSettingField('services',index,'summary','Summary',service.summary,{type:'textarea',rows:4,maxlength:400,wide:true})+siteSettingField('services',index,'url','Sales page path',service.url,{hint:'Internal URL beginning with /.'})+siteSettingField('services',index,'image','Card image path',service.image,{hint:'Image in site/static, beginning with /.'})+siteSettingField('services',index,'alt','Image alternative text',service.alt,{type:'textarea',rows:2,maxlength:220,wide:true})+'</div></details>'});
+  h+='</div></section>';
+  h+='<section class="panel site-settings-card" id="sitePublishing"><div class="site-settings-card-head"><span><i data-lucide="rocket"></i></span><div><h3>Publishing</h3><p>Version control and production deployment details.</p></div></div><div class="site-publish-grid"><div><span>Repository</span><b>banktif/jayaclean-salespage</b></div><div><span>Source branch</span><b>master</b></div><div><span>Cloudflare project</span><b>jayabina</b></div><div><span>Current source</span><b>'+esc((websiteState.settingsCommit||'').slice(0,7)||'—')+'</b></div></div><div class="site-publish-note"><i data-lucide="git-commit-horizontal"></i><span>Saving creates one atomic commit for Hugo config, company details, homepage SEO and service cards.</span></div><div id="sitePublishMsg" class="site-settings-message">No unsaved changes.</div></section>';
+  h+='</div></div><div class="site-settings-savebar"><div><span id="siteSettingsState">All settings are up to date.</span><small>Changes are validated before they reach GitHub.</small></div><div><button class="d-btn" onclick="resetWebsiteSettings()"><i data-lucide="rotate-ccw"></i> Reset</button><button class="d-btn acc" id="siteSettingsSave" onclick="saveWebsiteSettings()" disabled><i data-lucide="save"></i> Save website settings</button></div></div>';
+  el.innerHTML=h;relucide();
+}
+function websiteSettingChanged(input){
+  var s=websiteState.settings;if(!s)return;var root=input.getAttribute('data-root'),field=input.getAttribute('data-field'),index=input.getAttribute('data-index'),value=input.value;
+  if(root==='navigation'&&field==='weight')value=Number(value||0);
+  if(index===null)s[root][field]=value;else s[root][Number(index)][field]=value;
+  var counter=input.parentNode.querySelector('.site-field-count');if(counter)counter.textContent=String(input.value||'').length+'/'+input.maxLength;
+  if(root==='seo'&&field==='homepage_title'){var seoTitle=document.getElementById('siteSeoTitlePreview');if(seoTitle)seoTitle.textContent=value}
+  if(root==='seo'&&field==='homepage_description'){var seoDescription=document.getElementById('siteSeoDescriptionPreview');if(seoDescription)seoDescription.textContent=value}
+  if(root==='general'&&field==='site_url'){var seoUrl=document.getElementById('siteSeoUrlPreview');if(seoUrl)seoUrl.textContent=value}
+  markWebsiteSettingsDirty();
+}
+function markWebsiteSettingsDirty(){
+  websiteState.settingsDirty=true;var state=document.getElementById('siteSettingsState'),save=document.getElementById('siteSettingsSave'),msg=document.getElementById('sitePublishMsg');if(state)state.textContent='You have unsaved website settings.';if(save)save.disabled=false;if(msg){msg.className='site-settings-message dirty';msg.textContent='Unsaved changes.'}
+}
+function jumpWebsiteSettings(id){var el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}
+function addWebsiteNav(){if(!websiteState.settings)return;if(websiteState.settings.navigation.length>=8){alert('A maximum of 8 navigation links is allowed.');return}websiteState.settings.navigation.push({name:'New link',page_ref:'/',weight:(websiteState.settings.navigation.length+1)*10});websiteState.settingsDirty=true;renderWebsiteSettings();markWebsiteSettingsDirty()}
+function removeWebsiteNav(index){if(!websiteState.settings||websiteState.settings.navigation.length<=1){alert('At least one navigation link is required.');return}websiteState.settings.navigation.splice(index,1);websiteState.settingsDirty=true;renderWebsiteSettings();markWebsiteSettingsDirty()}
+function resetWebsiteSettings(){if(!websiteState.settingsOriginal)return;if(websiteState.settingsDirty&&!confirm('Discard all unsaved website settings?'))return;websiteState.settings=JSON.parse(JSON.stringify(websiteState.settingsOriginal));websiteState.settingsDirty=false;renderWebsiteSettings()}
+async function saveWebsiteSettings(){
+  if(!websiteState.settings||!websiteState.settingsDirty)return;var btn=document.getElementById('siteSettingsSave'),state=document.getElementById('siteSettingsState'),msg=document.getElementById('sitePublishMsg');btn.disabled=true;state.textContent='Validating and saving to GitHub...';if(msg){msg.className='site-settings-message';msg.textContent='Creating one protected settings commit...'}
+  try{
+    var res=await websiteRequest('/settings',{method:'PUT',body:{settings:websiteState.settings,base_commit:websiteState.settingsCommit}}),body=await res.json();if(!res.ok)throw new Error(body.error||'Unable to save website settings');
+    websiteState.settingsCommit=body.data.commit_sha;websiteState.settingsOriginal=JSON.parse(JSON.stringify(websiteState.settings));websiteState.settingsDirty=false;renderWebsiteSettings();var fresh=document.getElementById('sitePublishMsg');if(fresh){fresh.className='site-settings-message saved';fresh.textContent='Settings saved. Hugo deployment started automatically.'}var status=document.getElementById('siteConfigStatus');if(status)status.textContent='Saved';
+  }catch(e){btn=document.getElementById('siteSettingsSave');state=document.getElementById('siteSettingsState');msg=document.getElementById('sitePublishMsg');if(btn)btn.disabled=false;if(state)state.textContent='Settings were not saved.';if(msg){msg.className='site-settings-message error';msg.textContent='Error: '+errorMessage(e)}}
 }
 function renderWebsiteFiles(){
   var el=document.getElementById('siteFiles');if(!el)return;var groups=['Content','Business data','Advanced templates'],h='';
@@ -1192,16 +1282,18 @@ async function saveWebsiteFile(){
   try{
     var res=await websiteRequest('/file',{method:'PUT',body:{path:websiteState.path,content:content,sha:websiteState.sha}}),body=await res.json();if(!res.ok)throw new Error(body.error||'Unable to save file');
     websiteState.sha=body.data.sha||websiteState.sha;websiteState.dirty=false;msg.className='saved';msg.textContent='Saved. Hugo deployment started automatically.';
+    if(['site/content/_index.md','site/data/business.yaml','site/data/services.yaml'].indexOf(websiteState.path)>=0)loadWebsiteSettings();
   }catch(e){msg.className='error';msg.textContent='Error: '+errorMessage(e);}btn.disabled=false;
 }
 function newWebsiteArticle(){
   var title=prompt('Article title:');if(!title)return;var slug=title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80);if(!slug){alert('Use a title containing letters or numbers.');return}
   var path='site/content/blog/'+slug+'.md',date=new Date().toISOString().slice(0,10),content='---\ntitle: "'+title.replace(/"/g,'\\"')+'"\ndate: '+date+'\ndescription: ""\ncategories: ["Panduan"]\ntags: []\ndraft: true\n---\n\nWrite the article here.\n';
   websiteState.files.push({path:path,label:title,group:'Content',mode:'markdown'});websiteState.path=path;websiteState.sha='';websiteState.dirty=true;renderWebsiteFiles();
+  switchWebsiteTab('content');
   document.getElementById('siteEmpty').style.display='none';document.getElementById('siteEditorForm').style.display='block';document.getElementById('siteFileLabel').textContent=title;document.getElementById('siteFilePath').textContent=path;document.getElementById('siteFileMode').textContent='MARKDOWN';document.getElementById('siteCode').value=content;document.getElementById('siteEditorMsg').textContent='New draft — save to create it.';
 }
 async function publishWebsite(){
-  if(!confirm('Start a fresh Hugo deployment to www.jayabina.com?'))return;var msg=document.getElementById('siteEditorMsg');if(msg){msg.className='';msg.textContent='Starting deployment...'}
+  if(!confirm('Start a fresh Hugo deployment to www.jayabina.com?'))return;var msg=document.getElementById('siteEditorMsg')||document.getElementById('sitePublishMsg');if(msg){msg.className='';msg.textContent='Starting deployment...'}
   try{var res=await websiteRequest('/publish',{method:'POST',body:{}}),body=await res.json();if(!res.ok)throw new Error(body.error||'Unable to deploy');if(msg){msg.className='saved';msg.textContent='Deployment started. The live website normally updates in 1–3 minutes.'}}
   catch(e){if(msg){msg.className='error';msg.textContent='Error: '+errorMessage(e)}else alert('Error: '+errorMessage(e))}
 }

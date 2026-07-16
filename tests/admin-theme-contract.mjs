@@ -68,11 +68,15 @@ for (const cardRule of [
   assert.ok(files.modern.includes(cardRule), `missing unified card rule ${cardRule}`);
 }
 
-assert.ok(files.html.includes('?v=20260716-english1'), 'admin must cache-bust the English UI release');
+assert.ok(files.html.includes('?v=20260716-hugo-settings1'), 'admin must cache-bust the complete Hugo settings release');
 assert.ok(files.html.includes('id="dsWebsite"'), 'desktop navigation must include the Website module');
 assert.ok(files.html.includes('function showWebsite()'), 'admin must provide the Hugo website manager');
 assert.ok(files.html.includes("API_URL+'/api/website'"), 'website manager must use the authenticated Worker API');
 assert.ok(files.modern.includes('.admin-app .site-shell'), 'website manager must have responsive layout styles');
+assert.ok(files.html.includes('function renderWebsiteSettings()'), 'website manager must provide structured settings');
+assert.ok(files.html.includes("websiteRequest('/settings'"), 'website settings must use the protected Worker API');
+assert.ok(files.html.includes('function saveWebsiteSettings()'), 'website manager must save structured settings');
+assert.ok(files.modern.includes('.admin-app .site-settings-layout'), 'structured website settings must have responsive layout styles');
 
 assert.ok(files.html.includes('<html lang="en"'), 'admin document language must be English');
 for (const malayUi of [

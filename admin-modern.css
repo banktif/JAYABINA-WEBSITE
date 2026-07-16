@@ -265,8 +265,9 @@ body.admin-app{
 .admin-app .m-btn{min-height:44px;font-size:13px}
 
 /* Hugo website manager */
-.admin-app .site-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:14px}
+.admin-app .site-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:14px}
 .admin-app .site-overview .kpi{min-height:126px}
+.admin-app .kpi.violet{--card-accent:var(--accent2);--card-tint:var(--accent2-light)}
 .admin-app .site-actions{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:14px}
 .admin-app .site-actions .d-btn{min-height:42px;padding-inline:14px}
 .admin-app .site-shell{display:grid;grid-template-columns:minmax(250px,300px) minmax(0,1fr);gap:16px;align-items:start}
@@ -298,6 +299,29 @@ body.admin-app{
 .admin-app .site-note{display:flex;align-items:flex-start;gap:12px;margin-top:14px;padding:16px 18px;border:1px solid var(--card-border);border-radius:14px;background:var(--accent-light);color:var(--accent)}
 .admin-app .site-note>svg{margin-top:1px}.admin-app .site-note b,.admin-app .site-note span{display:block}.admin-app .site-note b{font-size:12px}.admin-app .site-note span{margin-top:3px;color:var(--text2);font-size:11px;line-height:1.55}
 .admin-app .site-file-error{padding:18px;color:var(--danger);font-size:12px}
+.admin-app .site-tabs{display:flex;gap:8px;margin:0 0 14px;padding:5px;border:1px solid var(--card-border);border-radius:15px;background:var(--card-muted);width:max-content;max-width:100%}
+.admin-app .site-tabs button{display:flex;align-items:center;gap:9px;min-width:190px;padding:10px 14px;border:0;border-radius:11px;background:transparent;color:var(--text2);font-family:var(--font);text-align:left;cursor:pointer}
+.admin-app .site-tabs button:hover{color:var(--text);background:var(--card-bg)}
+.admin-app .site-tabs button.active{color:var(--accent);background:var(--card-bg);box-shadow:var(--card-shadow)}
+.admin-app .site-tabs button>svg{width:18px;height:18px}.admin-app .site-tabs b,.admin-app .site-tabs small{display:block}.admin-app .site-tabs b{font-size:12px}.admin-app .site-tabs small{margin-top:1px;color:var(--text3);font-size:9px}
+.admin-app .site-settings-loading{min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);font-size:12px}
+.admin-app .site-settings-error{display:flex;align-items:center;gap:13px;padding:20px;color:var(--danger)}
+.admin-app .site-settings-error>svg{flex:0 0 auto}.admin-app .site-settings-error>div{min-width:0;flex:1}.admin-app .site-settings-error b,.admin-app .site-settings-error span{display:block}.admin-app .site-settings-error b{font-size:14px}.admin-app .site-settings-error span{margin-top:3px;color:var(--text2);font-size:11px}
+.admin-app .site-settings-intro{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px 24px;margin-bottom:14px;background:linear-gradient(135deg,var(--card-bg),var(--accent-light))}
+.admin-app .site-settings-eyebrow{display:block;margin-bottom:7px;color:var(--accent);font-size:9px;font-weight:800;letter-spacing:.14em}.admin-app .site-settings-intro h2{font-size:22px;letter-spacing:-.03em}.admin-app .site-settings-intro p{max-width:650px;margin-top:5px;color:var(--text2);font-size:12px;line-height:1.6}
+.admin-app .site-settings-version{min-width:120px;padding:12px 14px;border:1px solid var(--card-border);border-radius:12px;background:var(--card-bg);text-align:right}.admin-app .site-settings-version span,.admin-app .site-settings-version code{display:block}.admin-app .site-settings-version span{color:var(--text3);font-size:9px;text-transform:uppercase;letter-spacing:.08em}.admin-app .site-settings-version code{margin-top:4px;color:var(--accent);font-size:13px;font-weight:800}
+.admin-app .site-settings-layout{display:grid;grid-template-columns:210px minmax(0,1fr);gap:14px;align-items:start}
+.admin-app .site-settings-nav{position:sticky;top:84px;padding:10px}.admin-app .site-settings-nav>b{display:block;padding:8px 10px 10px;color:var(--text3);font-size:9px;text-transform:uppercase;letter-spacing:.1em}.admin-app .site-settings-nav button{width:100%;display:flex;align-items:center;gap:9px;padding:10px;border:0;border-radius:10px;background:transparent;color:var(--text2);font:600 11px var(--font);text-align:left;cursor:pointer}.admin-app .site-settings-nav button:hover{background:var(--card-muted);color:var(--accent)}.admin-app .site-settings-nav button>svg{width:15px;height:15px}
+.admin-app .site-settings-content{display:grid;gap:14px;min-width:0}.admin-app .site-settings-card{padding:22px;scroll-margin-top:84px}
+.admin-app .site-settings-card-head{display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;align-items:center;margin-bottom:20px}.admin-app .site-settings-card-head.with-action{grid-template-columns:40px minmax(0,1fr) auto}.admin-app .site-settings-card-head>span{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:var(--accent-light);color:var(--accent)}.admin-app .site-settings-card-head>span svg{width:18px;height:18px}.admin-app .site-settings-card-head h3{font-size:15px}.admin-app .site-settings-card-head p{margin-top:3px;color:var(--text3);font-size:10px;line-height:1.5}
+.admin-app .site-settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.admin-app .site-settings-grid.one{grid-template-columns:1fr}.admin-app .site-setting-field.wide{grid-column:1/-1}.admin-app .site-setting-field label{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;color:var(--text2);font-size:11px;font-weight:700}.admin-app .site-field-count{color:var(--text3);font-size:9px;font-weight:500}
+.admin-app .site-setting-input{width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--border-strong);border-radius:11px;outline:0;background:var(--elevated);color:var(--text);font:500 12px/1.5 var(--font);transition:border-color .2s,box-shadow .2s}.admin-app textarea.site-setting-input{resize:vertical}.admin-app .site-setting-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}.admin-app .site-setting-field small{display:block;margin-top:5px;color:var(--text3);font-size:9px;line-height:1.45}
+.admin-app .site-seo-preview{margin-top:18px;padding:16px 18px;border:1px solid var(--card-border);border-radius:12px;background:var(--card-muted)}.admin-app .site-seo-preview>span{display:block;margin-bottom:8px;color:var(--text3);font-size:8px;font-weight:800;letter-spacing:.12em}.admin-app .site-seo-preview b{display:block;color:#4d7fce;font-size:16px;font-weight:600;line-height:1.3}.admin-app .site-seo-preview small{display:block;margin:4px 0;color:var(--accent);font-size:10px}.admin-app .site-seo-preview p{color:var(--text2);font-size:11px;line-height:1.5}
+.admin-app .site-nav-editor{display:grid;gap:9px}.admin-app .site-nav-row{display:grid;grid-template-columns:28px minmax(120px,.7fr) minmax(160px,1fr) 90px 36px;gap:10px;align-items:end;padding:12px;border:1px solid var(--card-border);border-radius:12px;background:var(--card-muted)}.admin-app .site-nav-row .site-setting-field small{display:none}.admin-app .site-nav-handle{align-self:center;color:var(--text3)}.admin-app .site-nav-remove{width:36px;height:42px;display:grid;place-items:center;border:0;border-radius:10px;background:transparent;color:var(--danger);cursor:pointer}.admin-app .site-nav-remove:hover{background:var(--danger-light)}
+.admin-app .site-service-editor{display:grid;gap:10px}.admin-app .site-service-card{overflow:hidden;border:1px solid var(--card-border);border-radius:13px;background:var(--card-muted)}.admin-app .site-service-card summary{display:grid;grid-template-columns:40px minmax(0,1fr) 18px;gap:11px;align-items:center;padding:13px 15px;list-style:none;cursor:pointer}.admin-app .site-service-card summary::-webkit-details-marker{display:none}.admin-app .site-service-card summary>span{width:40px;height:40px;display:grid;place-items:center;border-radius:11px;background:var(--card-bg);color:var(--accent)}.admin-app .site-service-card summary b,.admin-app .site-service-card summary small{display:block}.admin-app .site-service-card summary b{font-size:12px}.admin-app .site-service-card summary small{margin-top:2px;color:var(--text3);font-size:9px}.admin-app .site-service-card summary>svg{color:var(--text3);transition:transform .2s}.admin-app .site-service-card[open] summary>svg{transform:rotate(180deg)}.admin-app .site-service-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;padding:17px;border-top:1px solid var(--card-border);background:var(--card-bg)}
+.admin-app .site-publish-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.admin-app .site-publish-grid>div{padding:13px;border:1px solid var(--card-border);border-radius:11px;background:var(--card-muted)}.admin-app .site-publish-grid span,.admin-app .site-publish-grid b{display:block}.admin-app .site-publish-grid span{color:var(--text3);font-size:9px;text-transform:uppercase;letter-spacing:.07em}.admin-app .site-publish-grid b{margin-top:4px;font-size:11px;word-break:break-word}.admin-app .site-publish-note{display:flex;align-items:flex-start;gap:9px;margin-top:12px;padding:12px;border-radius:11px;background:var(--accent-light);color:var(--accent)}.admin-app .site-publish-note span{color:var(--text2);font-size:10px;line-height:1.5}.admin-app .site-settings-message{margin-top:12px;color:var(--text3);font-size:11px}.admin-app .site-settings-message.dirty{color:var(--warning)}.admin-app .site-settings-message.saved{color:var(--accent)}.admin-app .site-settings-message.error{color:var(--danger)}
+.admin-app .site-settings-savebar{position:sticky;bottom:16px;z-index:12;display:flex;align-items:center;justify-content:space-between;gap:16px;margin:14px 0 0 224px;padding:14px 16px;border:1px solid var(--card-border-hover);border-radius:14px;background:var(--nav-glass);backdrop-filter:blur(18px);box-shadow:var(--card-shadow-hover)}.admin-app .site-settings-savebar>div:first-child span,.admin-app .site-settings-savebar>div:first-child small{display:block}.admin-app .site-settings-savebar>div:first-child span{font-size:11px;font-weight:700}.admin-app .site-settings-savebar>div:first-child small{margin-top:2px;color:var(--text3);font-size:9px}.admin-app .site-settings-savebar>div:last-child{display:flex;gap:8px}.admin-app .site-settings-savebar button:disabled{opacity:.45;cursor:not-allowed}
+.admin-app .site-settings-savebar .d-btn.acc:not(:disabled){background:var(--accent);border-color:var(--accent);color:#fff}
 
 .admin-app .login{
   overflow:auto;
@@ -482,6 +506,12 @@ body.admin-app{
   .admin-app #siteFiles{max-height:310px}
   .admin-app .site-editor,.admin-app .site-editor-empty{min-height:520px}
   .admin-app .site-code{min-height:410px;font-size:13px}
+  .admin-app .site-overview{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-app .site-settings-layout{grid-template-columns:1fr}
+  .admin-app .site-settings-nav{position:static;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  .admin-app .site-settings-nav>b{grid-column:1/-1}
+  .admin-app .site-settings-savebar{margin-left:0;bottom:82px}
+  .admin-app .site-nav-row{grid-template-columns:24px minmax(110px,.7fr) minmax(150px,1fr) 82px 36px}
 }
 
 @media(max-width:480px){
@@ -501,9 +531,17 @@ body.admin-app{
   .admin-app .m-row{display:grid;gap:4px}
   .admin-app .m-row .mv{max-width:none;text-align:left}
   .admin-app .site-overview{grid-template-columns:1fr 1fr;gap:9px}
-  .admin-app .site-overview .kpi:last-child{grid-column:1/-1}
+  .admin-app .site-overview .kpi:last-child{grid-column:auto}
   .admin-app .site-actions{display:grid;grid-template-columns:1fr 1fr}
   .admin-app .site-actions .d-btn{width:100%}
+  .admin-app .site-tabs{width:100%}.admin-app .site-tabs button{min-width:0;flex:1;padding:10px}.admin-app .site-tabs button small{display:none}
+  .admin-app .site-settings-intro{align-items:flex-start;flex-direction:column;padding:18px}.admin-app .site-settings-version{width:100%;text-align:left}
+  .admin-app .site-settings-nav{grid-template-columns:repeat(2,minmax(0,1fr));padding:8px}.admin-app .site-settings-nav button{font-size:10px;padding:9px 8px}
+  .admin-app .site-settings-card{padding:17px;scroll-margin-top:72px}.admin-app .site-settings-card-head,.admin-app .site-settings-card-head.with-action{grid-template-columns:38px minmax(0,1fr)}.admin-app .site-settings-card-head.with-action .d-btn{grid-column:1/-1;width:100%}
+  .admin-app .site-settings-grid,.admin-app .site-service-fields{grid-template-columns:1fr}.admin-app .site-setting-field.wide{grid-column:auto}
+  .admin-app .site-nav-row{grid-template-columns:1fr 40px;padding:13px}.admin-app .site-nav-row .site-nav-handle{display:none}.admin-app .site-nav-row .site-setting-field{grid-column:1/-1}.admin-app .site-nav-row .site-nav-remove{grid-column:2;grid-row:1;justify-self:end}
+  .admin-app .site-publish-grid{grid-template-columns:1fr}
+  .admin-app .site-settings-savebar{align-items:stretch;flex-direction:column;padding:13px;bottom:78px}.admin-app .site-settings-savebar>div:last-child{display:grid;grid-template-columns:1fr 1.4fr}.admin-app .site-settings-savebar .d-btn{width:100%}
   .admin-app .site-editor-head,.admin-app .site-editor-foot{align-items:flex-start;padding:14px}
   .admin-app .site-editor-foot{flex-direction:column}
   .admin-app .site-editor-foot>div{width:100%}.admin-app .site-editor-foot .d-btn{flex:1}
