@@ -1,16 +1,23 @@
+import { asc, inArray } from 'drizzle-orm';
 import type { Env } from '../types';
 import { err, ok, nowISO } from '../utils/helpers';
 import { requireAuth, requireAdmin } from '../utils/middleware';
+import { createDb } from '../db/client';
+import { appSettings, privateSettings } from '../db/schema';
 
 export async function handleSettings(req: Request, env: Env, path: string): Promise<Response> {
-  const url = new URL(req.url);
+  const db = createDb(env);
 
   // GET /api/settings (all auth users)
   if (path === '/api/settings' && req.method === 'GET') {
     try {
       await requireAuth(req, env);
-      const rows = await env.DB.prepare('SELECT key, value, updated_at FROM app_settings ORDER BY key ASC').all();
-      return ok(rows.results);
+      const rows = await db.select({
+        key: appSettings.key,
+        value: appSettings.value,
+        updated_at: appSettings.updatedAt
+      }).from(appSettings).orderBy(asc(appSettings.key));
+      return ok(rows);
     } catch (e: any) {
       return err(e.msg || 'Error', e.status || 400);
     }
@@ -18,9 +25,11 @@ export async function handleSettings(req: Request, env: Env, path: string): Prom
 
   // GET /api/settings/public (anon: limited config)
   if (path === '/api/settings/public' && req.method === 'GET') {
-    const rows = await env.DB.prepare(`SELECT key, value FROM app_settings WHERE key IN ('slots','max_slots_per_day','price_total','price_deposit','price_balance','business_name','coverage_area')`).all();
+    const publicKeys = ['slots', 'max_slots_per_day', 'price_total', 'price_deposit', 'price_balance', 'business_name', 'coverage_area'];
+    const rows = await db.select({ key: appSettings.key, value: appSettings.value })
+      .from(appSettings).where(inArray(appSettings.key, publicKeys));
     const config: Record<string, string> = {};
-    for (const r of rows.results as any[]) config[r.key] = r.value;
+    for (const row of rows) config[row.key] = row.value || '';
     return ok(config);
   }
 
@@ -34,8 +43,11 @@ export async function handleSettings(req: Request, env: Env, path: string): Prom
 
       const now = nowISO();
       for (const s of settings) {
-        await env.DB.prepare('INSERT INTO app_settings (key, value, updated_at) VALUES (?,?,?) ON CONFLICT(key) DO UPDATE SET value = ?, updated_at = ?')
-          .bind(s.key, s.value, now, s.value, now).run();
+        await db.insert(appSettings).values({ key: s.key, value: s.value, updatedAt: now })
+          .onConflictDoUpdate({
+            target: appSettings.key,
+            set: { value: s.value, updatedAt: now }
+          });
       }
       return ok({ updated: settings.length });
     } catch (e: any) {
@@ -48,8 +60,8 @@ export async function handleSettings(req: Request, env: Env, path: string): Prom
     try {
       const payload = await requireAuth(req, env);
       requireAdmin(payload);
-      const rows = await env.DB.prepare('SELECT key, value FROM private_settings').all();
-      return ok(rows.results);
+      const rows = await db.select({ key: privateSettings.key, value: privateSettings.value }).from(privateSettings);
+      return ok(rows);
     } catch (e: any) {
       return err(e.msg || 'Error', e.status || 400);
     }
@@ -64,8 +76,8 @@ export async function handleSettings(req: Request, env: Env, path: string): Prom
       if (!settings || !settings.length) return err('No settings provided');
 
       for (const s of settings) {
-        await env.DB.prepare('INSERT OR REPLACE INTO private_settings (key, value) VALUES (?,?)')
-          .bind(s.key, s.value).run();
+        await db.insert(privateSettings).values({ key: s.key, value: s.value })
+          .onConflictDoUpdate({ target: privateSettings.key, set: { value: s.value } });
       }
       return ok({ updated: settings.length });
     } catch (e: any) {

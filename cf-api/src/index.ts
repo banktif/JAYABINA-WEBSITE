@@ -27,6 +27,19 @@ app.all('/api/health', async (c) => {
   return ok({ service: 'jayaclean-api', database: 'ok' });
 });
 
+const handleSettingsRoute = (req: Request, env: Env) => {
+  const path = new URL(req.url).pathname.replace(/\/+$/, '') || '/';
+  return handleSettings(req, env, path);
+};
+app.all('/api/settings', (c) => handleSettingsRoute(c.req.raw, c.env));
+app.all('/api/settings/*', (c) => handleSettingsRoute(c.req.raw, c.env));
+
+const handleSlotsRoute = (req: Request, env: Env) => {
+  const path = new URL(req.url).pathname.replace(/\/+$/, '') || '/';
+  return handleSlots(req, env, path);
+};
+app.all('/api/slots/*', (c) => handleSlotsRoute(c.req.raw, c.env));
+
 app.all('*', (c) => handleLegacyRequest(c.req.raw, c.env));
 
 async function handleLegacyRequest(req: Request, env: Env): Promise<Response> {
@@ -45,12 +58,8 @@ async function handleLegacyRequest(req: Request, env: Env): Promise<Response> {
 
       // Auth
       if (path.startsWith('/api/auth')) return await handleAuth(req, env, path);
-      if (path.startsWith('/api/settings')) return await handleSettings(req, env, path);
-
       // Public endpoints
       if (path === '/api/bookings/public') return await handleBookings(req, env, path);
-      if (path === '/api/slots/available' || path === '/api/slots/check') return await handleSlots(req, env, path);
-      if (path === '/api/settings/public') return await handleSettings(req, env, path);
 
       // Bookings
       if (path.startsWith('/api/bookings')) return await handleBookings(req, env, path);

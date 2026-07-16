@@ -87,6 +87,7 @@ Current entry point: `cf-api/src/index.ts`. It manually normalizes the URL, hand
 ## Route refactor verification
 
 - **Health — PASS:** `GET /api/health` is now handled by Hono and executes the D1 connectivity probe through Drizzle. CORS, response envelope, headers, fallback behavior and the scheduled handler remain unchanged. Verification: TypeScript PASS, 3/3 tests PASS against the committed baseline snapshot, Worker dry-run PASS, diff check PASS.
+- **Settings + slots — PASS:** Hono now owns the settings and slot URL groups. All reads, allowlist filtering, counts and setting upserts in those handlers use the typed Drizzle schema, with explicit aliases preserving legacy `snake_case` response fields. Verification: TypeScript PASS, 3/3 tests PASS against the committed baseline snapshot, Worker dry-run PASS, diff check PASS.
 
 ## Backup evidence
 
