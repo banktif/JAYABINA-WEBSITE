@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ms" class="light">
+<html lang="en" class="light">
 <head>
   <link rel="icon" href="/admin-favicon.svg" type="image/svg+xml">
   <meta charset="UTF-8">
@@ -19,9 +19,9 @@
     })();
   </script>
   <link rel="manifest" href="/admin-manifest.json">
-  <title>JAYABINA — Operations Portal</title>
+  <title>JAYABINA &mdash; Operations Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/theme.css?v=20260716-website1">
+  <link rel="stylesheet" href="/theme.css?v=20260716-english1">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     html,body{overflow-x:hidden;scrollbar-width:none;-ms-overflow-style:none}
@@ -400,7 +400,7 @@
     .d-sidebar-footer button{color:rgba(255,255,255,.72)}
     .d-sidebar-footer button:hover{background:rgba(255,255,255,.09);color:#fff}
   </style>
-  <link rel="stylesheet" href="/admin-modern.css?v=20260716-website1">
+  <link rel="stylesheet" href="/admin-modern.css?v=20260716-english1">
 </head>
 <body class="admin-app">
 
@@ -410,34 +410,34 @@
     <div class="hdr-logo">JB</div>
     <div class="d-brand-text"><h1>JAYABINA</h1><span>Operations Portal</span></div>
   </div>
-  <div class="d-nav-label">Ringkasan</div>
+  <div class="d-nav-label">Overview</div>
   <button class="d-nav-item active" id="dsDash" onclick="showDashboard()"><span class="dni"><i data-lucide="layout-dashboard"></i></span> Dashboard</button>
-  <div class="d-nav-label">Operasi</div>
-  <button class="d-nav-item" id="dsAll" onclick="showBookings()"><span class="dni"><i data-lucide="layout-grid"></i></span> Tempahan</button>
-  <button class="d-nav-item" id="dsWait" onclick="showBookings('pending_payment')"><span class="dni"><i data-lucide="clock"></i></span> Menunggu <span class="d-nav-badge" id="dsBadge">0</span></button>
-  <button class="d-nav-item" id="dsOK" onclick="showBookings('confirmed')"><span class="dni"><i data-lucide="check"></i></span> Disahkan</button>
-  <button class="d-nav-item" id="dsDone" onclick="showBookings('completed')"><span class="dni"><i data-lucide="check-check"></i></span> Selesai</button>
-  <button class="d-nav-item" id="dsSchedule" onclick="showSchedule()"><span class="dni"><i data-lucide="calendar"></i></span> Jadual</button>
-  <button class="d-nav-item" id="dsCustomers" onclick="showCustomers()"><span class="dni"><i data-lucide="contact"></i></span> Pelanggan</button>
-  <div class="d-nav-label">Pasukan & Analitik</div>
-  <button class="d-nav-item" id="dsStaff" onclick="showStaff()"><span class="dni"><i data-lucide="users"></i></span> Staf</button>
-  <button class="d-nav-item" id="dsReports" onclick="showReports()"><span class="dni"><i data-lucide="bar-chart-3"></i></span> Laporan</button>
-  <div class="d-nav-label">Sistem</div>
+  <div class="d-nav-label">Operations</div>
+  <button class="d-nav-item" id="dsAll" onclick="showBookings()"><span class="dni"><i data-lucide="layout-grid"></i></span> Bookings</button>
+  <button class="d-nav-item" id="dsWait" onclick="showBookings('pending_payment')"><span class="dni"><i data-lucide="clock"></i></span> Pending <span class="d-nav-badge" id="dsBadge">0</span></button>
+  <button class="d-nav-item" id="dsOK" onclick="showBookings('confirmed')"><span class="dni"><i data-lucide="check"></i></span> Confirmed</button>
+  <button class="d-nav-item" id="dsDone" onclick="showBookings('completed')"><span class="dni"><i data-lucide="check-check"></i></span> Completed</button>
+  <button class="d-nav-item" id="dsSchedule" onclick="showSchedule()"><span class="dni"><i data-lucide="calendar"></i></span> Schedule</button>
+  <button class="d-nav-item" id="dsCustomers" onclick="showCustomers()"><span class="dni"><i data-lucide="contact"></i></span> Customers</button>
+  <div class="d-nav-label">Team &amp; Analytics</div>
+  <button class="d-nav-item" id="dsStaff" onclick="showStaff()"><span class="dni"><i data-lucide="users"></i></span> Staff</button>
+  <button class="d-nav-item" id="dsReports" onclick="showReports()"><span class="dni"><i data-lucide="bar-chart-3"></i></span> Reports</button>
+  <div class="d-nav-label">System</div>
   <button class="d-nav-item" id="dsWebsite" onclick="showWebsite()"><span class="dni"><i data-lucide="globe-2"></i></span> Website</button>
-  <button class="d-nav-item" id="dsSettings" onclick="showSettings()"><span class="dni"><i data-lucide="settings"></i></span> Tetapan</button>
-  <button class="d-nav-item" id="dsBackup" onclick="showBackup()"><span class="dni"><i data-lucide="database-backup"></i></span> Sandaran</button>
+  <button class="d-nav-item" id="dsSettings" onclick="showSettings()"><span class="dni"><i data-lucide="settings"></i></span> Settings</button>
+  <button class="d-nav-item" id="dsBackup" onclick="showBackup()"><span class="dni"><i data-lucide="database-backup"></i></span> Backup</button>
   <div class="d-sidebar-footer">
-    <button onclick="refreshView()"><i data-lucide="refresh-cw"></i> Segarkan data</button>
-    <button onclick="toggleTheme()"><i data-lucide="sun-moon"></i> Tema</button>
-    <button onclick="logout()" style="color:#fca5a5"><i data-lucide="log-out"></i> Log keluar</button>
+    <button onclick="refreshView()"><i data-lucide="refresh-cw"></i> Refresh data</button>
+    <button onclick="toggleTheme()"><i data-lucide="sun-moon"></i> Theme</button>
+    <button onclick="logout()" style="color:#fca5a5"><i data-lucide="log-out"></i> Log out</button>
   </div>
 </aside>
 
 <!-- ═══════════ MAIN CONTENT ═══════════ -->
 <div class="d-main" id="dMain">
   <div class="d-hdr">
-    <div><h1 id="dTitle">Dashboard</h1><p id="dSub">Ringkasan operasi semua servis JAYABINA</p></div>
-    <div class="d-hdr-actions"><span class="cloud-status">Cloudflare Live</span><button class="d-icon-btn" onclick="toggleTheme()" aria-label="Tukar tema"><i data-lucide="sun-moon"></i></button></div>
+    <div><h1 id="dTitle">Dashboard</h1><p id="dSub">Overview of all JAYABINA service operations</p></div>
+    <div class="d-hdr-actions"><span class="cloud-status">Cloudflare Live</span><button class="d-icon-btn" onclick="toggleTheme()" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button></div>
   </div>
 
   <div class="stats-grid">
@@ -457,43 +457,43 @@
     <div class="hdr-title"><h1 id="mTitleView">Dashboard</h1><span>JAYABINA</span></div>
   </div>
   <div class="hdr-r">
-    <button class="hdr-btn" onclick="toggleTheme()" aria-label="Tukar tema"><i data-lucide="sun-moon"></i></button>
-    <button class="hdr-btn" id="burgerBtn" onclick="toggleDrawer()" aria-label="Buka menu" aria-expanded="false" aria-controls="drawer"><i data-lucide="menu"></i></button>
+    <button class="hdr-btn" onclick="toggleTheme()" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+    <button class="hdr-btn" id="burgerBtn" onclick="toggleDrawer()" aria-label="Open menu" aria-expanded="false" aria-controls="drawer"><i data-lucide="menu"></i></button>
   </div>
 </header>
 
 <!-- ═══════════ HAMBURGER DRAWER ═══════════ -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
-<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Menu portal JAYABINA" aria-hidden="true">
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="JAYABINA portal menu" aria-hidden="true">
   <div class="drawer-head" style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
     <div class="hdr-logo" style="width:40px;height:40px;font-size:.75rem">JB</div>
     <div><div style="font-weight:800;font-size:.95rem">JAYABINA</div><div class="drawer-sub" style="font-size:.68rem;color:var(--text3)">Operations Portal</div></div>
   </div>
   <div class="drawer-menu">
     <button class="drawer-item" onclick="showDashboard();toggleDrawer()"><span><i data-lucide="layout-dashboard"></i></span> Dashboard</button>
-    <button class="drawer-item" onclick="showBookings();toggleDrawer()"><span><i data-lucide="layout-grid"></i></span> Semua tempahan</button>
-    <button class="drawer-item" onclick="showBookings('pending_payment');toggleDrawer()"><span><i data-lucide="clock"></i></span> Menunggu bayaran <span class="d-nav-badge" id="drBadge" style="margin-left:auto">0</span></button>
-    <button class="drawer-item" onclick="showSchedule();toggleDrawer()"><span><i data-lucide="calendar"></i></span> Jadual</button>
-    <button class="drawer-item" onclick="showStaff();toggleDrawer()"><span><i data-lucide="users"></i></span> Staf</button>
-    <button class="drawer-item" onclick="showCustomers();toggleDrawer()"><span><i data-lucide="contact"></i></span> Pelanggan</button>
-    <button class="drawer-item" onclick="showReports();toggleDrawer()"><span><i data-lucide="bar-chart-3"></i></span> Laporan</button>
+    <button class="drawer-item" onclick="showBookings();toggleDrawer()"><span><i data-lucide="layout-grid"></i></span> All bookings</button>
+    <button class="drawer-item" onclick="showBookings('pending_payment');toggleDrawer()"><span><i data-lucide="clock"></i></span> Pending payment <span class="d-nav-badge" id="drBadge" style="margin-left:auto">0</span></button>
+    <button class="drawer-item" onclick="showSchedule();toggleDrawer()"><span><i data-lucide="calendar"></i></span> Schedule</button>
+    <button class="drawer-item" onclick="showStaff();toggleDrawer()"><span><i data-lucide="users"></i></span> Staff</button>
+    <button class="drawer-item" onclick="showCustomers();toggleDrawer()"><span><i data-lucide="contact"></i></span> Customers</button>
+    <button class="drawer-item" onclick="showReports();toggleDrawer()"><span><i data-lucide="bar-chart-3"></i></span> Reports</button>
     <button class="drawer-item" onclick="showWebsite();toggleDrawer()"><span><i data-lucide="globe-2"></i></span> Website</button>
-    <button class="drawer-item" onclick="showSettings();toggleDrawer()"><span><i data-lucide="settings"></i></span> Tetapan</button>
-    <button class="drawer-item" onclick="showBackup();toggleDrawer()"><span><i data-lucide="database-backup"></i></span> Sandaran</button>
+    <button class="drawer-item" onclick="showSettings();toggleDrawer()"><span><i data-lucide="settings"></i></span> Settings</button>
+    <button class="drawer-item" onclick="showBackup();toggleDrawer()"><span><i data-lucide="database-backup"></i></span> Backup</button>
   </div>
   <div class="drawer-menu" style="border-top:1px solid var(--border);padding-top:8px">
-    <button class="drawer-item" onclick="refreshView();toggleDrawer()"><span><i data-lucide="refresh-cw"></i></span> Segarkan data</button>
-    <button class="drawer-item" onclick="toggleTheme();toggleDrawer()"><span><i data-lucide="sun-moon"></i></span> Tema</button>
-    <button class="drawer-item" onclick="logout()" style="color:var(--danger)"><span><i data-lucide="log-out"></i></span> Log keluar</button>
+    <button class="drawer-item" onclick="refreshView();toggleDrawer()"><span><i data-lucide="refresh-cw"></i></span> Refresh data</button>
+    <button class="drawer-item" onclick="toggleTheme();toggleDrawer()"><span><i data-lucide="sun-moon"></i></span> Theme</button>
+    <button class="drawer-item" onclick="logout()" style="color:var(--danger)"><span><i data-lucide="log-out"></i></span> Log out</button>
   </div>
 </div>
 
 <!-- ═══════════ MOBILE BOTTOM NAV ═══════════ -->
 <nav class="bnav">
-  <button class="bnav-item active" id="navDash" onclick="showDashboard()"><span class="bni"><i data-lucide="layout-dashboard"></i></span><span class="bnl">Utama</span></button>
-  <button class="bnav-item" id="navAll" onclick="showBookings()"><span class="bni"><i data-lucide="layout-grid"></i></span><span class="bnl">Tempahan</span></button>
-  <button class="bnav-item" id="navSchedule" onclick="showSchedule()"><span class="bni"><i data-lucide="calendar"></i></span><span class="bnl">Jadual</span></button>
-  <button class="bnav-item" id="navMore" onclick="toggleDrawer()"><span class="bni"><i data-lucide="menu"></i></span><span class="bnl">Lain-lain</span></button>
+  <button class="bnav-item active" id="navDash" onclick="showDashboard()"><span class="bni"><i data-lucide="layout-dashboard"></i></span><span class="bnl">Home</span></button>
+  <button class="bnav-item" id="navAll" onclick="showBookings()"><span class="bni"><i data-lucide="layout-grid"></i></span><span class="bnl">Bookings</span></button>
+  <button class="bnav-item" id="navSchedule" onclick="showSchedule()"><span class="bni"><i data-lucide="calendar"></i></span><span class="bnl">Schedule</span></button>
+  <button class="bnav-item" id="navMore" onclick="toggleDrawer()"><span class="bni"><i data-lucide="menu"></i></span><span class="bnl">More</span></button>
 </nav>
 
 <!-- ═══════════ MODAL ═══════════ -->
@@ -501,15 +501,15 @@
 
 <!-- ═══════════ AUTH GATE ═══════════ -->
 <div class="login" id="loginOverlay"><div class="login-box">
-  <button type="button" class="login-theme" onclick="toggleTheme()" aria-label="Aktifkan tema gelap" title="Tukar tema"><i data-lucide="moon"></i></button>
+  <button type="button" class="login-theme" onclick="toggleTheme()" aria-label="Enable dark theme" title="Toggle theme"><i data-lucide="moon"></i></button>
   <div class="login-avatar">JB</div>
   <h2>JAYABINA</h2>
-  <p class="sub">Log masuk ke Operations Portal</p>
+  <p class="sub">Sign in to the Operations Portal</p>
   <input type="text" id="loginEmail" placeholder="Email" autocomplete="email">
   <input type="password" id="loginPass" placeholder="Password" autocomplete="current-password">
   <div class="err" id="authErr" style="display:none;color:var(--danger);font-size:.72rem;margin-bottom:6px;text-align:center"></div>
-  <button onclick="doLogin()">Log masuk</button>
-  <p class="login-note">Akses pentadbir sahaja · Primex Jaya Bina Solutions<br>No. Syarikat JR0188646-T</p>
+  <button onclick="doLogin()">Sign in</button>
+  <p class="login-note">Administrator access only &middot; Primex Jaya Bina Solutions<br>Company No. JR0188646-T</p>
 </div></div>
 
 <script src="/jc-api.js"></script>
@@ -539,7 +539,7 @@ function applyTheme(t){
   var d=h.classList.contains('dark');
   document.querySelector('meta[name=theme-color]').content=d?'#0a0f0a':'#f5f8f6';
   document.querySelectorAll('[onclick*="toggleTheme()"]').forEach(function(btn){
-    btn.setAttribute('aria-label',d?'Aktifkan tema cerah':'Aktifkan tema gelap');
+    btn.setAttribute('aria-label',d?'Enable light theme':'Enable dark theme');
     if(btn.classList.contains('login-theme'))btn.innerHTML='<i data-lucide="'+(d?'sun':'moon')+'"></i>';
   });
   relucide();
@@ -646,7 +646,7 @@ function showModal(id){
 function openModalFrame(){lastFocused=document.activeElement;var modal=document.getElementById('modal');modal.classList.add('show');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';setTimeout(function(){var first=modal.querySelector('button,a,input,select,textarea');if(first)first.focus()},40)}
 function closeModal(){var modal=document.getElementById('modal');modal.classList.remove('show');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';cid=null;if(lastFocused&&lastFocused.focus)lastFocused.focus()}
 function statusNeedsConfirm(s){return s==='cancelled'||s==='completed'}
-function confirmStatus(s){if(!statusNeedsConfirm(s))return true;return window.confirm(s==='completed'?'Tandakan kerja ini sebagai selesai?':'Batalkan tempahan ini?')}
+function confirmStatus(s){if(!statusNeedsConfirm(s))return true;return window.confirm(s==='completed'?'Mark this job as completed?':'Cancel this booking?')}
 async function updateStatus(id,s){if(!confirmStatus(s))return;try{var r=await SB.from('bookings').update({status:s,updated_at:new Date().toISOString()}).eq('id',id);if(r.error)throw r.error;closeModal();await load(cf)}catch(e){alert(errorMessage(e))}}
 async function quickUpdate(id,s){if(!confirmStatus(s))return;try{var r=await SB.from('bookings').update({status:s,updated_at:new Date().toISOString()}).eq('id',id);if(r.error)throw r.error;await load(cf)}catch(e){alert(errorMessage(e))}}
 

@@ -68,11 +68,23 @@ for (const cardRule of [
   assert.ok(files.modern.includes(cardRule), `missing unified card rule ${cardRule}`);
 }
 
-assert.ok(files.html.includes('?v=20260716-website1'), 'admin must cache-bust the website manager release');
+assert.ok(files.html.includes('?v=20260716-english1'), 'admin must cache-bust the English UI release');
 assert.ok(files.html.includes('id="dsWebsite"'), 'desktop navigation must include the Website module');
 assert.ok(files.html.includes('function showWebsite()'), 'admin must provide the Hugo website manager');
 assert.ok(files.html.includes("API_URL+'/api/website'"), 'website manager must use the authenticated Worker API');
 assert.ok(files.modern.includes('.admin-app .site-shell'), 'website manager must have responsive layout styles');
+
+assert.ok(files.html.includes('<html lang="en"'), 'admin document language must be English');
+for (const malayUi of [
+  '>Ringkasan<', '>Operasi<', '>Tempahan<', '>Menunggu ', '>Disahkan<', '>Selesai<',
+  '>Jadual<', '>Pelanggan<', '>Pasukan & Analitik<', '>Staf<', '>Laporan<', '>Sistem<',
+  '>Tetapan<', '>Sandaran<', '>Segarkan data<', '>Tema<', '>Log keluar<', '>Utama<',
+  '>Lain-lain<', 'Log masuk ke Operations Portal', '>Log masuk<', 'Akses pentadbir sahaja',
+  'No. Syarikat', 'Tandakan kerja ini sebagai selesai?', 'Batalkan tempahan ini?',
+  'aria-label="Tukar tema"', 'aria-label="Buka menu"', 'Aktifkan tema cerah', 'Aktifkan tema gelap'
+]) {
+  assert.ok(!files.html.includes(malayUi), `Malay admin UI text remains: ${malayUi}`);
+}
 
 const inlineScripts = [...files.html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map(match => match[1]);
 assert.ok(inlineScripts.length >= 2, 'admin must retain its inline application scripts');
