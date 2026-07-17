@@ -1,4 +1,4 @@
-name: Deploy JAYABINA to Cloudflare Pages
+name: Deploy to CF Pages
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch: {}
 
 concurrency:
-  group: cloudflare-pages-production
+  group: cf-pages-deploy
   cancel-in-progress: false
 
 jobs:
@@ -15,37 +15,27 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-    permissions:
-      contents: read
-      deployments: write
     steps:
       - uses: actions/checkout@v6
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
+      - uses: peaceiris/actions-hugo@v3
+        with: { hugo-version: latest, extended: true }
 
-      - name: Install Hugo
-        uses: peaceiris/actions-hugo@v3
-        with:
-          hugo-version: latest
-          extended: true
+      - run: npm install -g wrangler@4
 
-      - name: Install Wrangler
-        run: npm install -g wrangler@4
+      - run: hugo --source site --destination site-public --minify
 
-      - name: Build JAYABINA Hugo website (site/)
-        run: hugo --source site --destination site-public --minify
+      - name: Deploy jayabina
+        run: |
+          echo "TOKEN length: ${#CLOUDFLARE_API_TOKEN}"
+          echo "ACCOUNT: ${CLOUDFLARE_ACCOUNT_ID}"
+          wrangler pages deploy site-public --project-name jayabina --branch master 2>&1
 
-      - name: Deploy JAYABINA to www.jayabina.com
-        run: wrangler pages deploy site-public --project-name jayabina --branch master
-
-      - name: Deploy Admin to admin.jayabina.com
+      - name: Deploy admin
         run: |
           mkdir -p admin-public
-          cp admin/index.html admin-public/index.html
+          cp admin/index.html admin-public/index.html 2>/dev/null || true
           test -f admin/editor.html && cp admin/editor.html admin-public/ || true
           test -d admin/vendor && cp -r admin/vendor admin-public/ || true
           for f in theme.css admin-modern.css jc-api.js admin-favicon.svg admin-manifest.json; do test -f "$f" && cp "$f" admin-public/ || true; done
-          wrangler pages deploy admin-public --project-name jayabina-admin --branch master
+          wrangler pages deploy admin-public --project-name jayabina-admin --branch master 2>&1
