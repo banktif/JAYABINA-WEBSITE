@@ -23,13 +23,12 @@ jobs:
 
       - run: npm install -g wrangler@4
 
-      - run: hugo --source site --destination site-public --minify
+      - name: Build Hugo
+        working-directory: site
+        run: hugo --minify --destination ../site-public
 
       - name: Deploy jayabina
-        run: |
-          echo "TOKEN length: ${#CLOUDFLARE_API_TOKEN}"
-          echo "ACCOUNT: ${CLOUDFLARE_ACCOUNT_ID}"
-          wrangler pages deploy site-public --project-name jayabina --branch master 2>&1
+        run: wrangler pages deploy site-public --project-name jayabina --branch master
 
       - name: Deploy admin
         run: |
@@ -38,4 +37,4 @@ jobs:
           test -f admin/editor.html && cp admin/editor.html admin-public/ || true
           test -d admin/vendor && cp -r admin/vendor admin-public/ || true
           for f in theme.css admin-modern.css jc-api.js admin-favicon.svg admin-manifest.json; do test -f "$f" && cp "$f" admin-public/ || true; done
-          wrangler pages deploy admin-public --project-name jayabina-admin --branch master 2>&1
+          wrangler pages deploy admin-public --project-name jayabina-admin --branch master
