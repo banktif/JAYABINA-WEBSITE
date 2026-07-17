@@ -31,11 +31,10 @@ jobs:
         run: hugo --source site --destination site-public --minify
 
       - name: Deploy JAYABINA to www.jayabina.com
-        if: env.CLOUDFLARE_API_TOKEN != ''
-        run: npx --yes wrangler@4 pages deploy site-public --project-name jayabina --branch master
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' }}
 
       - name: Deploy Admin to admin.jayabina.com
-        if: env.CLOUDFLARE_API_TOKEN != ''
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' }}
         run: |
           mkdir -p admin-public
           cp admin/index.html admin-public/index.html 2>/dev/null || true
