@@ -28,7 +28,7 @@ jobs:
         run: hugo --minify --destination ../site-public
 
       - name: Deploy jayabina
-        run: wrangler pages deploy site-public --project-name jayabina --branch master
+        run: wrangler pages deploy site-public --project-name jayabina --branch main
 
       - name: Deploy admin
         run: |
