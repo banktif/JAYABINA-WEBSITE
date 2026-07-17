@@ -304,6 +304,8 @@ body.admin-app{
 .admin-app .site-tabs button:hover{color:var(--text);background:var(--card-bg)}
 .admin-app .site-tabs button.active{color:var(--accent);background:var(--card-bg);box-shadow:var(--card-shadow)}
 .admin-app .site-tabs button>svg{width:18px;height:18px}.admin-app .site-tabs b,.admin-app .site-tabs small{display:block}.admin-app .site-tabs b{font-size:12px}.admin-app .site-tabs small{margin-top:1px;color:var(--text3);font-size:9px}
+.admin-app .site-visual-head{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:20px 22px;margin-bottom:12px}.admin-app .site-visual-head h2{margin:4px 0 4px;font-size:20px}.admin-app .site-visual-head p{max-width:720px;color:var(--text2);font-size:11px;line-height:1.55}.admin-app .site-visual-head .d-btn{flex:0 0 auto}
+.admin-app .site-visual-frame-wrap{height:max(720px,calc(100dvh - 260px));overflow:hidden;border:1px solid var(--card-border);border-radius:17px;background:#07150d;box-shadow:var(--card-shadow)}.admin-app .site-visual-frame-wrap iframe{display:block;width:100%;height:100%;border:0;background:#07150d}
 .admin-app .site-settings-loading{min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);font-size:12px}
 .admin-app .site-settings-error{display:flex;align-items:center;gap:13px;padding:20px;color:var(--danger)}
 .admin-app .site-settings-error>svg{flex:0 0 auto}.admin-app .site-settings-error>div{min-width:0;flex:1}.admin-app .site-settings-error b,.admin-app .site-settings-error span{display:block}.admin-app .site-settings-error b{font-size:14px}.admin-app .site-settings-error span{margin-top:3px;color:var(--text2);font-size:11px}
@@ -535,6 +537,7 @@ body.admin-app{
   .admin-app .site-actions{display:grid;grid-template-columns:1fr 1fr}
   .admin-app .site-actions .d-btn{width:100%}
   .admin-app .site-tabs{width:100%}.admin-app .site-tabs button{min-width:0;flex:1;padding:10px}.admin-app .site-tabs button small{display:none}
+  .admin-app .site-visual-head{align-items:flex-start;flex-direction:column;padding:17px}.admin-app .site-visual-head .d-btn{width:100%}.admin-app .site-visual-frame-wrap{height:calc(100dvh - 235px);min-height:620px;border-radius:13px}
   .admin-app .site-settings-intro{align-items:flex-start;flex-direction:column;padding:18px}.admin-app .site-settings-version{width:100%;text-align:left}
   .admin-app .site-settings-nav{grid-template-columns:repeat(2,minmax(0,1fr));padding:8px}.admin-app .site-settings-nav button{font-size:10px;padding:9px 8px}
   .admin-app .site-settings-card{padding:17px;scroll-margin-top:72px}.admin-app .site-settings-card-head,.admin-app .site-settings-card-head.with-action{grid-template-columns:38px minmax(0,1fr)}.admin-app .site-settings-card-head.with-action .d-btn{grid-column:1/-1;width:100%}

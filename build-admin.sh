@@ -6,7 +6,9 @@ rm -rf "$OUT_DIR"
 mkdir -p "$OUT_DIR"
 
 cp admin/index.html "$OUT_DIR/index.html"
-cp theme.css admin-modern.css jc-api.js admin-favicon.svg admin-manifest.json "$OUT_DIR/"
+test -f admin/editor.html && cp admin/editor.html "$OUT_DIR/editor.html"
+test -d admin/vendor && cp -r admin/vendor "$OUT_DIR/vendor"
+for f in theme.css admin-modern.css jc-api.js admin-favicon.svg admin-manifest.json; do test -f "$f" && cp "$f" "$OUT_DIR/"; done
 
 # Security headers for the dedicated admin hostname.
 cat > "$OUT_DIR/_headers" <<'EOF'
@@ -24,6 +26,9 @@ cat > "$OUT_DIR/_headers" <<'EOF'
 
 /*.html
   Cache-Control: no-store, max-age=0
+
+/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
 EOF
 
 echo "JAYABINA admin build ready: $OUT_DIR"

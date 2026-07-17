@@ -211,38 +211,6 @@ export async function handleBackup(req: Request, env: Env, path: string): Promis
     }
   }
 
-  // POST /api/backup/publish-home
-  if (path === '/api/backup/publish-home' && req.method === 'POST') {
-    try {
-      await checkBackupAuth(req, env);
-      if (!env.GH_PAT) return err('GitHub token is not configured in Cloudflare Worker secrets', 503);
-      const { version } = await req.json() as {version?: string};
-      const clean = String(version || '').toLowerCase();
-      if (!['v1', 'v2', 'v3', 'v4'].includes(clean)) return err('Invalid homepage version');
-      const headers = githubHeaders(env.GH_PAT);
-      const srcResponse = await fetch(`https://api.github.com/repos/banktif/jayaclean-salespage/contents/home/${clean}.html`, { headers });
-      const src: any = await srcResponse.json();
-      if (!srcResponse.ok || !src.content) return err(`Source home/${clean}.html not found`, 404);
-      const indexResponse = await fetch('https://api.github.com/repos/banktif/jayaclean-salespage/contents/index.html', { headers });
-      const index: any = await indexResponse.json();
-      if (!indexResponse.ok || !index.sha) return err('Live homepage metadata could not be read', 502);
-      const publish = await fetch('https://api.github.com/repos/banktif/jayaclean-salespage/contents/index.html', {
-        method: 'PUT', headers,
-        body: JSON.stringify({
-          message: `Publish homepage ${clean} to live`,
-          content: String(src.content).replace(/\n/g, ''),
-          sha: index.sha,
-          branch: 'master'
-        })
-      });
-      if (!publish.ok) return err('Homepage publish failed', 502);
-      await setSetting(db, 'active_homepage', clean);
-      return ok({ published: clean });
-    } catch (e: any) {
-      return err(e.msg || e.message || 'Homepage publish failed', e.status || 500);
-    }
-  }
-
   return err('Not found', 404);
 }
 

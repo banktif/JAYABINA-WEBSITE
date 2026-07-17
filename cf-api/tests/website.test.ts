@@ -2,7 +2,17 @@ import { env, exports as workerExports } from 'cloudflare:workers';
 import { applyD1Migrations } from 'cloudflare:test';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { hashPassword, signJWT } from '../src/utils/helpers';
-import { buildWebsiteSettingsFiles, isEditableWebsitePath, parseWebsiteSettings, validateWebsiteSettings, WEBSITE_FILES } from '../src/routes/website';
+import {
+  buildWebsiteSettingsFiles,
+  DEFAULT_EDITOR_SITES,
+  editorProtectReason,
+  isEditableWebsitePath,
+  normalizeEditorSites,
+  parseWebsiteSettings,
+  validateEditorSites,
+  validateWebsiteSettings,
+  WEBSITE_FILES
+} from '../src/routes/website';
 
 const ADMIN_ID = '20000000-0000-4000-8000-000000000001';
 const STAFF_ID = '20000000-0000-4000-8000-000000000002';
@@ -21,7 +31,8 @@ beforeEach(async () => {
     env.DB.prepare('INSERT OR REPLACE INTO profiles (id,full_name,phone,role,is_active,email,address,avatar_url,service_area,password,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)')
       .bind(ADMIN_ID, 'Website Admin', '60110000011', 'admin', 1, 'website-admin@example.test', '', '', '', password, '2026-01-01T00:00:00.000Z'),
     env.DB.prepare('INSERT OR REPLACE INTO profiles (id,full_name,phone,role,is_active,email,address,avatar_url,service_area,password,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)')
-      .bind(STAFF_ID, 'Website Staff', '60110000012', 'staff', 1, 'website-staff@example.test', '', '', '', password, '2026-01-01T00:00:00.000Z')
+      .bind(STAFF_ID, 'Website Staff', '60110000012', 'staff', 1, 'website-staff@example.test', '', '', '', password, '2026-01-01T00:00:00.000Z'),
+    env.DB.prepare("DELETE FROM app_settings WHERE key = 'website_visual_editor_sites_v1'")
   ]);
 });
 
@@ -58,8 +69,41 @@ describe('Hugo website management', () => {
     const missing = await call('/api/website/file?path=site%2Fcontent%2F_index.md', adminToken);
     expect(missing.status).toBe(503);
     expect((await call('/api/website/settings', adminToken)).status).toBe(503);
+    expect((await call('/api/website/editor/page?site=jayaclean-sales', adminToken)).status).toBe(503);
     const traversal = await call('/api/website/file', adminToken, 'PUT', { path: '../theme.css', content: 'x' });
     expect(traversal.status).toBe(400);
+  });
+
+  it('provides a persistent, admin-only visual editor registry for up to 10 sites', async () => {
+    expect(validateEditorSites(DEFAULT_EDITOR_SITES)).toBe('');
+    const unauthenticated = await call('/api/website/editor/sites');
+    const staff = await call('/api/website/editor/sites', staffToken);
+    const defaults = await call('/api/website/editor/sites', adminToken);
+    expect(unauthenticated.status).toBe(401);
+    expect(staff.status).toBe(403);
+    expect(defaults.status).toBe(200);
+    expect(defaults.body.data.sites).toEqual(DEFAULT_EDITOR_SITES);
+    expect(defaults.body.data.limit).toBe(10);
+
+    const configured = normalizeEditorSites([
+      DEFAULT_EDITOR_SITES[0],
+      { id: 'roof-sales', name: 'Roof Sales Page', repo: 'banktif/roof-sales', branch: 'main', file: 'index.html', live_url: 'https://roof.jayabina.com', asset_dir: 'assets/editor' }
+    ]);
+    const saved = await call('/api/website/editor/sites', adminToken, 'PUT', { sites: configured });
+    expect(saved.status).toBe(200);
+    expect(saved.body.data.sites).toHaveLength(2);
+    const reloaded = await call('/api/website/editor/sites', adminToken);
+    expect(reloaded.body.data.sites).toEqual(configured);
+  });
+
+  it('blocks app files and unsafe repositories from the visual editor', () => {
+    expect(editorProtectReason('banktif/site', 'index.html')).toBe('');
+    expect(editorProtectReason('banktif/site', 'admin/index.html')).toContain('protected');
+    expect(editorProtectReason('banktif/site', '../index.html')).toContain('invalid');
+    expect(editorProtectReason('banktif/site', 'theme.css')).toContain('standalone HTML');
+    expect(editorProtectReason('banktif/jayaclean-salespage', 'site/layouts/index.html')).toContain('Only the public sales page');
+    expect(validateEditorSites([{ ...DEFAULT_EDITOR_SITES[0], repo: 'another-owner/site' }])).toContain('banktif');
+    expect(validateEditorSites(Array.from({ length: 11 }, (_, index) => ({ ...DEFAULT_EDITOR_SITES[0], id: `site-${index}`, name: `Site ${index}`, repo: `banktif/site-${index}` })))).toContain('between 1 and 10');
   });
 
   it('round-trips structured Hugo settings without losing managed fields', () => {

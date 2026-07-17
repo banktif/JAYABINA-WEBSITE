@@ -1,11 +1,39 @@
 import type { Env } from '../types';
-import { err, ok } from '../utils/helpers';
+import { err, ok, nowISO } from '../utils/helpers';
 import { requireAdmin, requireAuth } from '../utils/middleware';
+import { createDb } from '../db/client';
+import { appSettings } from '../db/schema';
+import { eq, sql } from 'drizzle-orm';
 
 const REPO = 'banktif/jayaclean-salespage';
 const BRANCH = 'master';
-const API_ROOT = `https://api.github.com/repos/${REPO}`;
 const MAX_CONTENT_BYTES = 500_000;
+const EDITOR_SITES_KEY = 'website_visual_editor_sites_v1';
+const MAX_EDITOR_SITES = 10;
+const MAX_EDITOR_HTML_BYTES = 2_000_000;
+const MAX_EDITOR_PROJECT_BYTES = 4_000_000;
+const MAX_EDITOR_ASSET_BYTES = 5_000_000;
+const EDITOR_SYSTEM_SEGMENT = /(^|\/)(admin|worker|customer|dashboard|login|staff|app|api|cf-api|functions)(\/|$)/i;
+
+export type WebsiteEditorSite = {
+  id: string;
+  name: string;
+  repo: string;
+  branch: string;
+  file: string;
+  live_url: string;
+  asset_dir: string;
+};
+
+export const DEFAULT_EDITOR_SITES: WebsiteEditorSite[] = [{
+  id: 'jayaclean-sales',
+  name: 'JAYACLEAN Sales Page',
+  repo: REPO,
+  branch: BRANCH,
+  file: 'index.html',
+  live_url: 'https://cuci.jayabina.com/',
+  asset_dir: 'assets/editor'
+}];
 
 export type WebsiteFile = {
   path: string;
@@ -195,6 +223,148 @@ export async function handleWebsite(req: Request, env: Env, path: string): Promi
     });
   }
 
+  if (path === '/api/website/editor/sites' && req.method === 'GET') {
+    const sites = await readEditorSites(env);
+    return ok({
+      sites,
+      limit: MAX_EDITOR_SITES,
+      connected: Boolean(env.GH_PAT),
+      grapesjs: '0.23.2',
+      storage: 'Cloudflare D1 + GitHub'
+    });
+  }
+
+  if (path === '/api/website/editor/sites' && req.method === 'PUT') {
+    const body = await safeJson(req);
+    const validation = validateEditorSites(body.sites);
+    if (validation) return err(validation, 400);
+    const sites = normalizeEditorSites(body.sites);
+    const now = new Date().toISOString();
+    const db = createDb(env);
+    await db.insert(appSettings).values({ key: EDITOR_SITES_KEY, value: JSON.stringify(sites), updatedAt: now })
+      .onConflictDoUpdate({ target: appSettings.key, set: { value: JSON.stringify(sites), updatedAt: now } });
+    return ok({ sites, limit: MAX_EDITOR_SITES });
+  }
+
+  if (path === '/api/website/editor/page' && req.method === 'GET') {
+    if (!env.GH_PAT) return err('GitHub publishing is not configured', 503);
+    const site = await findEditorSite(env, new URL(req.url).searchParams.get('site') || '');
+    if (!site) return err('Visual editor site was not found', 404);
+    const reason = editorProtectReason(site.repo, site.file);
+    if (reason) return err(reason, 400);
+
+    const refResponse = await githubForRepo(site.repo, `/git/ref/heads/${encodePath(site.branch)}`, env.GH_PAT);
+    const refData: any = await refResponse.json();
+    if (!refResponse.ok || !refData.object?.sha) return githubError(refData, refResponse.status, 'Unable to load website version');
+    const file = await readGithubRepoFile(site.repo, site.file, site.branch, env.GH_PAT);
+    if (new TextEncoder().encode(file.content).byteLength > MAX_EDITOR_HTML_BYTES) return err('This HTML file is too large for the visual editor', 413);
+
+    let projectData: unknown = null;
+    try {
+      const project = await readGithubRepoFile(site.repo, editorProjectPath(site), site.branch, env.GH_PAT);
+      if (new TextEncoder().encode(project.content).byteLength <= MAX_EDITOR_PROJECT_BYTES) projectData = JSON.parse(project.content);
+    } catch (e: any) {
+      if (e?.status !== 404) return err(e?.message || 'Unable to load visual editor project data', e?.status || 502);
+    }
+    return ok({
+      site,
+      html: file.content,
+      file_sha: file.sha,
+      commit_sha: refData.object.sha,
+      project_data: projectData,
+      project_path: editorProjectPath(site)
+    });
+  }
+
+  if (path === '/api/website/editor/page' && req.method === 'PUT') {
+    if (!env.GH_PAT) return err('GitHub publishing is not configured', 503);
+    const body = await safeJson(req);
+    const site = await findEditorSite(env, typeof body.site_id === 'string' ? body.site_id : '');
+    if (!site) return err('Visual editor site was not found', 404);
+    const reason = editorProtectReason(site.repo, site.file);
+    if (reason) return err(reason, 400);
+    const html = typeof body.html === 'string' ? body.html : '';
+    const baseCommit = typeof body.base_commit === 'string' ? body.base_commit : '';
+    if (!html.trim() || !/<body(?:\s|>)/i.test(html)) return err('A complete HTML document with a body is required', 400);
+    if (new TextEncoder().encode(html).byteLength > MAX_EDITOR_HTML_BYTES) return err('This HTML file is too large for the visual editor', 413);
+    if (!/^[a-f0-9]{40}$/i.test(baseCommit)) return err('Website version is missing or invalid. Reload the page and try again.', 400);
+    if (!body.project_data || typeof body.project_data !== 'object') return err('GrapesJS project data is required', 400);
+    const projectJson = JSON.stringify(body.project_data, null, 2) + '\n';
+    if (new TextEncoder().encode(projectJson).byteLength > MAX_EDITOR_PROJECT_BYTES) return err('Visual editor project data is too large', 413);
+
+    const result = await atomicGithubTextCommit(site, env.GH_PAT, baseCommit, {
+      [site.file]: html,
+      [editorProjectPath(site)]: projectJson
+    }, `Update ${site.name} via JAYABINA Visual Editor`);
+    if (result instanceof Response) return result;
+    return ok({
+      site_id: site.id,
+      commit_sha: result.commitSha,
+      commit_url: `https://github.com/${site.repo}/commit/${result.commitSha}`,
+      files: [site.file, editorProjectPath(site)],
+      deployment: 'GitHub deployment started automatically'
+    });
+  }
+
+  if (path === '/api/website/editor/assets' && req.method === 'GET') {
+    if (!env.GH_PAT) return err('GitHub publishing is not configured', 503);
+    const site = await findEditorSite(env, new URL(req.url).searchParams.get('site') || '');
+    if (!site) return err('Visual editor site was not found', 404);
+    const response = await githubForRepo(site.repo, `/contents/${encodePath(site.asset_dir)}?ref=${encodeURIComponent(site.branch)}`, env.GH_PAT);
+    if (response.status === 404) return ok({ assets: [] });
+    const data: any = await response.json();
+    if (!response.ok || !Array.isArray(data)) return githubError(data, response.status, 'Unable to load website assets');
+    const assets = data.filter((item: any) => item?.type === 'file' && isEditorImageName(item.name)).map((item: any) => ({
+      type: 'image', name: item.name, src: publicAssetUrl(site, item.name)
+    }));
+    return ok({ assets });
+  }
+
+  if (path === '/api/website/editor/assets' && req.method === 'POST') {
+    if (!env.GH_PAT) return err('GitHub publishing is not configured', 503);
+    const site = await findEditorSite(env, new URL(req.url).searchParams.get('site') || '');
+    if (!site) return err('Visual editor site was not found', 404);
+    let form: FormData;
+    try { form = await req.formData(); } catch { return err('Image upload must use multipart form data', 400); }
+    const files = form.getAll('files').filter((value): value is File => value instanceof File);
+    if (!files.length) return err('Choose at least one image to upload', 400);
+    if (files.length > 5) return err('Upload a maximum of 5 images at a time', 400);
+    let totalBytes = 0;
+    for (const file of files) {
+      totalBytes += file.size;
+      if (file.size < 1 || file.size > MAX_EDITOR_ASSET_BYTES) return err('Each image must be 5 MB or smaller', 413);
+      if (!isEditorImageMime(file.type) || !isEditorImageName(file.name)) return err(`Unsupported image: ${file.name}`, 400);
+    }
+    if (totalBytes > MAX_EDITOR_ASSET_BYTES * 2) return err('Combined upload must be 10 MB or smaller', 413);
+
+    const refResponse = await githubForRepo(site.repo, `/git/ref/heads/${encodePath(site.branch)}`, env.GH_PAT);
+    const refData: any = await refResponse.json();
+    if (!refResponse.ok || !refData.object?.sha) return githubError(refData, refResponse.status, 'Unable to verify website version');
+    const baseCommit = refData.object.sha;
+    const commitResponse = await githubForRepo(site.repo, `/git/commits/${baseCommit}`, env.GH_PAT);
+    const commitData: any = await commitResponse.json();
+    if (!commitResponse.ok || !commitData.tree?.sha) return githubError(commitData, commitResponse.status, 'Unable to read the current website tree');
+
+    const tree: Array<{ path: string; mode: string; type: string; sha: string }> = [];
+    const assets: Array<{ type: string; name: string; src: string }> = [];
+    for (const file of files) {
+      const name = uniqueAssetName(file.name);
+      const blobResponse = await githubForRepo(site.repo, '/git/blobs', env.GH_PAT, {
+        method: 'POST', body: JSON.stringify({ content: encodeBytesBase64(new Uint8Array(await file.arrayBuffer())), encoding: 'base64' })
+      });
+      const blobData: any = await blobResponse.json();
+      if (!blobResponse.ok || !blobData.sha) return githubError(blobData, blobResponse.status, `Unable to upload ${file.name}`);
+      tree.push({ path: `${site.asset_dir}/${name}`, mode: '100644', type: 'blob', sha: blobData.sha });
+      assets.push({ type: 'image', name, src: publicAssetUrl(site, name) });
+    }
+    const committed = await finishGithubTreeCommit(site, env.GH_PAT, baseCommit, commitData.tree.sha, tree, `Upload ${files.length} visual editor image${files.length === 1 ? '' : 's'}`);
+    if (committed instanceof Response) return committed;
+    return new Response(JSON.stringify({ data: assets, commit_sha: committed.commitSha }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json; charset=utf-8' }
+    });
+  }
+
   if (path === '/api/website/file' && req.method === 'GET') {
     const filePath = new URL(req.url).searchParams.get('path') || '';
     if (!isEditableWebsitePath(filePath)) return err('This Hugo file is not editable from Admin', 400);
@@ -245,7 +415,94 @@ export async function handleWebsite(req: Request, env: Env, path: string): Promi
     return ok({ deployment: 'started', live_url: 'https://www.jayabina.com' });
   }
 
+  if (path === '/api/website/publish-home' && req.method === 'POST') {
+    if (!env.GH_PAT) return err('GitHub token is not configured in Cloudflare Worker secrets', 503);
+    const { version } = await req.json() as {version?: string};
+    const clean = String(version || '').toLowerCase();
+    if (!['v1', 'v2', 'v3', 'v4'].includes(clean)) return err('Invalid homepage version');
+    const srcResponse = await github(`/contents/home/${clean}.html?ref=${BRANCH}`, env.GH_PAT);
+    const src: any = await srcResponse.json();
+    if (!srcResponse.ok || !src.content) return err(`Source home/${clean}.html not found`, 404);
+    const indexResponse = await github(`/contents/index.html?ref=${BRANCH}`, env.GH_PAT);
+    const index: any = await indexResponse.json();
+    if (!indexResponse.ok || !index.sha) return err('Live homepage metadata could not be read', 502);
+    const publish = await github('/contents/index.html', env.GH_PAT, {
+      method: 'PUT',
+      body: JSON.stringify({
+        message: `Publish homepage ${clean} to live`,
+        content: String(src.content).replace(/\n/g, ''),
+        sha: index.sha,
+        branch: BRANCH
+      })
+    });
+    if (!publish.ok) return err('Homepage publish failed', 502);
+    const db = createDb(env);
+    const now = nowISO();
+    await db.insert(appSettings).values({ key: 'active_homepage', value: clean, updatedAt: now })
+      .onConflictDoUpdate({ target: appSettings.key, set: { value: clean, updatedAt: now } });
+    return ok({ published: clean });
+  }
+
+  // GET /api/website/page-html?page=tank|roof|paint
+  if (path === '/api/website/page-html' && req.method === 'GET') {
+    if (!env.GH_PAT) return err('GitHub publishing is not configured', 503);
+    const url = new URL(req.url);
+    const page = url.searchParams.get('page') || '';
+    const filePath = pageFilePath(page);
+    if (!filePath) return err('Invalid page. Use tank, roof, or paint.', 400);
+    try {
+      const file = await readGithubFile(filePath, env.GH_PAT);
+      return ok({ page, path: filePath, html: file.content, sha: file.sha });
+    } catch (e: any) {
+      return err(e.message || 'Unable to load page', e.status || 502);
+    }
+  }
+
+  // PUT /api/website/page-html
+  if (path === '/api/website/page-html' && req.method === 'PUT') {
+    if (!env.GH_PAT) return err('GitHub publishing is not configured', 503);
+    const body = await safeJson(req);
+    const page = typeof body.page === 'string' ? body.page : '';
+    const html = typeof body.html === 'string' ? body.html : '';
+    const filePath = pageFilePath(page);
+    if (!filePath) return err('Invalid page. Use tank, roof, or paint.', 400);
+    if (!html.trim()) return err('Content cannot be empty', 400);
+    if (new TextEncoder().encode(html).byteLength > MAX_CONTENT_BYTES) return err('Content is too large', 413);
+    try {
+      const current = await readGithubFile(filePath, env.GH_PAT);
+      const response = await github(`/contents/${encodePath(filePath)}`, env.GH_PAT, {
+        method: 'PUT',
+        body: JSON.stringify({
+          message: `Update ${page} page HTML via JAYABINA Admin`,
+          content: encodeBase64(html),
+          sha: current.sha,
+          branch: BRANCH
+        })
+      });
+      const data: any = await response.json();
+      if (!response.ok || !data.commit) return githubError(data, response.status, 'Unable to save page');
+      return ok({
+        page,
+        path: filePath,
+        sha: data.content?.sha || '',
+        commit_sha: data.commit.sha || '',
+        deployment: 'GitHub Actions started automatically'
+      });
+    } catch (e: any) {
+      return err(e.message || 'Unable to save page', e.status || 502);
+    }
+  }
+
   return err('Not found', 404);
+}
+
+function pageFilePath(page: string): string | null {
+  const map: Record<string, string> = {
+    tank: 'site/layouts/partials/service-tank.html',
+    roof: 'site/layouts/partials/service-roof.html',
+    paint: 'site/layouts/partials/service-paint.html'
+  };
+  return map[page] || null;
 }
 
 export function parseWebsiteSettings(files: Record<string, string>): WebsiteSettings {
@@ -490,8 +747,162 @@ function domainFromUrl(value: string): string {
   try { return new URL(value).hostname; } catch { return ''; }
 }
 
+export function editorProtectReason(repo: string, file: string): string {
+  const normalizedRepo = String(repo || '').trim().replace(/\.git$/i, '');
+  const normalizedFile = String(file || '').trim().replace(/^\/+/, '');
+  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(normalizedRepo)) return 'GitHub repository is invalid';
+  if (!/\.html?$/i.test(normalizedFile)) return 'The visual editor only supports standalone HTML files';
+  if (!safeRepoPath(normalizedFile)) return 'The HTML file path is invalid';
+  if (EDITOR_SYSTEM_SEGMENT.test(normalizedFile)) return 'App and system pages are protected from visual editing';
+  const base = normalizedFile.split('/').pop()?.toLowerCase() || '';
+  if (['admin.html', 'worker.html', 'customer.html', 'login.html', 'staff.html', 'dashboard.html'].includes(base)) return 'App and system pages are protected from visual editing';
+  if (/jayaclean-salespage$/i.test(normalizedRepo) && !(normalizedFile.toLowerCase() === 'index.html' || /^home\/[a-z0-9_.-]+\.html?$/i.test(normalizedFile))) {
+    return 'Only the public sales page and home page variants are editable in the JAYACLEAN repository';
+  }
+  return '';
+}
+
+export function normalizeEditorSites(value: any[]): WebsiteEditorSite[] {
+  return value.map(site => ({
+    id: String(site.id).trim().toLowerCase(),
+    name: String(site.name).trim(),
+    repo: String(site.repo).trim().replace(/\.git$/i, ''),
+    branch: String(site.branch || 'main').trim(),
+    file: String(site.file || 'index.html').trim().replace(/^\/+/, ''),
+    live_url: withTrailingSlash(String(site.live_url).trim()),
+    asset_dir: String(site.asset_dir || 'assets/editor').trim().replace(/^\/+|\/+$/g, '')
+  }));
+}
+
+export function validateEditorSites(value: unknown): string {
+  if (!Array.isArray(value)) return 'Website list is required';
+  if (value.length < 1 || value.length > MAX_EDITOR_SITES) return `Add between 1 and ${MAX_EDITOR_SITES} websites`;
+  const ids = new Set<string>(), targets = new Set<string>();
+  for (const raw of value) {
+    if (!raw || typeof raw !== 'object') return 'Every website needs complete configuration';
+    const site = raw as Record<string, unknown>;
+    const id = typeof site.id === 'string' ? site.id.trim().toLowerCase() : '';
+    const name = typeof site.name === 'string' ? site.name.trim() : '';
+    const repo = typeof site.repo === 'string' ? site.repo.trim().replace(/\.git$/i, '') : '';
+    const branch = typeof site.branch === 'string' ? site.branch.trim() : '';
+    const file = typeof site.file === 'string' ? site.file.trim().replace(/^\/+/, '') : '';
+    const liveUrl = typeof site.live_url === 'string' ? site.live_url.trim() : '';
+    const assetDir = typeof site.asset_dir === 'string' ? site.asset_dir.trim().replace(/^\/+|\/+$/g, '') : '';
+    if (!/^[a-z0-9][a-z0-9-]{1,39}$/.test(id)) return 'Website ID must use 2 to 40 lowercase letters, numbers or hyphens';
+    if (!name || name.length > 80) return 'Every website needs a name of 80 characters or fewer';
+    if (!/^banktif\/[A-Za-z0-9_.-]{1,100}$/i.test(repo)) return 'Repository must belong to the banktif GitHub account';
+    if (!branch || branch.length > 120 || !/^[A-Za-z0-9._\/-]+$/.test(branch) || branch.includes('..') || branch.startsWith('/') || branch.endsWith('/')) return 'Git branch is invalid';
+    const reason = editorProtectReason(repo, file);
+    if (reason) return `${name}: ${reason}`;
+    try {
+      const parsed = new URL(liveUrl);
+      if (parsed.protocol !== 'https:') return `${name}: live URL must use HTTPS`;
+    } catch { return `${name}: live URL is invalid`; }
+    if (!safeRepoDirectory(assetDir) || EDITOR_SYSTEM_SEGMENT.test(assetDir)) return `${name}: asset directory is invalid`;
+    if (ids.has(id)) return `Website ID is duplicated: ${id}`;
+    const target = `${repo.toLowerCase()}:${branch.toLowerCase()}:${file.toLowerCase()}`;
+    if (targets.has(target)) return `${name}: this GitHub file is already configured`;
+    ids.add(id); targets.add(target);
+  }
+  return '';
+}
+
+async function readEditorSites(env: Env): Promise<WebsiteEditorSite[]> {
+  const db = createDb(env);
+  const rows = await db.select({ value: appSettings.value }).from(appSettings).where(eq(appSettings.key, EDITOR_SITES_KEY)).limit(1);
+  if (!rows[0]?.value) return DEFAULT_EDITOR_SITES.map(site => ({ ...site }));
+  try {
+    const parsed = JSON.parse(rows[0].value);
+    if (validateEditorSites(parsed)) return DEFAULT_EDITOR_SITES.map(site => ({ ...site }));
+    return normalizeEditorSites(parsed);
+  } catch {
+    return DEFAULT_EDITOR_SITES.map(site => ({ ...site }));
+  }
+}
+
+async function findEditorSite(env: Env, id: string): Promise<WebsiteEditorSite | null> {
+  const normalized = String(id || '').trim().toLowerCase();
+  return (await readEditorSites(env)).find(site => site.id === normalized) || null;
+}
+
+function editorProjectPath(site: WebsiteEditorSite): string {
+  return `.grapesjs/${site.id}.json`;
+}
+
+function safeRepoPath(value: string): boolean {
+  return value.length <= 240 && !value.startsWith('/') && !value.includes('..') && !value.includes('\\') && /^[A-Za-z0-9_./%+ -]+$/.test(value);
+}
+
+function safeRepoDirectory(value: string): boolean {
+  return value.length >= 1 && value.length <= 160 && !value.startsWith('.') && !value.includes('..') && !value.includes('\\') && /^[A-Za-z0-9_./-]+$/.test(value);
+}
+
+function isEditorImageMime(value: string): boolean {
+  return ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'].includes(value.toLowerCase());
+}
+
+function isEditorImageName(value: string): boolean {
+  return /\.(?:jpe?g|png|webp|gif|avif)$/i.test(value);
+}
+
+function uniqueAssetName(value: string): string {
+  const extension = value.toLowerCase().match(/\.(jpe?g|png|webp|gif|avif)$/i)?.[0] || '.jpg';
+  const stem = value.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'image';
+  return `${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${stem}${extension}`;
+}
+
+function publicAssetUrl(site: WebsiteEditorSite, name: string): string {
+  return new URL(`/${site.asset_dir}/${name}`.replace(/\/+/g, '/'), site.live_url).toString();
+}
+
+async function readGithubRepoFile(repo: string, filePath: string, branch: string, token: string): Promise<{ content: string; sha: string }> {
+  const response = await githubForRepo(repo, `/contents/${encodePath(filePath)}?ref=${encodeURIComponent(branch)}`, token);
+  const data: any = await response.json();
+  if (!response.ok || !data.content || !data.sha) {
+    const error: any = new Error(typeof data?.message === 'string' ? data.message : `Unable to load ${filePath}`);
+    error.status = response.status === 404 ? 404 : 502;
+    throw error;
+  }
+  return { content: decodeBase64(data.content), sha: data.sha };
+}
+
+async function atomicGithubTextCommit(site: WebsiteEditorSite, token: string, baseCommit: string, files: Record<string, string>, message: string): Promise<{ commitSha: string } | Response> {
+  const refResponse = await githubForRepo(site.repo, `/git/ref/heads/${encodePath(site.branch)}`, token);
+  const refData: any = await refResponse.json();
+  if (!refResponse.ok || !refData.object?.sha) return githubError(refData, refResponse.status, 'Unable to verify website version');
+  if (refData.object.sha !== baseCommit) return err('This website changed in GitHub. Reload it before saving to avoid overwriting newer work.', 409);
+  const commitResponse = await githubForRepo(site.repo, `/git/commits/${baseCommit}`, token);
+  const commitData: any = await commitResponse.json();
+  if (!commitResponse.ok || !commitData.tree?.sha) return githubError(commitData, commitResponse.status, 'Unable to read the current website tree');
+  const tree = Object.entries(files).map(([path, content]) => ({ path, mode: '100644', type: 'blob', content }));
+  return finishGithubTreeCommit(site, token, baseCommit, commitData.tree.sha, tree, message);
+}
+
+async function finishGithubTreeCommit(site: WebsiteEditorSite, token: string, baseCommit: string, baseTree: string, tree: Array<Record<string, string>>, message: string): Promise<{ commitSha: string } | Response> {
+  const treeResponse = await githubForRepo(site.repo, '/git/trees', token, {
+    method: 'POST', body: JSON.stringify({ base_tree: baseTree, tree })
+  });
+  const treeData: any = await treeResponse.json();
+  if (!treeResponse.ok || !treeData.sha) return githubError(treeData, treeResponse.status, 'Unable to prepare the website update');
+  const newCommitResponse = await githubForRepo(site.repo, '/git/commits', token, {
+    method: 'POST', body: JSON.stringify({ message, tree: treeData.sha, parents: [baseCommit] })
+  });
+  const newCommitData: any = await newCommitResponse.json();
+  if (!newCommitResponse.ok || !newCommitData.sha) return githubError(newCommitData, newCommitResponse.status, 'Unable to create the website commit');
+  const updateResponse = await githubForRepo(site.repo, `/git/refs/heads/${encodePath(site.branch)}`, token, {
+    method: 'PATCH', body: JSON.stringify({ sha: newCommitData.sha, force: false })
+  });
+  const updateData: any = await updateResponse.json();
+  if (!updateResponse.ok) return githubError(updateData, updateResponse.status, 'Unable to publish the website update');
+  return { commitSha: newCommitData.sha };
+}
+
 function github(path: string, token: string, init: RequestInit = {}): Promise<Response> {
-  return fetch(`${API_ROOT}${path}`, {
+  return githubForRepo(REPO, path, token, init);
+}
+
+function githubForRepo(repo: string, path: string, token: string, init: RequestInit = {}): Promise<Response> {
+  return fetch(`https://api.github.com/repos/${repo}${path}`, {
     ...init,
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -514,6 +925,12 @@ function encodeBase64(value: string): string {
   for (let offset = 0; offset < bytes.length; offset += 0x8000) {
     binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
   }
+  return btoa(binary);
+}
+
+function encodeBytesBase64(bytes: Uint8Array): string {
+  let binary = '';
+  for (let offset = 0; offset < bytes.length; offset += 0x8000) binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
   return btoa(binary);
 }
 

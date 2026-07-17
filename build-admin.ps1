@@ -11,6 +11,8 @@ if (Test-Path -LiteralPath $out) {
 New-Item -ItemType Directory -Path $out | Out-Null
 
 Copy-Item -LiteralPath (Join-Path $root 'admin\index.html') -Destination (Join-Path $out 'index.html')
+Copy-Item -LiteralPath (Join-Path $root 'admin\editor.html') -Destination (Join-Path $out 'editor.html')
+Copy-Item -LiteralPath (Join-Path $root 'admin\vendor') -Destination (Join-Path $out 'vendor') -Recurse
 @('theme.css','admin-modern.css','jc-api.js','admin-favicon.svg','admin-manifest.json') | ForEach-Object {
   Copy-Item -LiteralPath (Join-Path $root $_) -Destination (Join-Path $out $_)
 }
@@ -30,6 +32,9 @@ Copy-Item -LiteralPath (Join-Path $root 'admin\index.html') -Destination (Join-P
 
 /*.html
   Cache-Control: no-store, max-age=0
+
+/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
 '@ | Set-Content -LiteralPath (Join-Path $out '_headers') -Encoding utf8
 
 Write-Host "JAYABINA admin build ready: $out"
