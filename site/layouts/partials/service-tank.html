@@ -1,98 +1,843 @@
-{{ $b := hugo.Data.business }}
-{{ $wa := "Assalamualaikum JAYABINA. Saya mahu semak servis cuci tangki air rumah. Jenis rumah: ____. Lokasi/poskod: ____." }}
-<section class="service-hero" data-hero>
-  <div class="container hero-grid">
-    <div class="hero-copy">
-      <span class="hero-badge">SERVIS CUCI TANGKI AIR RUMAH</span>
-      <h1>Air nampak jernih. Tapi bagaimana keadaan dasar tangki?</h1>
-      <p class="lead">Tangki air berada di tempat yang jarang dilihat, sedangkan airnya digunakan untuk mandi, berwuduk, membasuh dan rutin keluarga setiap hari.</p>
-      <div class="hero-actions"><a class="btn btn-primary" href="#hubungi">Semak Servis &amp; Lokasi</a><a class="btn btn-outline" href="#proses">Lihat Proses Cucian</a></div>
-      <p class="hero-note">Kongsi jenis rumah, lokasi atau poskod dan gambar tangki jika mudah diambil dengan selamat.</p>
+
+<!DOCTYPE html>
+<!-- saved from url=(0088)file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html -->
+<html lang="ms" class="js js-fallback"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d3b2e">
+  <meta name="description" content="Servis cuci tangki air rumah di KL dan Selangor. Pemeriksaan, cucian menyeluruh dan bukti sebelum serta selepas oleh JAYACLEAN.">
+  <meta property="og:title" content="Servis Cuci Tangki Air Rumah KL &amp; Selangor | JAYACLEAN">
+  <meta property="og:description" content="Buka. Tunjuk. Cuci. Buktikan. Semak skop dan slot servis tangki rumah anda.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cuci.jayabina.com/">
+  <meta property="og:image" content="https://cuci.jayabina.com/assets/jayaclean-wudhu-tank-emotional.jpg">
+  <link rel="canonical" href="https://cuci.jayabina.com/">
+  <link rel="icon" type="image/svg+xml" href="./JAYACLEAN GPT 3_files/jayaclean-favicon.svg">
+  <link rel="icon" type="image/png" sizes="64x64" href="file:///C:/Users/USER/OneDrive/Documents/New%20project/assets/jayaclean-favicon-64.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="file:///C:/Users/USER/OneDrive/Documents/New%20project/assets/jayaclean-apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com/">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+  <link href="./JAYACLEAN GPT 3_files/css2" rel="stylesheet">
+  <title>Servis Cuci Tangki Air Rumah KL &amp; Selangor | JAYACLEAN</title>
+  <script>document.documentElement.className='js';window.setTimeout(function(){document.documentElement.classList.add('js-fallback')},2500);</script>
+  <style>
+    :root{
+      --green-950:#052e22;
+      --green-900:#0d3b2e;
+      --green-800:#145c3d;
+      --green-700:#146c43;
+      --green-600:#158957;
+      --green-100:#dff5e8;
+      --green-50:#f1fbf5;
+      --white:#fff;
+      --grey-50:#f8faf9;
+      --grey-100:#f3f4f6;
+      --grey-200:#e5e7eb;
+      --grey-300:#d1d5db;
+      --grey-500:#6b7280;
+      --grey-600:#4b5563;
+      --grey-700:#374151;
+      --grey-900:#111827;
+      --error:#b42318;
+      --wa:#0f766e;
+      --shadow-sm:0 1px 2px rgba(17,24,39,.05);
+      --shadow:0 14px 36px rgba(17,24,39,.08);
+      --shadow-green:0 18px 42px rgba(13,59,46,.2);
+      --radius:20px;
+      --radius-sm:14px;
+      --container:1200px;
+      --font-body:clamp(1rem,.96rem + .18vw,1.125rem);
+      --font-small:clamp(.9rem,.87rem + .1vw,1rem);
+      --font-h1:clamp(2.35rem,1.65rem + 3.15vw,4.35rem);
+      --font-h2:clamp(2rem,1.56rem + 2vw,3.1rem);
+      --font-h3:clamp(1.4rem,1.22rem + .75vw,1.9rem);
+    }
+
+    *,*::before,*::after{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--white);color:var(--grey-900);font-family:'Figtree',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:var(--font-body);line-height:1.67;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    body.menu-open{overflow:hidden}
+    h1,h2,h3,h4,p,ul,ol,figure{margin-top:0}
+    h1,h2,h3,h4{font-family:'Bricolage Grotesque','Figtree',sans-serif;color:var(--grey-900);letter-spacing:-.025em}
+    h1{font-size:var(--font-h1);line-height:1.05;margin-bottom:24px;max-width:15ch}
+    h2{font-size:var(--font-h2);line-height:1.12;margin-bottom:20px;max-width:20ch}
+    h3{font-size:var(--font-h3);line-height:1.2;margin-bottom:14px}
+    h4{font-size:clamp(1.1rem,1.04rem + .25vw,1.28rem);line-height:1.32;margin-bottom:8px}
+    p{max-width:65ch}
+    a{color:inherit;text-decoration:none}
+    button,input,textarea{font:inherit}
+    button,a{touch-action:manipulation}
+    img{display:block;max-width:100%}
+    [hidden]{display:none!important}
+    .container{width:min(calc(100% - 48px),var(--container));margin-inline:auto}
+    .section{padding-block:clamp(64px,7vw,104px);scroll-margin-top:84px}
+    .section-grey{background:var(--grey-50)}
+    .section-mint{background:var(--green-50)}
+    .section-dark{background:var(--green-950);color:var(--white)}
+    .section-dark h2,.section-dark h3{color:var(--white)}
+    .section-kicker{display:inline-flex;align-items:center;gap:9px;margin-bottom:16px;color:var(--green-700);font-size:.875rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+    .section-kicker::before{content:'';width:24px;height:2px;background:currentColor;border-radius:99px}
+    .section-dark .section-kicker{color:#9de3ba}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:32px;margin-bottom:44px}
+    .section-head h2{margin-bottom:0}
+    .section-head p{margin:0;color:var(--grey-600);max-width:46ch}
+    .lead{font-size:clamp(1.08rem,1rem + .3vw,1.3rem);line-height:1.55}
+    .muted{color:var(--grey-600)}
+    .fine-print{font-size:.9rem;line-height:1.55;color:var(--grey-600)}
+    .fine-print-light{font-size:.9rem;line-height:1.55;color:#c7d8d1}
+    .btn{min-height:54px;display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid transparent;border-radius:13px;padding:14px 24px;font-weight:700;font-size:1rem;line-height:1.25;cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}
+    .btn:hover{transform:translateY(-2px)}
+    .btn-primary{background:var(--green-700);color:var(--white);box-shadow:0 10px 24px rgba(20,108,67,.2)}
+    .btn-primary:hover{background:var(--green-800)}
+    .btn-light{background:var(--white);color:var(--green-900);box-shadow:var(--shadow-sm)}
+    .btn-light:hover{background:var(--green-50)}
+    .btn-outline{background:transparent;color:var(--green-800);border-color:#8dc9a7}
+    .btn-outline:hover{background:var(--green-50);border-color:var(--green-700)}
+    .btn-hero-ghost{background:transparent;color:var(--white);border-color:rgba(255,255,255,.42)}
+    .btn-hero-ghost:hover{background:rgba(255,255,255,.1);border-color:var(--white)}
+    .btn-wa{background:var(--wa);color:var(--white);box-shadow:0 10px 24px rgba(18,140,126,.2)}
+    .btn-wa:hover{background:#0b5f59}
+    :focus-visible{outline:3px solid var(--white);outline-offset:2px;box-shadow:0 0 0 5px #16a36a}
+
+    .site-nav{position:fixed;inset:0 0 auto;z-index:100;height:72px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--grey-200);box-shadow:var(--shadow-sm)}
+    .nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand{display:flex;align-items:center;gap:11px;font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;color:var(--green-950);letter-spacing:-.02em}
+    .brand-mark{width:38px;height:38px;display:block;border-radius:11px;box-shadow:0 5px 14px rgba(13,59,46,.16)}
+    .nav-links{display:flex;align-items:center;gap:28px;list-style:none;margin:0;padding:0}
+    .nav-links a{color:var(--grey-700);font-size:.94rem;font-weight:600}
+    .nav-links a:hover,.nav-links a.active{color:var(--green-700)}
+    .nav-actions{display:flex;align-items:center;gap:12px}
+    .nav-actions .btn{min-height:44px;padding:10px 18px;font-size:.93rem}
+    .menu-toggle{display:none;width:46px;height:46px;padding:0;border:1px solid var(--grey-200);border-radius:12px;background:var(--white);cursor:pointer}
+    .menu-toggle span{display:block;width:21px;height:2px;margin:4px auto;background:var(--green-950);border-radius:99px;transition:transform .2s ease,opacity .2s ease}
+    .menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+    .menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+    .menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+    .mobile-menu{display:none;position:fixed;z-index:99;top:64px;left:0;right:0;max-height:calc(100dvh - 64px);overflow-y:auto;padding:20px 24px 26px;background:var(--white);border-bottom:1px solid var(--grey-200);box-shadow:var(--shadow)}
+    .mobile-menu.open{display:grid;gap:6px}
+    .mobile-menu a{min-height:46px;display:flex;align-items:center;padding:8px 4px;color:var(--grey-700);font-weight:600}
+    .mobile-menu .btn{margin-top:10px;color:var(--white);padding-inline:18px}
+
+    .hero{min-height:760px;padding:144px 0 78px;background:linear-gradient(135deg,var(--green-950) 0%,var(--green-900) 58%,#126044 100%);color:var(--white);position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;width:620px;height:620px;border:1px solid rgba(255,255,255,.08);border-radius:50%;right:-190px;top:-250px;box-shadow:0 0 0 90px rgba(255,255,255,.025),0 0 0 180px rgba(255,255,255,.018)}
+    .hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(390px,.88fr);gap:72px;align-items:center}
+    .hero h1{color:var(--white)}
+    .hero h1 span{color:#9de3ba}
+    .hero-copy>.lead{color:#d7e8e1;max-width:58ch;margin-bottom:30px}
+    .hero-badge{display:inline-flex;align-items:center;gap:10px;margin-bottom:24px;padding:8px 13px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(255,255,255,.07);color:#e9f7ef;font-size:.875rem;font-weight:700;letter-spacing:.04em}
+    .pulse{width:8px;height:8px;background:#4ade80;border-radius:50%;box-shadow:0 0 0 5px rgba(74,222,128,.13)}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+    .hero-note{display:flex;align-items:center;gap:9px;margin:0;color:#c7d8d1;font-size:.92rem}
+    .hero-note::before{content:'✓';width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:rgba(157,227,186,.13);color:#9de3ba;font-weight:700}
+    .hero-panel{position:relative;padding:28px;border:1px solid rgba(255,255,255,.15);border-radius:28px;background:rgba(255,255,255,.97);box-shadow:0 32px 80px rgba(0,0,0,.24);color:var(--grey-900)}
+    .hero-panel-top{display:flex;align-items:start;justify-content:space-between;gap:20px;padding-bottom:22px;border-bottom:1px solid var(--grey-200)}
+    .hero-panel-label{margin-bottom:5px;color:var(--grey-600);font-size:.88rem;font-weight:600}
+    .hero-price{font-family:'Bricolage Grotesque',sans-serif;font-size:3.25rem;line-height:1;font-weight:800;color:var(--green-900);letter-spacing:-.05em}
+    .hero-price small{font-family:'Figtree',sans-serif;font-size:.85rem;font-weight:600;color:var(--grey-600);letter-spacing:0}
+    .status-pill{padding:7px 11px;border-radius:999px;background:var(--green-100);color:var(--green-800);font-size:.875rem;font-weight:700;white-space:nowrap}
+    .service-list{display:grid;gap:0;margin:18px 0 22px}
+    .service-row{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--grey-100)}
+    .service-row:last-child{border-bottom:0}
+    .service-num{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--green-50);color:var(--green-800);font-size:.78rem;font-weight:700}
+    .service-row strong{display:block;font-size:.98rem}
+    .service-row span:last-child{color:var(--green-700);font-size:.875rem;font-weight:700}
+    .hero-panel-foot{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .mini-stat{padding:14px;border-radius:13px;background:var(--grey-50);border:1px solid var(--grey-200)}
+    .mini-stat strong{display:block;color:var(--green-900);font-size:1.06rem}
+    .mini-stat span{display:block;color:var(--grey-600);font-size:.875rem}
+
+    .trust-strip{background:var(--white);border-bottom:1px solid var(--grey-200)}
+    .trust-grid{display:grid;grid-template-columns:repeat(4,1fr)}
+    .trust-item{padding:26px 24px;border-right:1px solid var(--grey-200)}
+    .trust-item:first-child{padding-left:0}
+    .trust-item:last-child{border-right:0;padding-right:0}
+    .trust-item strong{display:block;margin-bottom:3px;color:var(--green-900);font-size:1.02rem}
+    .trust-item span{display:block;color:var(--grey-600);font-size:.9rem;line-height:1.45}
+
+    .emotion-section{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--white) 0%,#f4faf6 100%)}
+    .emotion-section::before{content:'';position:absolute;width:440px;height:440px;left:-220px;bottom:-270px;border-radius:50%;background:rgba(72,199,142,.1)}
+    .emotion-grid{position:relative;display:grid;grid-template-columns:.78fr 1.22fr;gap:58px;align-items:center}
+    .emotion-copy h2{max-width:13ch}
+    .emotion-copy .lead{color:var(--green-950)}
+    .emotion-copy p:not(.lead){color:var(--grey-600)}
+    .emotion-quote{margin:26px 0;padding:20px 22px;border-left:4px solid var(--green-700);border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:var(--white);box-shadow:var(--shadow-sm);color:var(--green-950);font-weight:700}
+    .emotion-visual{position:relative;margin:0;padding:10px;border:1px solid #bfddca;border-radius:28px;background:var(--white);box-shadow:var(--shadow)}
+    .emotion-visual img{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:20px}
+    .emotion-labels{position:absolute;left:26px;right:26px;bottom:26px;display:flex;justify-content:space-between;gap:16px;pointer-events:none}
+    .emotion-label{max-width:190px;padding:10px 13px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(5,46,34,.88);color:var(--white);box-shadow:0 8px 24px rgba(0,0,0,.2);font-size:.82rem;font-weight:700;line-height:1.35}
+    .emotion-label:last-child{text-align:right}
+    .emotion-caption{margin:11px 6px 2px;color:var(--grey-600);font-size:.875rem;line-height:1.5}
+
+    .signs-layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:72px;align-items:start}
+    .sign-intro{position:sticky;top:112px}
+    .sign-intro p{color:var(--grey-600)}
+    .signs-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .sign-card,.benefit-card,.process-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+    .sign-card{padding:24px}
+    .sign-card:last-child{grid-column:1/-1}
+    .sign-card h3,.benefit-card h3{font-size:clamp(1.12rem,1.05rem + .24vw,1.32rem);margin-bottom:8px}
+    .card-index{width:38px;height:38px;display:grid;place-items:center;margin-bottom:18px;border-radius:11px;background:var(--green-100);color:var(--green-800);font-size:.8rem;font-weight:800}
+    .sign-card p,.benefit-card p,.process-card p{margin:0;color:var(--grey-600);font-size:var(--font-small);line-height:1.6}
+    .check-callout{margin-top:28px;padding:20px 22px;border-left:4px solid var(--green-600);border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:var(--green-50);color:var(--green-950);font-weight:600}
+
+    .proof-layout{display:grid;grid-template-columns:1.15fr .85fr;gap:52px;align-items:center}
+    .proof-frame{overflow:hidden;border:1px solid var(--grey-200);border-radius:26px;background:var(--white);box-shadow:var(--shadow)}
+    .proof-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 20px;border-bottom:1px solid var(--grey-200);background:var(--grey-50)}
+    .proof-toolbar strong{font-size:.95rem;color:var(--green-950)}
+    .proof-toolbar span{font-size:.875rem;color:var(--grey-600)}
+    .proof-panels{display:grid;grid-template-columns:1fr 1fr;min-height:320px}
+    .proof-panel{position:relative;display:grid;place-items:center;padding:28px;text-align:center;overflow:hidden}
+    .proof-panel.before{background:linear-gradient(145deg,#e5e7eb,#cbd5d1)}
+    .proof-panel.after{background:linear-gradient(145deg,#e7f8ed,#c7efd6)}
+    .proof-panel::before,.proof-panel::after{content:'';position:absolute;border-radius:50%;opacity:.3}
+    .proof-panel::before{width:180px;height:180px;right:-52px;bottom:-62px;background:var(--green-700)}
+    .proof-panel::after{width:90px;height:90px;left:-30px;top:-24px;border:18px solid var(--white)}
+    .proof-label{position:absolute;top:16px;left:16px;padding:6px 10px;border-radius:999px;background:rgba(17,24,39,.78);color:var(--white);font-size:.8rem;font-weight:700;letter-spacing:.08em}
+    .proof-slot{position:relative;z-index:1}
+    .proof-slot strong{display:block;margin-bottom:6px;font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;color:var(--green-950)}
+    .proof-slot span{display:block;max-width:18ch;color:var(--grey-700);font-size:.875rem;line-height:1.45}
+    .proof-media{position:relative;background:var(--grey-100);overflow:hidden}
+    .proof-media img{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+    .proof-media-labels{position:absolute;inset:16px 16px auto;display:flex;justify-content:space-between;gap:12px;pointer-events:none}
+    .proof-media-label{padding:7px 11px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(5,46,34,.9);color:var(--white);font-size:.76rem;font-weight:800;letter-spacing:.09em}
+    .proof-caption{padding:15px 20px;margin:0;color:var(--grey-600);font-size:.875rem;line-height:1.5}
+    .ai-disclosure{display:inline-flex;align-items:center;gap:8px;margin:0 0 18px;padding:8px 11px;border-radius:999px;background:#eef2f0;color:var(--green-900);font-size:.78rem;font-weight:800;letter-spacing:.055em;text-transform:uppercase}
+    .proof-copy h2{max-width:13ch}
+    .proof-copy>p{color:var(--grey-600)}
+    .deliverables{display:grid;gap:12px;margin:26px 0 30px;padding:0;list-style:none}
+    .deliverables li{display:flex;align-items:flex-start;gap:12px;color:var(--grey-700);font-size:var(--font-small)}
+    .deliverables li::before{content:'✓';flex:0 0 26px;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:var(--green-100);color:var(--green-800);font-size:.78rem;font-weight:800}
+
+    .process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+    .process-card{padding:10px 10px 24px;position:relative;overflow:visible}
+    .process-card::after{content:'→';position:absolute;top:76px;right:-14px;z-index:2;width:28px;height:28px;display:grid;place-items:center;border:1px solid var(--grey-200);border-radius:50%;background:var(--white);color:var(--green-700);font-weight:700}
+    .process-card:last-child::after{display:none}
+    .process-photo{aspect-ratio:16/9;display:block;margin-bottom:20px;border-radius:14px;background:var(--green-100);overflow:hidden;position:relative}
+    .process-photo img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+    .process-card:hover .process-photo img{transform:scale(1.025)}
+    .process-photo span{position:absolute;left:10px;bottom:10px;z-index:1;display:block;padding:6px 9px;border:1px solid rgba(255,255,255,.25);border-radius:999px;background:rgba(5,46,34,.88);color:var(--white);font-size:.68rem;font-weight:800;letter-spacing:.075em;text-transform:uppercase}
+    .process-number{font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;line-height:1;color:#83c8a0;font-weight:800;margin:0 14px 16px}
+    .process-card h3,.process-card p{margin-left:14px;margin-right:14px}
+    .process-card h3{font-size:clamp(1.12rem,1.06rem + .2vw,1.3rem);margin-bottom:8px}
+
+    .benefits-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .benefit-card{padding:28px;display:grid;grid-template-columns:48px 1fr;gap:18px;align-items:start}
+    .benefit-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:var(--green-100);color:var(--green-800);font-weight:800}
+
+    .price-layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:72px;align-items:center;margin-top:52px}
+    .price-copy p{color:var(--grey-600)}
+    .price-card{padding:38px;border:1px solid #a9d7bb;border-radius:26px;background:var(--white);box-shadow:var(--shadow-green)}
+    .price-card-head{display:flex;align-items:start;justify-content:space-between;gap:20px;padding-bottom:26px;border-bottom:1px solid var(--grey-200)}
+    .price-eyebrow{margin-bottom:5px;color:var(--grey-600);font-size:.9rem;font-weight:600}
+    .price-main{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(3.4rem,6vw,4.8rem);line-height:.95;color:var(--green-900);font-weight:800;letter-spacing:-.055em}
+    .price-main small{font-family:'Figtree',sans-serif;font-size:.92rem;color:var(--grey-600);font-weight:600;letter-spacing:0}
+    .price-chip{padding:8px 12px;border-radius:999px;background:var(--green-100);color:var(--green-800);font-size:.875rem;font-weight:700;white-space:nowrap}
+    .scope-list{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;margin:22px 0;padding:0;list-style:none}
+    .scope-list li{display:flex;gap:10px;padding:10px 0;color:var(--grey-700);font-size:.93rem}
+    .scope-list li::before{content:'✓';color:var(--green-700);font-weight:800}
+    .payment-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}
+    .payment-box{padding:16px;border-radius:14px;background:var(--grey-50);border:1px solid var(--grey-200)}
+    .payment-box span{display:block;color:var(--grey-600);font-size:.875rem}
+    .payment-box strong{display:block;color:var(--green-950);font-size:1.14rem}
+    .price-card .btn{width:100%}
+    .price-note{margin:14px 0 0;text-align:center;color:var(--grey-600);font-size:.875rem;line-height:1.45}
+
+    .booking-layout{display:grid;grid-template-columns:.75fr 1.25fr;gap:58px;align-items:start}
+    .booking-layout>*{min-width:0}
+    .booking-copy{position:sticky;top:110px}
+    .booking-copy p{color:#c7d8d1}
+    .booking-points{display:grid;gap:12px;margin:26px 0 0;padding:0;list-style:none}
+    .booking-points li{display:flex;gap:12px;color:#e4f0eb;font-size:.95rem}
+    .booking-points li::before{content:'✓';color:#9de3ba;font-weight:800}
+    .booking-card{padding:34px;border-radius:26px;background:var(--white);color:var(--grey-900);box-shadow:0 28px 70px rgba(0,0,0,.25)}
+    .booking-card h3{margin-bottom:6px;color:var(--grey-900)}
+    .booking-sub{margin-bottom:28px;color:var(--grey-600);font-size:.95rem}
+    .form-step{display:flex;align-items:center;gap:10px;margin:26px 0 12px;color:var(--green-900);font-size:.88rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+    .form-step:first-of-type{margin-top:0}
+    .form-step span{width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:var(--green-100);color:var(--green-800);font-size:.76rem}
+    .calendar-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .calendar-head button{min-width:44px;min-height:44px;border:1px solid var(--grey-200);border-radius:11px;background:var(--white);color:var(--green-900);cursor:pointer}
+    .calendar-head button:disabled{opacity:.4;cursor:not-allowed}
+    .calendar-month{font-weight:700;color:var(--grey-900)}
+    .calendar-scroll{min-width:0;max-width:100%;overflow-x:auto;padding:2px 2px 8px;overscroll-behavior-inline:contain}
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;min-width:336px}
+    .calendar-day-name{display:grid;place-items:center;min-height:32px;color:var(--grey-600);font-size:.8rem;font-weight:700}
+    .calendar-day{min-width:0;min-height:44px;padding:0;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--grey-700);font-size:.88rem;font-weight:600;cursor:pointer}
+    .calendar-day:hover:not(:disabled){border-color:#8dc9a7;background:var(--green-50)}
+    .calendar-day:disabled{color:#b0b5bc;cursor:not-allowed}
+    .calendar-day.today{border-color:#8dc9a7;color:var(--green-800)}
+    .calendar-day.selected{background:var(--green-700);color:var(--white);border-color:var(--green-700)}
+    .calendar-empty{min-height:44px}
+    .selected-date{margin:10px 0 0;color:var(--green-800);font-size:.9rem;font-weight:700;text-align:center}
+    .slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .slot{min-height:48px;border:1px solid var(--grey-300);border-radius:11px;background:var(--white);color:var(--grey-700);font-size:.88rem;font-weight:700;cursor:pointer}
+    .slot:hover:not(:disabled){border-color:var(--green-700);background:var(--green-50)}
+    .slot.selected{border-color:var(--green-700);background:var(--green-100);color:var(--green-900)}
+    .slot:disabled{background:var(--grey-100);color:#9ca3af;cursor:not-allowed}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .field{margin-bottom:16px}
+    .field.full{grid-column:1/-1}
+    .field label{display:block;margin-bottom:7px;color:var(--grey-700);font-size:.9rem;font-weight:700}
+    .field input,.field textarea{width:100%;min-height:52px;padding:13px 15px;border:1px solid var(--grey-300);border-radius:11px;background:var(--white);color:var(--grey-900);font-size:1rem;outline:none}
+    .field textarea{min-height:94px;resize:vertical}
+    .field input:focus,.field textarea:focus{border-color:var(--green-700);box-shadow:0 0 0 4px rgba(20,108,67,.12)}
+    .field input::placeholder,.field textarea::placeholder{color:#7c838d}
+    .error{display:none;margin-top:5px;color:var(--error);font-size:.875rem}
+    .error.show{display:block}
+    .summary-box{margin:8px 0 18px;padding:16px 18px;border-radius:14px;background:var(--grey-50);border:1px solid var(--grey-200)}
+    .summary-row{display:flex;justify-content:space-between;gap:14px;padding:5px 0;color:var(--grey-600);font-size:.9rem}
+    .summary-row.total{margin-top:6px;padding-top:12px;border-top:1px solid var(--grey-300);color:var(--green-950);font-weight:800}
+    .submit-btn{width:100%}
+    .submit-btn:disabled{opacity:.65;cursor:wait;transform:none}
+    .form-note{margin:12px auto 0;color:var(--grey-600);font-size:.875rem;text-align:center;line-height:1.5}
+    .form-status{min-height:24px;margin:8px 0 0;color:var(--grey-600);font-size:.875rem;text-align:center}
+    .form-status.error-state{color:var(--error);font-weight:700}
+    .confirmation{padding:36px 14px 18px;text-align:center}
+    .confirmation-mark{width:68px;height:68px;display:grid;place-items:center;margin:0 auto 18px;border-radius:50%;background:var(--green-100);color:var(--green-800);font-size:1.6rem;font-weight:800}
+    .confirmation p{margin-inline:auto;color:var(--grey-600)}
+    .confirmation .btn{margin-top:8px}
+
+    .faq-layout{display:grid;grid-template-columns:.65fr 1.35fr;gap:70px;align-items:start}
+    .faq-list{border-top:1px solid var(--grey-200)}
+    .faq-item{border-bottom:1px solid var(--grey-200)}
+    .faq-question{width:100%;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 0;border:0;background:transparent;color:var(--grey-900);font-family:'Bricolage Grotesque',sans-serif;font-size:1.08rem;font-weight:700;text-align:left;cursor:pointer}
+    .faq-plus{flex:0 0 34px;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--green-100);color:var(--green-800);font-family:'Figtree',sans-serif;font-size:1.2rem;transition:transform .2s ease,background .2s ease}
+    .faq-question[aria-expanded="true"] .faq-plus{transform:rotate(45deg);background:var(--green-700);color:var(--white)}
+    .faq-answer{padding:0 52px 20px 0;color:var(--grey-600);font-size:var(--font-small)}
+    .faq-answer p{margin-bottom:0}
+
+    .final-cta{padding-block:clamp(68px,7vw,92px);background:linear-gradient(135deg,var(--green-900),var(--green-700));color:var(--white)}
+    .final-inner{display:flex;align-items:center;justify-content:space-between;gap:50px}
+    .final-cta h2{color:var(--white);margin-bottom:14px}
+    .final-cta p{margin-bottom:0;color:#d7e8e1}
+    .final-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+    .site-footer{padding:36px 0;background:var(--green-950);color:#c7d8d1;font-size:.9rem}
+    .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .footer-brand strong{display:block;color:var(--white);font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem}
+    .footer-brand span{display:block}
+    .footer-links{display:flex;gap:22px;flex-wrap:wrap;justify-content:flex-end}
+    .footer-links a:hover{color:var(--white)}
+
+    .desktop-wa{position:fixed;right:22px;bottom:22px;z-index:50;min-height:50px;padding:13px 18px;border-radius:999px;background:var(--wa);color:var(--white);box-shadow:0 14px 32px rgba(0,0,0,.2);font-size:.92rem;font-weight:700;transition:opacity .2s ease,transform .2s ease}
+    .desktop-wa.is-hidden{opacity:0;transform:translateY(14px);pointer-events:none}
+    .mobile-sticky{display:none}
+
+    .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
+    .js .reveal.visible,.js.js-fallback .reveal{opacity:1;transform:none}
+
+    @media(max-width:1023px){
+      .container{width:min(calc(100% - 40px),var(--container))}
+      .site-nav{height:64px}
+      .nav-links,.nav-actions{display:none}
+      .menu-toggle{display:block}
+      .hero{min-height:auto;padding:116px 0 72px}
+      .hero-grid{grid-template-columns:1fr;gap:44px}
+      .hero-copy{max-width:760px}
+      .hero-panel{max-width:680px}
+      .trust-grid{grid-template-columns:1fr 1fr}
+      .trust-item:nth-child(2){border-right:0}
+      .trust-item:nth-child(-n+2){border-bottom:1px solid var(--grey-200)}
+      .trust-item:nth-child(3){padding-left:0}
+      .signs-layout,.proof-layout,.price-layout,.booking-layout,.faq-layout,.emotion-grid{grid-template-columns:1fr;gap:44px}
+      .sign-intro,.booking-copy{position:static}
+      .proof-frame{max-width:760px}
+      .emotion-copy{max-width:760px}
+      .emotion-visual{max-width:900px}
+      .process-grid{grid-template-columns:1fr 1fr}
+      .process-card:nth-child(2)::after{display:none}
+      .booking-copy{max-width:680px}
+      .booking-card{max-width:760px}
+      .final-inner{align-items:flex-start;flex-direction:column;gap:28px}
+      .final-actions{justify-content:flex-start}
+      .desktop-wa{display:none}
+      body{padding-bottom:78px}
+      .mobile-sticky{position:fixed;left:0;right:0;bottom:0;z-index:90;display:block;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);border-top:1px solid var(--grey-200);box-shadow:0 -8px 24px rgba(17,24,39,.08)}
+      .mobile-sticky .btn{width:100%;min-height:52px}
+      .mobile-sticky.is-hidden{display:none}
+    }
+
+    @media(max-width:767px){
+      .container{width:min(calc(100% - 32px),var(--container))}
+      .section{padding-block:64px;scroll-margin-top:72px}
+      h1{font-size:clamp(2.3rem,10.3vw,3.1rem);line-height:1.08}
+      h2{font-size:clamp(2rem,8.2vw,2.55rem);line-height:1.14}
+      .section-head{display:block;margin-bottom:32px}
+      .section-head h2{margin-bottom:14px}
+      .btn{width:100%;min-height:52px;padding-inline:18px}
+      .hero{padding:102px 0 58px}
+      .hero::before{width:430px;height:430px;right:-240px;top:-180px}
+      .hero-grid{gap:34px}
+      .hero-badge{font-size:.82rem}
+      .hero-actions{display:grid}
+      .hero-note{align-items:flex-start;font-size:.87rem}
+      .hero-panel{padding:22px;border-radius:22px}
+      .hero-panel-top{display:block}
+      .status-pill{display:inline-block;margin-top:14px}
+      .hero-price{font-size:2.9rem}
+      .hero-panel-foot{grid-template-columns:1fr}
+      .emotion-visual img{aspect-ratio:auto;object-fit:contain}
+      .emotion-labels{position:static;display:grid;grid-template-columns:1fr 1fr;margin:10px 2px 2px}
+      .emotion-label{max-width:none;background:var(--green-900);font-size:.8rem}
+      .emotion-label:last-child{text-align:left}
+      .trust-grid{grid-template-columns:1fr}
+      .trust-item{padding:18px 0;border-right:0;border-bottom:1px solid var(--grey-200)!important}
+      .trust-item:last-child{border-bottom:0!important}
+      .signs-grid,.benefits-grid,.process-grid{grid-template-columns:1fr}
+      .sign-card:last-child{grid-column:auto}
+      .process-card::after{display:none}
+      .proof-layout{gap:32px}
+      .proof-media-labels{inset:12px 12px auto}
+      .proof-panel{padding:20px}
+      .proof-slot strong{font-size:1.05rem}
+      .proof-slot span{font-size:.84rem}
+      .benefit-card{grid-template-columns:42px 1fr;padding:22px;gap:14px}
+      .benefit-icon{width:42px;height:42px}
+      .price-card{padding:26px 22px;border-radius:22px}
+      .price-card-head{display:block}
+      .price-chip{display:inline-block;margin-top:14px}
+      .scope-list{grid-template-columns:1fr}
+      .payment-split{grid-template-columns:1fr}
+      .booking-card{padding:24px 18px;border-radius:20px}
+      .form-grid{grid-template-columns:1fr;gap:0}
+      .field.full{grid-column:auto}
+      .slots{grid-template-columns:1fr 1fr}
+      .calendar-grid{gap:4px}
+      .calendar-day,.calendar-empty{min-height:42px}
+      .calendar-day-name{font-size:.75rem}
+      .faq-answer{padding-right:0}
+      .footer-inner{align-items:flex-start;flex-direction:column}
+      .footer-links{justify-content:flex-start;gap:14px 20px}
+    }
+
+    @media(max-width:380px){
+      .container{width:min(calc(100% - 28px),var(--container))}
+      .hero-panel{padding:18px}
+      .service-row{grid-template-columns:34px 1fr}
+      .service-row span:last-child{grid-column:2}
+      .emotion-labels{grid-template-columns:1fr}
+      .emotion-label{font-size:.78rem}
+      .price-main{font-size:3.15rem}
+      .slots{grid-template-columns:1fr 1fr}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+      .js .reveal{opacity:1;transform:none}
+    }
+  </style>
+  <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
+</head>
+<body>
+  <nav class="site-nav" aria-label="Navigasi utama">
+    <div class="container nav-inner">
+      <a class="brand" href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#hero" aria-label="JAYACLEAN - kembali ke utama"><img class="brand-mark" src="./JAYACLEAN GPT 3_files/jayaclean-favicon.svg" width="38" height="38" alt=""><span>JAYACLEAN</span></a>
+      <ul class="nav-links">
+        <li><a href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#tanda" class="">Tanda</a></li>
+        <li><a href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#bukti" class="">Visual</a></li>
+        <li><a href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#proses" class="">Proses</a></li>
+        <li><a href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#harga" class="">Harga</a></li>
+        <li><a href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#faq" class="active" aria-current="location">FAQ</a></li>
+      </ul>
+      <div class="nav-actions"><a class="btn btn-primary" href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#tempah">Semak Slot &amp; Harga</a></div>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Buka menu" aria-controls="mobileMenu" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
-    <div class="hero-visual">{{ partial "responsive-image.html" (dict "base" "/images/tank/tank-emotional" "alt" "Seorang lelaki berwuduk dengan air bersih dan gambaran bahagian dalam tangki air yang kotor" "loading" "eager" "sizes" "(max-width: 1023px) calc(100vw - 40px), 45vw") }}<p class="image-disclosure">Visual konsep AI untuk menggambarkan penggunaan air harian dan keadaan tersembunyi dalam tangki.</p></div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <a href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#tanda">Tanda tangki perlu diperiksa</a>
+    <a href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#bukti">Visual perbandingan</a>
+    <a href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#proses">Cara kami bekerja</a>
+    <a href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#harga">Harga &amp; skop</a>
+    <a href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#faq">Soalan lazim</a>
+    <a class="btn btn-primary" href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#tempah">Semak Slot &amp; Harga</a>
   </div>
-</section>
 
-<section class="section">
-  <div class="container assessment-panel">
-    <div><span class="section-kicker">APA YANG SEPATUTNYA ANDA NAMPAK</span><h2>Proses yang boleh diterangkan dan direkodkan.</h2></div>
-    <ul class="assessment-list"><li>Pemeriksaan keadaan dan akses tangki</li><li>Gambar awal jika keadaan membenarkan</li><li>Air serta mendapan dikeluarkan</li><li>Bahagian dalam dicuci mengikut akses</li><li>Bilas dan semakan selepas kerja</li><li>Dokumentasi sebelum dan selepas</li></ul>
-  </div>
-</section>
+  <main>
+    <section class="hero" id="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="hero-badge"><span class="pulse"></span>Servis cuci tangki air rumah · KL &amp; Selangor</div>
+          <h1>Tangki dah lama tak dicuci? <span>Kami buka, cuci &amp; tunjuk keadaannya.</span></h1>
+          <p class="lead">Tak perlu meneka keadaan tangki rumah anda. Kami tunjuk keadaan awal, jelaskan kerja yang diperlukan, kemudian hantar foto hasil cucian terus ke WhatsApp.</p>
+          <div class="hero-actions">
+            <a class="btn btn-light" href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#tempah">Semak Slot &amp; Harga</a>
+            <a class="btn btn-hero-ghost" href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#bukti">Lihat Visual Proses</a>
+          </div>
+          <p class="hero-note">Tanya dahulu pun boleh · Tiada bayaran sebelum harga, skop dan tarikh dipersetujui.</p>
+        </div>
+        <aside class="hero-panel" aria-label="Ringkasan servis JAYACLEAN">
+          <div class="hero-panel-top">
+            <div><div class="hero-panel-label">Pakej 1 tangki rumah standard*</div><div class="hero-price">RM300 <small>/ servis</small></div></div>
+            <span class="status-pill">Harga disahkan awal</span>
+          </div>
+          <div class="service-list">
+            <div class="service-row"><span class="service-num">01</span><strong>Periksa &amp; tunjuk keadaan</strong><span>TERMASUK</span></div>
+            <div class="service-row"><span class="service-num">02</span><strong>Keluarkan air &amp; mendapan</strong><span>TERMASUK</span></div>
+            <div class="service-row"><span class="service-num">03</span><strong>Cuci dinding &amp; dasar</strong><span>TERMASUK</span></div>
+            <div class="service-row"><span class="service-num">04</span><strong>Bilas &amp; bukti foto</strong><span>TERMASUK</span></div>
+          </div>
+          <div class="hero-panel-foot">
+            <div class="mini-stat"><strong>RM150</strong><span>Deposit selepas skop disahkan</span></div>
+            <div class="mini-stat"><strong>RM150</strong><span>Baki selepas servis selesai</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
 
-<section class="section section-grey">
-  <div class="container emotion-layout">
-    <div>{{ partial "responsive-image.html" (dict "base" "/images/tank/tank-comparison" "alt" "Perbandingan visual air yang kelihatan bersih dengan mendapan kotor di dalam tangki" "sizes" "(max-width: 767px) calc(100vw - 32px), 46vw") }}<p class="image-disclosure">Visual konsep AI untuk membantu menerangkan keadaan yang mungkin tersembunyi.</p></div>
-    <div><span class="section-kicker">DIGUNAKAN SETIAP HARI, TETAPI JARANG DILIHAT</span><h2>Air yang menyentuh keluarga bermula daripada tempat yang terlindung.</h2><p class="lead">Kita berwuduk, berkumur, memandikan anak dan membersihkan rumah dengan air yang mengalir dari paip. Tetapi bahagian dalam tangki selalunya hanya difikirkan apabila ada tanda yang jelas.</p><p>Air yang kelihatan jernih tidak semestinya memberitahu anda keadaan dasar tangki. Pemeriksaan dan cucian membantu anda melihat sendiri apa yang selama ini tidak kelihatan.</p><div class="quote-callout">Bukan untuk menakutkan — tetapi untuk memberi gambaran, bukti visual dan langkah penjagaan yang lebih jelas.</div></div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="section-head"><span class="section-kicker">BILA WAJAR BUAT SEMAKAN?</span><h2>Mulakan apabila anda tidak pasti keadaan tangki.</h2><p>Tanda di bawah tidak menggantikan pemeriksaan. Ia membantu anda mengenal pasti bila pertanyaan awal mungkin berguna.</p></div>
-    <div class="feature-grid">
-      <article class="feature-card"><h3>Sudah lama tidak dicuci</h3><p>Anda tidak ingat bila kali terakhir bahagian dalam tangki diperiksa atau dibersihkan.</p></article>
-      <article class="feature-card"><h3>Rumah baru diduduki</h3><p>Anda berpindah masuk dan tidak mempunyai rekod penjagaan tangki daripada penghuni terdahulu.</p></article>
-      <article class="feature-card"><h3>Ada mendapan atau serpihan</h3><p>Anda ternampak sedimen, warna atau benda asing pada air atau di bahagian yang boleh dilihat.</p></article>
-      <article class="feature-card"><h3>Selepas gangguan air</h3><p>Bekalan terputus atau kerja paip berlaku dan anda mahu menyemak keadaan simpanan air.</p></article>
-      <article class="feature-card"><h3>Tangki sukar dilihat</h3><p>Lokasinya terlindung, tinggi atau jarang dibuka sehingga keadaan dalaman tidak diketahui.</p></article>
-      <article class="feature-card"><h3>Mahu bukti visual</h3><p>Anda mahu melihat gambar sebelum dan selepas untuk memahami apa yang telah dilakukan.</p></article>
+    <div class="trust-strip" aria-label="Ringkasan kelebihan servis">
+      <div class="container trust-grid">
+        <div class="trust-item"><strong>Skop jelas</strong><span>Disahkan sebelum deposit</span></div>
+        <div class="trust-item"><strong>Bukti foto</strong><span>Sebelum dan selepas servis</span></div>
+        <div class="trust-item"><strong>KL &amp; Selangor</strong><span>Liputan disemak melalui poskod</span></div>
+        <div class="trust-item"><strong>Baki kemudian</strong><span>Bayar selepas kerja selesai</span></div>
+      </div>
     </div>
-  </div>
-</section>
 
-<section class="section section-dark" id="proses">
-  <div class="container">
-    <div class="section-head"><span class="section-kicker">LIHAT PROSESNYA</span><h2>Empat peringkat yang mudah difahami.</h2><p>Keadaan sebenar, akses dan jenis tangki akan menentukan cara kerja yang sesuai dan selamat.</p></div>
-    <div class="visual-gallery">
-      <figure class="visual-card">{{ partial "responsive-image.html" (dict "base" "/images/tank/tank-process-inspection" "alt" "Pemeriksaan awal keadaan bahagian dalam tangki air" "sizes" "(max-width: 767px) calc(100vw - 32px), 23vw") }}<figcaption>1. Keadaan, lokasi dan akses tangki diperiksa sebelum kerja.</figcaption></figure>
-      <figure class="visual-card">{{ partial "responsive-image.html" (dict "base" "/images/tank/tank-process-extraction" "alt" "Air dan mendapan dikeluarkan dari tangki air" "sizes" "(max-width: 767px) calc(100vw - 32px), 23vw") }}<figcaption>2. Air serta mendapan dikeluarkan mengikut keadaan tangki.</figcaption></figure>
-      <figure class="visual-card">{{ partial "responsive-image.html" (dict "base" "/images/tank/tank-process-cleaning" "alt" "Bahagian dalam tangki air sedang dibersihkan" "sizes" "(max-width: 767px) calc(100vw - 32px), 23vw") }}<figcaption>3. Permukaan dalaman yang boleh dicapai dicuci dan dibilas.</figcaption></figure>
-      <figure class="visual-card">{{ partial "responsive-image.html" (dict "base" "/images/tank/tank-process-documentation" "alt" "Dokumentasi keadaan tangki selepas proses cucian" "sizes" "(max-width: 767px) calc(100vw - 32px), 23vw") }}<figcaption>4. Keadaan selepas kerja disemak dan didokumentasikan.</figcaption></figure>
+    <section class="section emotion-section" id="kenapa-perlu-periksa">
+      <div class="container emotion-grid">
+        <div class="emotion-copy reveal visible">
+          <span class="section-kicker">Yang penting ialah keadaan sebenar</span>
+          <h2>Air boleh nampak jernih walaupun dasar tangki belum diperiksa.</h2>
+          <p class="lead">Setiap hari kita guna air untuk berwuduk, berkumur, mandi dan menguruskan anak kecil.</p>
+          <p>Mendapan boleh terkumpul selepas lama digunakan. Cara paling jujur untuk tahu ialah buka, lihat dan nilai keadaan sebenar—tanpa menakut-nakutkan.</p>
+          <a class="btn btn-primary" href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#tanda">Lihat Tanda Yang Perlu Diperiksa</a>
+        </div>
+        <figure class="emotion-visual reveal visible">
+          <picture>
+            <source media="(max-width:600px)" type="image/webp" srcset="./assets/jayaclean-wudhu-tank-emotional-mobile-480.webp 480w, ./assets/jayaclean-wudhu-tank-emotional-mobile-800.webp 800w" sizes="calc(100vw - 52px)">
+            <source type="image/webp" srcset="./assets/jayaclean-wudhu-tank-emotional-640.webp 640w, ./assets/jayaclean-wudhu-tank-emotional-1200.webp 1200w" sizes="(max-width:1023px) calc(100vw - 60px), 58vw">
+            <img src="./JAYACLEAN GPT 3_files/jayaclean-wudhu-tank-emotional.jpg" width="1536" height="1024" loading="lazy" decoding="async" alt="Ilustrasi seorang pakcik mengambil wuduk dengan air paip yang kelihatan jernih, bersebelahan keadaan dalaman tangki yang mempunyai mendapan dan kesan karat">
+          </picture>
+          <div class="emotion-labels" aria-hidden="true"><span class="emotion-label">Apa yang kita nampak: air jernih di paip</span><span class="emotion-label">Apa yang mungkin tersembunyi: mendapan di dasar tangki</span></div>
+          <figcaption class="emotion-caption">Ilustrasi dijana AI untuk menerangkan konsep. Bukan foto pelanggan atau bukti servis.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section section-grey" id="tanda">
+      <div class="container signs-layout">
+        <div class="sign-intro reveal visible">
+          <span class="section-kicker">Periksa dahulu</span>
+          <h2>Tak pasti tangki perlu dicuci?</h2>
+          <p class="lead">Air nampak jernih di paip tidak semestinya bermakna dasar tangki bebas mendapan.</p>
+          <p>Selepas lama digunakan, pasir, kelodak dan kesan karat boleh terkumpul. Kami buka dan tunjuk keadaan sebenar—anda tak perlu meneka.</p>
+          <div class="check-callout">Jika satu atau lebih tanda ini berlaku, elok periksa dahulu keadaan tangki.</div>
+        </div>
+        <div class="signs-grid reveal visible">
+          <article class="sign-card"><span class="card-index">01</span><h3>Warna berubah</h3><p>Air kelihatan kekuningan, keruh atau meninggalkan kesan luar biasa.</p></article>
+          <article class="sign-card"><span class="card-index">02</span><h3>Bau luar biasa</h3><p>Ada bau hapak atau bau yang tidak pernah muncul sebelum ini.</p></article>
+          <article class="sign-card"><span class="card-index">03</span><h3>Ada partikel halus</h3><p>Nampak pasir, kelodak atau serpihan halus keluar dari paip.</p></article>
+          <article class="sign-card"><span class="card-index">04</span><h3>Sudah lama tak dibuka</h3><p>Anda tidak ingat bila kali terakhir tangki diperiksa atau dicuci.</p></article>
+          <article class="sign-card"><span class="card-index">05</span><h3>Baru berpindah rumah</h3><p>Sejarah penyelenggaraan tangki tidak diketahui dan anda mahu semak keadaan sebenar.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="bukti">
+      <div class="container proof-layout">
+        <figure class="proof-frame reveal visible">
+          <div class="proof-toolbar"><strong>Visual keadaan tangki</strong><span>Perbandingan ilustrasi</span></div>
+          <div class="proof-media">
+            <img src="./JAYACLEAN GPT 3_files/jayaclean-comparison-illustration-1200.webp" srcset="./assets/jayaclean-comparison-illustration-640.webp 640w, ./assets/jayaclean-comparison-illustration-1200.webp 1200w" sizes="(max-width:1023px) calc(100vw - 40px), 58vw" width="1200" height="800" loading="lazy" decoding="async" alt="Ilustrasi perbandingan bahagian dalam tangki air yang mempunyai mendapan sebelum cucian dan keadaan lebih bersih selepas cucian">
+            <div class="proof-media-labels" aria-hidden="true"><span class="proof-media-label">SEBELUM</span><span class="proof-media-label">SELEPAS</span></div>
+          </div>
+          <figcaption class="proof-caption">Ilustrasi dijana AI untuk menunjukkan perbezaan umum—bukan foto pelanggan atau bukti servis sebenar.</figcaption>
+        </figure>
+        <div class="proof-copy reveal visible">
+          <span class="ai-disclosure">Ilustrasi · Bukan bukti pelanggan</span>
+          <span class="section-kicker">Apa yang anda akan terima</span>
+          <h2>Keadaan awal dan hasil akhir, ditunjukkan dengan jelas.</h2>
+          <p class="lead">Semasa servis sebenar, foto hendaklah diambil daripada sudut yang setara supaya perbandingan lebih jujur dan mudah difahami.</p>
+          <ul class="deliverables">
+            <li>Keadaan tangki ditunjukkan sebelum kerja bermula</li>
+            <li>Skop diterangkan mengikut jenis, lokasi dan akses</li>
+            <li>Foto akhir direkod selepas cucian dan bilasan</li>
+            <li>Salinan rekod dihantar terus ke WhatsApp anda</li>
+          </ul>
+          <a class="btn btn-primary" href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#tempah">Semak Slot &amp; Harga</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-mint" id="proses">
+      <div class="container">
+        <div class="section-head reveal visible">
+          <div><span class="section-kicker">Cara kami bekerja</span><h2>Empat langkah. Semuanya boleh diperiksa.</h2></div>
+          <p>Kami susun proses supaya anda faham apa yang dibuat, bila ia dibuat dan apa hasil yang diterima.</p>
+        </div>
+        <div class="process-grid reveal visible">
+          <article class="process-card"><div class="process-photo"><img src="./JAYACLEAN GPT 3_files/jayaclean-process-01-inspection-640.webp" srcset="./assets/jayaclean-process-01-inspection-640.webp 640w, ./assets/jayaclean-process-01-inspection-1200.webp 1200w" sizes="(max-width:767px) calc(100vw - 52px), (max-width:1023px) 46vw, 24vw" width="1200" height="675" loading="lazy" decoding="async" alt="Ilustrasi juruteknik memeriksa bahagian dalam tangki air"><span>Ilustrasi proses</span></div><div class="process-number">01</div><h3>Periksa &amp; Tunjuk</h3><p>Semak jenis tangki, lokasi, akses dan keadaan awal bersama anda.</p></article>
+          <article class="process-card"><div class="process-photo"><img src="./JAYACLEAN GPT 3_files/jayaclean-process-02-extraction-640.webp" srcset="./assets/jayaclean-process-02-extraction-640.webp 640w, ./assets/jayaclean-process-02-extraction-1200.webp 1200w" sizes="(max-width:767px) calc(100vw - 52px), (max-width:1023px) 46vw, 24vw" width="1200" height="675" loading="lazy" decoding="async" alt="Ilustrasi proses mengeluarkan air lama dan mendapan dari tangki"><span>Ilustrasi proses</span></div><div class="process-number">02</div><h3>Keluarkan Mendapan</h3><p>Keluarkan air lama serta mendapan yang boleh dicapai mengikut keadaan tangki.</p></article>
+          <article class="process-card"><div class="process-photo"><img src="./JAYACLEAN GPT 3_files/jayaclean-process-03-scrubbing-640.webp" srcset="./assets/jayaclean-process-03-scrubbing-640.webp 640w, ./assets/jayaclean-process-03-scrubbing-1200.webp 1200w" sizes="(max-width:767px) calc(100vw - 52px), (max-width:1023px) 46vw, 24vw" width="1200" height="675" loading="lazy" decoding="async" alt="Ilustrasi juruteknik mencuci dinding dan dasar tangki"><span>Ilustrasi proses</span></div><div class="process-number">03</div><h3>Cuci Dinding &amp; Dasar</h3><p>Bersihkan permukaan menggunakan kaedah yang sesuai dengan bahan tangki.</p></article>
+          <article class="process-card"><div class="process-photo"><img src="./JAYACLEAN GPT 3_files/jayaclean-process-04-documentation-640.webp" srcset="./assets/jayaclean-process-04-documentation-640.webp 640w, ./assets/jayaclean-process-04-documentation-1200.webp 1200w" sizes="(max-width:767px) calc(100vw - 52px), (max-width:1023px) 46vw, 24vw" width="1200" height="675" loading="lazy" decoding="async" alt="Ilustrasi juruteknik mengambil foto tangki selepas cucian"><span>Ilustrasi proses</span></div><div class="process-number">04</div><h3>Bilas &amp; Rekod</h3><p>Buat bilasan akhir, pemeriksaan visual dan rekod foto selepas kerja.</p></article>
+        </div>
+        <p class="proof-caption">Semua visual proses di atas ialah ilustrasi AI untuk menerangkan aliran kerja umum, bukan foto pelanggan.</p>
+      </div>
+    </section>
+
+    <section class="section section-grey" id="harga">
+      <div class="container">
+        <div class="section-head reveal visible">
+          <div><span class="section-kicker">Kenapa JAYACLEAN</span><h2>Anda tahu apa yang dibuat, dibayar dan diterima.</h2></div>
+          <p>Daripada semakan awal hingga bilasan akhir, setiap langkah diterangkan dengan jelas.</p>
+        </div>
+        <div class="benefits-grid reveal visible">
+          <article class="benefit-card"><span class="benefit-icon">01</span><div><h3>Harga dipersetujui dahulu</h3><p>Skop dan jumlah bayaran dijelaskan sebelum anda membuat deposit.</p></div></article>
+          <article class="benefit-card"><span class="benefit-icon">02</span><div><h3>Keadaan tangki ditunjukkan</h3><p>Anda boleh melihat keadaan awal dan rekod selepas kerja disiapkan.</p></div></article>
+          <article class="benefit-card"><span class="benefit-icon">03</span><div><h3>Kaedah ikut keadaan tangki</h3><p>Jenis, bahan dan akses diperiksa sebelum kaedah cucian ditentukan.</p></div></article>
+          <article class="benefit-card"><span class="benefit-icon">04</span><div><h3>Baki selepas kerja siap</h3><p>Deposit mengesahkan slot; baki dibayar selepas servis diselesaikan.</p></div></article>
+        </div>
+        <div class="price-layout">
+        <div class="price-copy reveal visible">
+          <span class="section-kicker">Harga &amp; skop</span>
+          <h2>Satu tangki standard. Bermula RM300.</h2>
+          <p class="lead">Harga akhir disahkan berdasarkan jenis tangki, lokasi dan akses sebelum anda membuat sebarang bayaran.</p>
+          <p>Jika ada tangki tambahan, akses sukar, kerja pembaikan atau lokasi di luar kawasan, kami maklumkan dahulu—sebelum anda bayar deposit.</p>
+          <p class="fine-print"><strong>Tiada kerja tambahan dibuat tanpa persetujuan anda.</strong> Kapasiti, jenis tangki, ketinggian dan akses akan disemak semasa pengesahan.</p>
+        </div>
+        <div class="price-card reveal visible">
+          <div class="price-card-head">
+            <div><div class="price-eyebrow">1 tangki rumah standard*</div><div class="price-main">RM300 <small>bermula</small></div></div>
+            <span class="price-chip">Skop disahkan awal</span>
+          </div>
+          <ul class="scope-list">
+            <li>Pemeriksaan visual awal</li><li>Pengeluaran mendapan</li>
+            <li>Cucian dinding &amp; dasar</li><li>Bilasan akhir</li>
+            <li>Foto sebelum servis</li><li>Foto selepas servis</li>
+          </ul>
+          <div class="payment-split">
+            <div class="payment-box"><span>Deposit selepas pengesahan</span><strong>RM150</strong></div>
+            <div class="payment-box"><span>Baki selepas servis</span><strong>RM150</strong></div>
+          </div>
+          <a class="btn btn-primary" href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#tempah">Semak Slot &amp; Harga</a>
+          <p class="price-note">Tiada bayaran sehingga lokasi, skop dan tarikh disahkan.</p>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark" id="tempah">
+      <div class="container booking-layout">
+        <div class="booking-copy reveal visible">
+          <span class="section-kicker">Semakan slot</span>
+          <h2>Minta slot servis yang sesuai.</h2>
+          <p class="lead">Hantar pilihan tarikh dan butiran asas. Ini ialah permintaan slot; pasukan kami akan semak liputan, jenis tangki dan skop sebelum mengesahkan tempahan.</p>
+          <ul class="booking-points">
+            <li>Tarikh boleh ditukar tertakluk ketersediaan</li>
+            <li>Baki RM150 selepas servis selesai</li>
+            <li>Bukti foto dihantar ke WhatsApp</li>
+          </ul>
+        </div>
+        <div class="booking-card reveal visible" id="bookingCard">
+          <form id="bookingForm" novalidate="">
+            <h3>Permintaan slot servis</h3>
+            <p class="booking-sub">Pilih tarikh pilihan dan lengkapkan butiran di bawah.</p>
+
+            <div class="form-step"><span>1</span>Pilih tarikh</div>
+            <div class="calendar-head"><button id="prevMonth" type="button" aria-label="Bulan sebelumnya" disabled="">←</button><strong class="calendar-month" id="calendarMonth">Julai 2026</strong><button id="nextMonth" type="button" aria-label="Bulan seterusnya">→</button></div>
+            <div class="calendar-scroll"><div class="calendar-grid" id="calendar" role="group" aria-label="Pilih tarikh servis"><div class="calendar-day-name" aria-hidden="true">Ahd</div><div class="calendar-day-name" aria-hidden="true">Isn</div><div class="calendar-day-name" aria-hidden="true">Sel</div><div class="calendar-day-name" aria-hidden="true">Rab</div><div class="calendar-day-name" aria-hidden="true">Kha</div><div class="calendar-day-name" aria-hidden="true">Jum</div><div class="calendar-day-name" aria-hidden="true">Sab</div><span class="calendar-empty" aria-hidden="true"></span><span class="calendar-empty" aria-hidden="true"></span><span class="calendar-empty" aria-hidden="true"></span><button class="calendar-day" type="button" data-date="2026-07-01" aria-label="01 Julai 2026" aria-pressed="false" disabled="">1</button><button class="calendar-day" type="button" data-date="2026-07-02" aria-label="02 Julai 2026" aria-pressed="false" disabled="">2</button><button class="calendar-day" type="button" data-date="2026-07-03" aria-label="03 Julai 2026" aria-pressed="false" disabled="">3</button><button class="calendar-day" type="button" data-date="2026-07-04" aria-label="04 Julai 2026" aria-pressed="false" disabled="">4</button><button class="calendar-day" type="button" data-date="2026-07-05" aria-label="05 Julai 2026" aria-pressed="false" disabled="">5</button><button class="calendar-day" type="button" data-date="2026-07-06" aria-label="06 Julai 2026" aria-pressed="false" disabled="">6</button><button class="calendar-day" type="button" data-date="2026-07-07" aria-label="07 Julai 2026" aria-pressed="false" disabled="">7</button><button class="calendar-day" type="button" data-date="2026-07-08" aria-label="08 Julai 2026" aria-pressed="false" disabled="">8</button><button class="calendar-day" type="button" data-date="2026-07-09" aria-label="09 Julai 2026" aria-pressed="false" disabled="">9</button><button class="calendar-day" type="button" data-date="2026-07-10" aria-label="10 Julai 2026" aria-pressed="false" disabled="">10</button><button class="calendar-day" type="button" data-date="2026-07-11" aria-label="11 Julai 2026" aria-pressed="false" disabled="">11</button><button class="calendar-day" type="button" data-date="2026-07-12" aria-label="12 Julai 2026" aria-pressed="false" disabled="">12</button><button class="calendar-day" type="button" data-date="2026-07-13" aria-label="13 Julai 2026" aria-pressed="false" disabled="">13</button><button class="calendar-day" type="button" data-date="2026-07-14" aria-label="14 Julai 2026" aria-pressed="false" disabled="">14</button><button class="calendar-day today" type="button" data-date="2026-07-15" aria-label="15 Julai 2026" aria-pressed="false" disabled="">15</button><button class="calendar-day" type="button" data-date="2026-07-16" aria-label="16 Julai 2026" aria-pressed="false">16</button><button class="calendar-day" type="button" data-date="2026-07-17" aria-label="17 Julai 2026" aria-pressed="false">17</button><button class="calendar-day" type="button" data-date="2026-07-18" aria-label="18 Julai 2026" aria-pressed="false">18</button><button class="calendar-day" type="button" data-date="2026-07-19" aria-label="19 Julai 2026" aria-pressed="false">19</button><button class="calendar-day" type="button" data-date="2026-07-20" aria-label="20 Julai 2026" aria-pressed="false">20</button><button class="calendar-day" type="button" data-date="2026-07-21" aria-label="21 Julai 2026" aria-pressed="false">21</button><button class="calendar-day" type="button" data-date="2026-07-22" aria-label="22 Julai 2026" aria-pressed="false">22</button><button class="calendar-day" type="button" data-date="2026-07-23" aria-label="23 Julai 2026" aria-pressed="false">23</button><button class="calendar-day" type="button" data-date="2026-07-24" aria-label="24 Julai 2026" aria-pressed="false">24</button><button class="calendar-day" type="button" data-date="2026-07-25" aria-label="25 Julai 2026" aria-pressed="false">25</button><button class="calendar-day" type="button" data-date="2026-07-26" aria-label="26 Julai 2026" aria-pressed="false">26</button><button class="calendar-day" type="button" data-date="2026-07-27" aria-label="27 Julai 2026" aria-pressed="false">27</button><button class="calendar-day" type="button" data-date="2026-07-28" aria-label="28 Julai 2026" aria-pressed="false">28</button><button class="calendar-day" type="button" data-date="2026-07-29" aria-label="29 Julai 2026" aria-pressed="false">29</button><button class="calendar-day" type="button" data-date="2026-07-30" aria-label="30 Julai 2026" aria-pressed="false">30</button><button class="calendar-day" type="button" data-date="2026-07-31" aria-label="31 Julai 2026" aria-pressed="false">31</button></div></div>
+            <p class="selected-date" id="selectedDate" aria-live="polite">Belum pilih tarikh</p>
+
+            <div class="form-step"><span>2</span>Pilih masa</div>
+            <div class="slots" id="slots" aria-label="Pilih masa servis">
+              <button class="slot" type="button" data-slot="9am" disabled="" aria-pressed="false">9:00 pagi</button>
+              <button class="slot" type="button" data-slot="11am" disabled="" aria-pressed="false">11:00 pagi</button>
+              <button class="slot" type="button" data-slot="2pm" disabled="" aria-pressed="false">2:00 petang</button>
+              <button class="slot" type="button" data-slot="4pm" disabled="" aria-pressed="false">4:00 petang</button>
+            </div>
+            <p class="form-status" id="slotStatus" aria-live="polite">Pilih tarikh untuk menyemak ketersediaan masa.</p>
+
+            <div class="form-step"><span>3</span>Butiran anda</div>
+            <div class="form-grid">
+              <div class="field"><label for="customerName">Nama penuh</label><input id="customerName" name="name" type="text" autocomplete="name" placeholder="Contoh: Ahmad Firdaus" aria-describedby="nameError" aria-invalid="false"><span class="error" id="nameError">Sila isi nama penuh.</span></div>
+              <div class="field"><label for="customerPhone">Nombor telefon</label><input id="customerPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Contoh: 0123456789" aria-describedby="phoneError" aria-invalid="false"><span class="error" id="phoneError">Masukkan nombor Malaysia yang sah.</span></div>
+              <div class="field full"><label for="customerAddress">Alamat &amp; poskod</label><textarea id="customerAddress" name="address" autocomplete="street-address" placeholder="No. rumah, jalan, taman dan poskod" aria-describedby="addressError" aria-invalid="false"></textarea><span class="error" id="addressError">Sila masukkan alamat lengkap dan poskod.</span></div>
+            </div>
+            <div class="summary-box">
+              <div class="summary-row"><span>Harga servis*</span><strong>RM300</strong></div>
+              <div class="summary-row"><span>Deposit selepas pengesahan</span><strong>RM150</strong></div>
+              <div class="summary-row total"><span>Baki selepas servis</span><strong>RM150</strong></div>
+            </div>
+            <button class="btn btn-primary submit-btn" id="submitBooking" type="submit">Hantar Permintaan Slot</button>
+            <p class="form-note">Tiada bayaran dibuat sekarang. Slot hanya disahkan selepas harga, skop dan deposit dipersetujui. Maklumat anda digunakan untuk mengurus permintaan servis ini.</p>
+          </form>
+          <div class="confirmation" id="confirmation" hidden="" aria-live="polite">
+            <div class="confirmation-mark">✓</div>
+            <h3>Permintaan slot diterima</h3>
+            <p id="confirmationText"></p>
+            <a class="btn btn-wa js-whatsapp" data-message="Assalamualaikum JAYACLEAN. Saya mahu semak slot dan harga servis cuci tangki. Poskod saya: ____. Jenis rumah: ____. Bilangan tangki: ____." href="https://wa.me/60000000000?text=Assalamualaikum%20JAYACLEAN.%20Saya%20mahu%20semak%20slot%20dan%20harga%20servis%20cuci%20tangki.%20Poskod%20saya%3A%20____.%20Jenis%20rumah%3A%20____.%20Bilangan%20tangki%3A%20____." target="_blank" rel="noopener">Teruskan di WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container faq-layout">
+        <div class="reveal visible"><span class="section-kicker">Soalan lazim</span><h2>Jawapan ringkas sebelum anda hantar permintaan.</h2><p class="muted">Masih tak pasti? Hantar gambar tangki atau lokasi pemasangannya melalui WhatsApp untuk semakan awal.</p></div>
+        <div class="faq-list reveal visible">
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq1"><span>Berapa lama proses cuci?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq1" hidden=""><p>Kebiasaannya sekitar 1–2 jam untuk satu tangki rumah standard. Tempoh sebenar bergantung pada saiz, keadaan dan akses tangki.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq2"><span>Apa yang termasuk dalam RM300?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq2" hidden=""><p>Pemeriksaan awal, pengeluaran mendapan, cucian dinding dan dasar, bilasan akhir serta foto sebelum dan selepas untuk satu tangki rumah standard. Skop akhir disahkan sebelum deposit.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq3"><span>Kenapa perlu deposit RM150?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq3" hidden=""><p>Deposit digunakan untuk mengesahkan tarikh dan pasukan servis selepas lokasi serta skop dipersetujui. Baki RM150 dibayar selepas kerja selesai.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq4"><span>Kalau akses tangki sukar?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq4" hidden=""><p>Hantar gambar lokasi tangki kepada kami. Kami akan semak aspek akses dan keselamatan terlebih dahulu, termasuk sebarang perubahan skop atau harga.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq5"><span>Kawasan mana yang diliputi?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq5" hidden=""><p>Kawasan utama ialah Kuala Lumpur dan Selangor. Berikan poskod anda supaya pasukan boleh mengesahkan liputan dan jadual.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq6"><span>Boleh tukar tarikh jika hujan atau ada kecemasan?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq6" hidden=""><p>Boleh, tertakluk pada polisi penjadualan dan slot yang tersedia. Terma pembatalan, pertukaran tarikh dan pemulangan deposit perlu disahkan semasa tempahan.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div class="container final-inner reveal visible">
+        <div><h2>Buka, lihat, kemudian buat keputusan dengan yakin.</h2><p>Beritahu poskod dan jenis rumah. Kami semak liputan, skop dan harga sebelum sebarang bayaran.</p></div>
+        <div class="final-actions"><a class="btn btn-light" href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#tempah">Semak Slot &amp; Harga</a><a class="btn btn-wa js-whatsapp" data-message="Assalamualaikum JAYACLEAN. Saya mahu semak slot dan harga servis cuci tangki. Poskod saya: ____. Jenis rumah: ____. Bilangan tangki: ____." href="https://wa.me/60000000000?text=Assalamualaikum%20JAYACLEAN.%20Saya%20mahu%20semak%20slot%20dan%20harga%20servis%20cuci%20tangki.%20Poskod%20saya%3A%20____.%20Jenis%20rumah%3A%20____.%20Bilangan%20tangki%3A%20____." target="_blank" rel="noopener">Tanya di WhatsApp</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand"><strong>JAYACLEAN · Jaya Bina Services</strong><span>Servis cuci tangki air rumah · KL &amp; Selangor · © 2026</span></div>
+      <div class="footer-links"><a href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#harga">Harga</a><a href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#faq">FAQ</a><a href="file:///C:/Users/USER/OneDrive/Documents/New%20project/JAYACLEAN-salespage-final-v4.html#tempah">Tempahan</a></div>
     </div>
-    <p class="image-disclosure">Visual proses ialah imej konsep AI dan bukan foto projek pelanggan. Kaedah sebenar bergantung pada tapak.</p>
-  </div>
-</section>
+  </footer>
 
-<section class="section">
-  <div class="container">
-    <div class="section-head"><span class="section-kicker">DARIPADA PERTANYAAN KE DOKUMENTASI</span><h2>Proses servis yang tersusun.</h2></div>
-    <div class="process-grid">
-      <article class="process-card"><span class="step-number">1</span><h3>Hantar lokasi</h3><p>Nyatakan jenis rumah, lokasi atau poskod dan maklumat tangki jika diketahui.</p></article>
-      <article class="process-card"><span class="step-number">2</span><h3>Semakan awal</h3><p>Akses, lokasi tangki dan maklumat berkaitan disemak sebelum jadual dicadangkan.</p></article>
-      <article class="process-card"><span class="step-number">3</span><h3>Pemeriksaan tapak</h3><p>Keadaan sebenar dinilai dan skop dijelaskan sebelum kerja diteruskan.</p></article>
-      <article class="process-card"><span class="step-number">4</span><h3>Pengeluaran mendapan</h3><p>Air serta kotoran di bahagian yang boleh dicapai dikeluarkan.</p></article>
-      <article class="process-card"><span class="step-number">5</span><h3>Cuci &amp; bilas</h3><p>Bahagian dalaman dicuci mengikut akses, kemudian dibilas dan disemak.</p></article>
-      <article class="process-card"><span class="step-number">6</span><h3>Rekod selepas kerja</h3><p>Dokumentasi berkaitan dikongsi supaya anda boleh melihat perbezaannya.</p></article>
-    </div>
-  </div>
-</section>
+  <a class="desktop-wa js-whatsapp" data-message="Assalamualaikum JAYACLEAN. Saya mahu semak slot dan harga servis cuci tangki. Poskod saya: ____. Jenis rumah: ____. Bilangan tangki: ____." href="https://wa.me/60000000000?text=Assalamualaikum%20JAYACLEAN.%20Saya%20mahu%20semak%20slot%20dan%20harga%20servis%20cuci%20tangki.%20Poskod%20saya%3A%20____.%20Jenis%20rumah%3A%20____.%20Bilangan%20tangki%3A%20____." target="_blank" rel="noopener">Tanya di WhatsApp</a>
+  <div class="mobile-sticky" id="mobileSticky"><a class="btn btn-wa js-whatsapp" data-message="Assalamualaikum JAYACLEAN. Saya mahu semak slot dan harga servis cuci tangki. Poskod saya: ____. Jenis rumah: ____. Bilangan tangki: ____." href="https://wa.me/60000000000?text=Assalamualaikum%20JAYACLEAN.%20Saya%20mahu%20semak%20slot%20dan%20harga%20servis%20cuci%20tangki.%20Poskod%20saya%3A%20____.%20Jenis%20rumah%3A%20____.%20Bilangan%20tangki%3A%20____." target="_blank" rel="noopener">Semak Slot &amp; Harga</a></div>
 
-<section class="section section-mint">
-  <div class="container cost-layout">
-    <div><span class="section-kicker">APA YANG MEMPENGARUHI SEBUT HARGA?</span><h2>Jenis tangki dan akses memainkan peranan.</h2><p class="lead">Tangki di aras tanah, siling atau bumbung mempunyai keadaan akses yang berbeza. Saiz, jumlah tangki dan tahap kesukaran juga perlu dipertimbangkan.</p><p class="muted">Kongsi gambar tangki jika selamat untuk diambil. Jangan memanjat atau membuka ruang yang berisiko semata-mata untuk mendapatkan gambar.</p></div>
-    <div class="cost-card"><h3>Antara faktor utama</h3><ul class="factor-list"><li>Jenis, saiz dan bilangan tangki</li><li>Lokasi serta akses yang selamat</li><li>Keadaan air dan mendapan</li><li>Ruang kerja di sekeliling tangki</li><li>Keperluan peralatan atau penyediaan tambahan</li><li>Lokasi rumah dan perjalanan</li></ul></div>
-  </div>
-</section>
+  <script src="./JAYACLEAN GPT 3_files/supabase-js@2" defer=""></script>
+  <script>
+    window.addEventListener('DOMContentLoaded',function(){
+      var WHATSAPP_NUMBER='60000000000'; // WAJIB GANTI dengan nombor WhatsApp Business sebenar, format 601xxxxxxxx.
+      document.querySelectorAll('.js-whatsapp').forEach(function(link){
+        var message=link.getAttribute('data-message')||'';
+        link.href='https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(message);
+      });
 
-<section class="section">
-  <div class="container faq-layout">
-    <div class="section-head"><span class="section-kicker">SOALAN LAZIM</span><h2>Sebelum servis cuci tangki.</h2></div>
-    <div class="faq-list">{{ $faqs := slice
-      (dict "q" "Berapa kerap tangki perlu dicuci?" "a" "Keperluan bergantung pada keadaan bekalan, jenis tangki, persekitaran dan sejarah penjagaan. Semakan visual membantu menentukan keadaan sebenar dengan lebih baik.")
-      (dict "q" "Adakah air rumah akan terputus semasa kerja?" "a" "Proses lazimnya memerlukan pengurusan bekalan air pada tangki. Keadaan dan persediaan akan diterangkan sebelum kerja bermula.")
-      (dict "q" "Boleh cuci semua jenis tangki?" "a" "Kesesuaian bergantung pada jenis, lokasi, keadaan dan akses yang selamat. Kongsi maklumat atau gambar untuk semakan awal.")
-      (dict "q" "Adakah saya dapat gambar sebelum dan selepas?" "a" "Dokumentasi visual akan dibuat apabila keadaan dan akses membenarkan. Cara dokumentasi perlu disahkan semasa semakan skop.")
-      (dict "q" "Perlu kosongkan rumah semasa kerja?" "a" "Kebiasaannya tidak, tetapi penggunaan air dan akses ke kawasan tangki mungkin perlu diselaraskan. Arahan khusus bergantung pada keadaan rumah.")
-    }}{{ range $i,$faq := $faqs }}<div class="faq-item"><button class="faq-question" type="button" data-faq-button aria-expanded="false" aria-controls="tank-faq-{{ $i }}"><span>{{ $faq.q }}</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="tank-faq-{{ $i }}" hidden>{{ $faq.a }}</div></div>{{ end }}</div>
-  </div>
-</section>
+      var menuToggle=document.getElementById('menuToggle');
+      var mobileMenu=document.getElementById('mobileMenu');
+      function closeMenu(returnFocus){menuToggle.setAttribute('aria-expanded','false');menuToggle.setAttribute('aria-label','Buka menu');mobileMenu.classList.remove('open');mobileMenu.setAttribute('aria-hidden','true');document.body.classList.remove('menu-open');if(returnFocus)menuToggle.focus()}
+      function openMenu(){menuToggle.setAttribute('aria-expanded','true');menuToggle.setAttribute('aria-label','Tutup menu');mobileMenu.classList.add('open');mobileMenu.setAttribute('aria-hidden','false');document.body.classList.add('menu-open');var first=mobileMenu.querySelector('a');if(first)first.focus()}
+      menuToggle.addEventListener('click',function(){this.getAttribute('aria-expanded')==='true'?closeMenu(false):openMenu()});
+      mobileMenu.querySelectorAll('a').forEach(function(link){link.addEventListener('click',function(){closeMenu(false)})});
+      document.addEventListener('keydown',function(event){if(event.key==='Escape'&&mobileMenu.classList.contains('open'))closeMenu(true);if(event.key==='Tab'&&mobileMenu.classList.contains('open')){var focusable=Array.from(mobileMenu.querySelectorAll('a[href]'));if(!focusable.length)return;var first=focusable[0],last=focusable[focusable.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}}});
+      document.addEventListener('click',function(event){if(!mobileMenu.contains(event.target)&&!menuToggle.contains(event.target)&&mobileMenu.classList.contains('open'))closeMenu()});
 
-<section class="section lead-section" id="hubungi" data-lead-section>
-  <div class="container lead-card">
-    <div><span class="section-kicker">SEMAK JENIS TANGKI &amp; LOKASI</span><h2>Mahu tahu keadaan tangki rumah anda?</h2><p class="lead">Hantar jenis rumah, lokasi atau poskod dan gambar tangki jika mudah serta selamat diambil. Kami akan bantu semak langkah seterusnya.</p><div class="lead-actions"><a class="btn btn-secondary" href="https://wa.me/{{ $b.whatsapp }}?text={{ $wa | urlquery }}" target="_blank" rel="noopener">Tanya Melalui WhatsApp</a><a class="btn btn-outline" style="color:white;border-color:white" href="tel:{{ $b.phone_tel }}">Telefon {{ $b.phone_display }}</a></div></div>
-    <div class="contact-options"><div><strong>Maklumat berguna</strong>Jenis rumah, bilangan tangki, lokasi tangki dan poskod.</div><div><strong>Utamakan keselamatan</strong>Jangan memanjat untuk mengambil gambar jika kawasan tidak selamat.</div><div><strong>Kawasan fokus</strong>{{ $b.service_area }}</div></div>
-  </div>
-</section>
+      document.querySelectorAll('a[href^="#"]').forEach(function(link){link.addEventListener('click',function(event){var target=document.querySelector(this.getAttribute('href'));if(target){event.preventDefault();var distance=Math.abs(target.getBoundingClientRect().top);var instant=window.matchMedia('(prefers-reduced-motion: reduce)').matches||distance>2200;if(instant){var oldBehavior=document.documentElement.style.scrollBehavior;document.documentElement.style.scrollBehavior='auto';target.scrollIntoView({behavior:'auto',block:'start'});window.setTimeout(function(){document.documentElement.style.scrollBehavior=oldBehavior},0)}else{target.scrollIntoView({behavior:'smooth',block:'start'})}}})});
 
-<section class="section section-mint">{{ partial "other-services.html" "tank" }}</section>
+      var navLinks=document.querySelectorAll('.nav-links a');
+      var sections=document.querySelectorAll('main section[id]');
+      var sectionObserver=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){navLinks.forEach(function(link){var active=link.getAttribute('href')==='#'+entry.target.id;link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')})}})},{rootMargin:'-30% 0px -60% 0px'});
+      sections.forEach(function(section){sectionObserver.observe(section)});
+
+      if('IntersectionObserver' in window){
+        var revealObserver=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('visible');revealObserver.unobserve(entry.target)}})},{threshold:.08});
+        document.querySelectorAll('.reveal').forEach(function(element){revealObserver.observe(element)});
+      }else{document.querySelectorAll('.reveal').forEach(function(element){element.classList.add('visible')})}
+
+      var sticky=document.getElementById('mobileSticky');
+      var desktopWhatsApp=document.querySelector('.desktop-wa');
+      var bookingSection=document.getElementById('tempah');
+      var heroSection=document.getElementById('hero');
+      if(sticky&&bookingSection&&heroSection&&'IntersectionObserver' in window){
+        var heroVisible=true;
+        var bookingVisible=false;
+        function updateSticky(){sticky.classList.toggle('is-hidden',heroVisible||bookingVisible);if(desktopWhatsApp)desktopWhatsApp.classList.toggle('is-hidden',bookingVisible)}
+        new IntersectionObserver(function(entries){entries.forEach(function(entry){heroVisible=entry.isIntersecting;updateSticky()})},{threshold:.05}).observe(heroSection);
+        new IntersectionObserver(function(entries){entries.forEach(function(entry){bookingVisible=entry.isIntersecting;updateSticky()})},{threshold:.01}).observe(bookingSection);
+        updateSticky();
+      }
+
+      document.querySelectorAll('.faq-question').forEach(function(button){button.addEventListener('click',function(){
+        var open=this.getAttribute('aria-expanded')==='true';
+        document.querySelectorAll('.faq-question').forEach(function(other){other.setAttribute('aria-expanded','false');document.getElementById(other.getAttribute('aria-controls')).hidden=true});
+        if(!open){this.setAttribute('aria-expanded','true');document.getElementById(this.getAttribute('aria-controls')).hidden=false}
+      })});
+
+      var SB=null;
+      if(window.supabase){SB=window.supabase.createClient('https://thbscwlcyhcnqsppoyfn.supabase.co','sb_publishable_jFrl83f8l_tcWTulTL5lkQ_bLnCVpYR')}
+      async function fetchBookedSlots(date){if(!SB)throw new Error('BOOKING_UNAVAILABLE');var result=await SB.from('slots').select('time_slot').eq('date',date).eq('is_booked',true);if(result.error)throw result.error;if(!result.data)throw new Error('AVAILABILITY_UNAVAILABLE');return result.data.map(function(item){return item.time_slot})}
+
+      var today=new Date();today.setHours(0,0,0,0);
+      var currentMonth=today.getMonth();
+      var currentYear=today.getFullYear();
+      var selectedDate=null;
+      var selectedSlot=null;
+      var availabilityRequest=0;
+      var monthNames=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+      var dayNames=['Ahd','Isn','Sel','Rab','Kha','Jum','Sab'];
+      function localDateString(year,month,day){return year+'-'+String(month+1).padStart(2,'0')+'-'+String(day).padStart(2,'0')}
+      function formatDate(dateString){var parts=dateString.split('-');return parts[2]+' '+monthNames[Number(parts[1])-1]+' '+parts[0]}
+      function maxBookDate(){var date=new Date(today);date.setDate(date.getDate()+30);return localDateString(date.getFullYear(),date.getMonth(),date.getDate())}
+      function minBookDate(){var date=new Date(today);date.setDate(date.getDate()+1);return localDateString(date.getFullYear(),date.getMonth(),date.getDate())}
+      function renderCalendar(){
+        var calendar=document.getElementById('calendar');
+        document.getElementById('calendarMonth').textContent=monthNames[currentMonth]+' '+currentYear;
+        var html='';
+        dayNames.forEach(function(day){html+='<div class="calendar-day-name" aria-hidden="true">'+day+'</div>'});
+        var firstDay=new Date(currentYear,currentMonth,1).getDay();
+        var totalDays=new Date(currentYear,currentMonth+1,0).getDate();
+        for(var blank=0;blank<firstDay;blank++)html+='<span class="calendar-empty" aria-hidden="true"></span>';
+        for(var day=1;day<=totalDays;day++){
+          var dateString=localDateString(currentYear,currentMonth,day);
+          var disabled=dateString<minBookDate()||dateString>maxBookDate();
+          var classes='calendar-day';
+          if(dateString===localDateString(today.getFullYear(),today.getMonth(),today.getDate()))classes+=' today';
+          if(dateString===selectedDate)classes+=' selected';
+          html+='<button class="'+classes+'" type="button" data-date="'+dateString+'" aria-label="'+formatDate(dateString)+'" aria-pressed="'+(dateString===selectedDate)+'" '+(disabled?'disabled':'')+'>'+day+'</button>';
+        }
+        calendar.innerHTML=html;
+        calendar.querySelectorAll('.calendar-day:not(:disabled)').forEach(function(button){button.addEventListener('click',function(){selectDate(this.getAttribute('data-date'))})});
+        document.getElementById('prevMonth').disabled=(currentYear===today.getFullYear()&&currentMonth<=today.getMonth());
+        var maxParts=maxBookDate().split('-');
+        document.getElementById('nextMonth').disabled=(currentYear>Number(maxParts[0])||(currentYear===Number(maxParts[0])&&currentMonth>=Number(maxParts[1])-1));
+      }
+      async function selectDate(dateString){
+        var requestId=++availabilityRequest;selectedDate=dateString;selectedSlot=null;renderCalendar();
+        document.getElementById('selectedDate').textContent='Tarikh dipilih: '+formatDate(dateString);document.getElementById('selectedDate').style.color='';
+        var slotButtons=document.querySelectorAll('.slot');slotButtons.forEach(function(button){button.disabled=true;button.classList.remove('selected');button.setAttribute('aria-pressed','false')});
+        var slotStatus=document.getElementById('slotStatus');slotStatus.classList.remove('error-state');slotStatus.textContent='Menyemak ketersediaan masa…';
+        try{var booked=await fetchBookedSlots(dateString);if(requestId!==availabilityRequest||selectedDate!==dateString)return;slotButtons.forEach(function(button){button.disabled=booked.indexOf(button.getAttribute('data-slot'))>-1});slotStatus.textContent=booked.length===slotButtons.length?'Semua masa pada tarikh ini telah ditempah. Sila pilih tarikh lain.':'Pilih masa yang masih tersedia.'}
+        catch(error){if(requestId!==availabilityRequest||selectedDate!==dateString)return;slotButtons.forEach(function(button){button.disabled=true});slotStatus.classList.add('error-state');slotStatus.textContent='Ketersediaan masa tidak dapat disemak. Sila cuba lagi atau hubungi kami melalui WhatsApp.'}
+      }
+      document.getElementById('prevMonth').addEventListener('click',function(){if(currentMonth===0){currentMonth=11;currentYear--}else currentMonth--;renderCalendar()});
+      document.getElementById('nextMonth').addEventListener('click',function(){if(currentMonth===11){currentMonth=0;currentYear++}else currentMonth++;renderCalendar()});
+      document.querySelectorAll('.slot').forEach(function(button){button.setAttribute('aria-pressed','false');button.addEventListener('click',function(){if(this.disabled)return;document.querySelectorAll('.slot').forEach(function(other){other.classList.remove('selected');other.setAttribute('aria-pressed','false')});this.classList.add('selected');this.setAttribute('aria-pressed','true');selectedSlot=this.getAttribute('data-slot');document.getElementById('slotStatus').textContent='Masa dipilih: '+this.textContent})});
+      renderCalendar();
+
+      function showError(id,inputId,show){var error=document.getElementById(id);var input=document.getElementById(inputId);error.classList.toggle('show',show);input.setAttribute('aria-invalid',show?'true':'false')}
+      document.getElementById('bookingForm').addEventListener('submit',async function(event){
+        event.preventDefault();
+        var name=document.getElementById('customerName').value.trim();
+        var phone=document.getElementById('customerPhone').value.replace(/[\s-]/g,'').trim();
+        var address=document.getElementById('customerAddress').value.trim();
+        var valid=true;
+        showError('nameError','customerName',!name);if(!name)valid=false;
+        showError('phoneError','customerPhone',!/^01\d{8,9}$/.test(phone));if(!/^01\d{8,9}$/.test(phone))valid=false;
+        showError('addressError','customerAddress',address.length<10);if(address.length<10)valid=false;
+        if(!selectedDate){document.getElementById('selectedDate').textContent='Sila pilih tarikh.';document.getElementById('selectedDate').style.color='var(--error)';valid=false}else{document.getElementById('selectedDate').style.color=''}
+        if(!selectedSlot){document.getElementById('slots').style.outline='2px solid var(--error)';valid=false}else{document.getElementById('slots').style.outline=''}
+        if(!valid){var firstInvalid=this.querySelector('[aria-invalid="true"]');if(firstInvalid)firstInvalid.focus();else if(!selectedDate){var firstDate=document.querySelector('.calendar-day:not(:disabled)');if(firstDate)firstDate.focus()}else{var firstSlot=document.querySelector('.slot:not(:disabled)');if(firstSlot)firstSlot.focus()}return}
+        var submit=document.getElementById('submitBooking');submit.disabled=true;submit.textContent='Menghantar...';
+        if(!SB){alert('Sistem tempahan belum bersambung. Sila gunakan WhatsApp.');submit.disabled=false;submit.textContent='Hantar Permintaan Slot';return}
+        try{
+          var existing=await fetchBookedSlots(selectedDate);if(existing.indexOf(selectedSlot)>-1)throw new Error('SLOT_TAKEN');
+          var bookingResult=await SB.from('bookings').insert({customer_name:name,customer_phone:phone,customer_address:address,booking_date:selectedDate,booking_time:selectedSlot,amount:300,deposit_amount:150,status:'pending_payment',payment_status:'pending'}).select();
+          if(bookingResult.error)throw bookingResult.error;
+          var bookingId=bookingResult.data[0].id;
+          var slotResult=await SB.from('slots').insert({date:selectedDate,time_slot:selectedSlot,is_booked:true,booking_id:bookingId});
+          if(slotResult.error)throw slotResult.error;
+          this.hidden=true;
+          var slotLabels={"9am":"9:00 pagi","11am":"11:00 pagi","2pm":"2:00 petang","4pm":"4:00 petang"};
+          document.getElementById('confirmationText').innerHTML='Terima kasih, <strong>'+name.replace(/[<>&"']/g,function(char){return({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'})[char]})+'</strong>. Permintaan untuk <strong>'+formatDate(selectedDate)+', '+slotLabels[selectedSlot]+'</strong> telah direkodkan. Slot belum disahkan sehingga semakan skop dan deposit selesai. Rujukan: <strong>'+bookingId.substring(0,8)+'</strong>.';
+          var confirmLink=document.querySelector('#confirmation .js-whatsapp');
+          confirmLink.href='https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent('Assalamualaikum JAYACLEAN. Saya mahu sahkan tempahan. Rujukan: '+bookingId.substring(0,8));
+          document.getElementById('confirmation').hidden=false;
+        }catch(error){
+          if(String(error.message).indexOf('SLOT_TAKEN')>-1||String(error.message).indexOf('duplicate')>-1){alert('Maaf, slot ini baru sahaja ditempah. Sila pilih masa lain.')}else{alert('Tempahan belum berjaya dihantar. Sila cuba lagi atau hubungi kami melalui WhatsApp.');}
+          submit.disabled=false;submit.textContent='Hantar Permintaan Slot';
+        }
+      });
+    });
+  </script>
+
+
+</body></html>
