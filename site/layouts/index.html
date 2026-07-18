@@ -1,135 +1,502 @@
-{{ define "main" }}
-{{ $b := hugo.Data.business }}
-<section class="home-hero" data-hero>
-  <div class="container hero-grid">
-    <div class="hero-copy">
-      <span class="hero-badge">{{ $b.legal_name }} · {{ $b.company_number }}</span>
-      <h1>Satu pasukan untuk rumah yang lebih terlindung, bersih dan kemas.</h1>
-      <p class="lead">Daripada atap yang bocor, tangki air yang lama tidak dicuci hingga dinding yang kusam — pilih servis yang anda perlukan dan lihat cara kami menilai kerja sebelum bermula.</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="#servis">Lihat 3 Servis Kami</a>
-        <a class="btn btn-outline" href="https://wa.me/{{ $b.whatsapp }}?text={{ "Assalamualaikum JAYABINA. Saya mahu bertanya tentang servis untuk rumah/ofis saya. Lokasi/poskod: ____." | urlquery }}" target="_blank" rel="noopener">Tanya Melalui WhatsApp</a>
-      </div>
-      <p class="hero-note">Kongsi jenis masalah, lokasi atau poskod, dan gambar jika ada. Kami akan bantu tentukan langkah seterusnya.</p>
-    </div>
-    <div class="hero-mosaic" aria-label="Gambaran servis JAYABINA">
-      <div class="mosaic-large">{{ partial "responsive-image.html" (dict "base" "/images/roof/roof-inspection" "alt" "Pemeriksaan keadaan atap rumah sebelum skop kerja dicadangkan" "loading" "eager" "sizes" "(max-width: 767px) calc(100vw - 32px), 36vw") }}</div>
-      <div class="mosaic-small">{{ partial "responsive-image.html" (dict "base" "/images/tank/tank-process-cleaning" "alt" "Proses mencuci bahagian dalam tangki air rumah" "loading" "eager" "sizes" "(max-width: 767px) 48vw, 18vw") }}</div>
-      <div class="mosaic-small">{{ partial "responsive-image.html" (dict "base" "/images/paint/paint-application" "alt" "Proses mengecat dinding rumah dengan kawasan kerja dilindungi" "loading" "eager" "sizes" "(max-width: 767px) 48vw, 18vw") }}</div>
-      <p class="image-disclosure">Visual atap dan mengecat ialah imej konsep AI. Visual tangki menunjukkan proses servis.</p>
-    </div>
-  </div>
-</section>
+<!DOCTYPE html>
+<html lang="ms" class="js">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d3b2e">
+  <meta name="description" content="Atap bocor, tangki kotor, dinding kusam? JAYABINA uruskan — tukar atap, cuci tangki air (RM300) dan mengecat rumah & ofis. Semakan WhatsApp percuma. KL & Selangor.">
+  <meta property="og:title" content="JAYABINA — Servis Tukar Atap, Cuci Tangki Air &amp; Mengecat | KL &amp; Selangor">
+  <meta property="og:description" content="Atap bocor, tangki kotor, dinding kusam — satu team uruskan semua. Semakan WhatsApp percuma.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.jayabina.com/">
+  <meta property="og:image" content="https://www.jayabina.com/images/og/jayabina-og.png">
+  <link rel="canonical" href="https://www.jayabina.com/">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>JAYABINA — Servis Tukar Atap, Cuci Tangki Air &amp; Mengecat | KL &amp; Selangor</title>
+  <script>document.documentElement.className='js';window.setTimeout(function(){document.documentElement.classList.add('js-fallback')},2500);</script>
+  <style>
+    :root{
+      --green-950:#052e22;
+      --green-900:#0d3b2e;
+      --green-800:#145c3d;
+      --green-700:#146c43;
+      --green-600:#158957;
+      --green-100:#dff5e8;
+      --green-50:#f1fbf5;
+      --white:#fff;
+      --grey-50:#f8faf9;
+      --grey-100:#f3f4f6;
+      --grey-200:#e5e7eb;
+      --grey-300:#d1d5db;
+      --grey-500:#6b7280;
+      --grey-600:#4b5563;
+      --grey-700:#374151;
+      --grey-900:#111827;
+      --error:#b42318;
+      --wa:#0f766e;
+      --shadow-sm:0 1px 2px rgba(17,24,39,.05);
+      --shadow:0 14px 36px rgba(17,24,39,.08);
+      --shadow-green:0 18px 42px rgba(13,59,46,.2);
+      --radius:20px;
+      --radius-sm:14px;
+      --container:1200px;
+      --font-body:clamp(1rem,.96rem + .18vw,1.125rem);
+      --font-small:clamp(.9rem,.87rem + .1vw,1rem);
+      --font-h1:clamp(2.35rem,1.65rem + 3.15vw,4.35rem);
+      --font-h2:clamp(2rem,1.56rem + 2vw,3.1rem);
+      --font-h3:clamp(1.4rem,1.22rem + .75vw,1.9rem);
+    }
 
-<section class="section" id="servis">
-  <div class="container">
-    <div class="section-head">
-      <span class="section-kicker">PILIH MENGIKUT KEPERLUAN</span>
-      <h2>Tiga servis penting. Satu standard komunikasi yang jelas.</h2>
-      <p>Setiap halaman di bawah menerangkan masalah yang kami tangani, proses kerja dan maklumat yang perlu anda sediakan sebelum meminta semakan.</p>
+    *,*::before,*::after{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--white);color:var(--grey-900);font-family:'Figtree',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:var(--font-body);line-height:1.67;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    body.menu-open{overflow:hidden}
+    h1,h2,h3,h4,p,ul,ol,figure{margin-top:0}
+    h1,h2,h3,h4{font-family:'Bricolage Grotesque','Figtree',sans-serif;color:var(--grey-900);letter-spacing:-.025em}
+    h1{font-size:var(--font-h1);line-height:1.05;margin-bottom:24px;max-width:15ch}
+    h2{font-size:var(--font-h2);line-height:1.12;margin-bottom:20px;max-width:20ch}
+    h3{font-size:var(--font-h3);line-height:1.2;margin-bottom:14px}
+    p{max-width:65ch}
+    a{color:inherit;text-decoration:none}
+    button,input,textarea{font:inherit}
+    button,a{touch-action:manipulation}
+    img{display:block;max-width:100%}
+    [hidden]{display:none!important}
+    .container{width:min(calc(100% - 48px),var(--container));margin-inline:auto}
+    .section{padding-block:clamp(64px,7vw,104px);scroll-margin-top:84px}
+    .section-grey{background:var(--grey-50)}
+    .section-mint{background:var(--green-50)}
+    .section-kicker{display:inline-flex;align-items:center;gap:9px;margin-bottom:16px;color:var(--green-700);font-size:.875rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+    .section-kicker::before{content:'';width:24px;height:2px;background:currentColor;border-radius:99px}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:32px;margin-bottom:44px}
+    .section-head h2{margin-bottom:0}
+    .section-head p{margin:0;color:var(--grey-600);max-width:46ch}
+    .lead{font-size:clamp(1.08rem,1rem + .3vw,1.3rem);line-height:1.55}
+    .muted{color:var(--grey-600)}
+    .btn{min-height:54px;display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid transparent;border-radius:13px;padding:14px 24px;font-weight:700;font-size:1rem;line-height:1.25;cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}
+    .btn:hover{transform:translateY(-2px)}
+    .btn-primary{background:var(--green-700);color:var(--white);box-shadow:0 10px 24px rgba(20,108,67,.2)}
+    .btn-primary:hover{background:var(--green-800)}
+    .btn-light{background:var(--white);color:var(--green-900);box-shadow:var(--shadow-sm)}
+    .btn-light:hover{background:var(--green-50)}
+    .btn-hero-ghost{background:transparent;color:var(--white);border-color:rgba(255,255,255,.42)}
+    .btn-hero-ghost:hover{background:rgba(255,255,255,.1);border-color:var(--white)}
+    .btn-wa{background:var(--wa);color:var(--white);box-shadow:0 10px 24px rgba(18,140,126,.2)}
+    .btn-wa:hover{background:#0b5f59}
+    :focus-visible{outline:3px solid var(--white);outline-offset:2px;box-shadow:0 0 0 5px #16a36a}
+
+    .site-nav{position:fixed;inset:0 0 auto;z-index:100;height:72px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--grey-200);box-shadow:var(--shadow-sm)}
+    .nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand{display:flex;align-items:center;gap:11px;font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;color:var(--green-950);letter-spacing:-.02em}
+    .brand-mark{width:38px;height:38px;display:block;border-radius:11px;box-shadow:0 5px 14px rgba(13,59,46,.16)}
+    .nav-links{display:flex;align-items:center;gap:28px;list-style:none;margin:0;padding:0}
+    .nav-links a{color:var(--grey-700);font-size:.94rem;font-weight:600}
+    .nav-links a:hover,.nav-links a.active{color:var(--green-700)}
+    .nav-actions{display:flex;align-items:center;gap:12px}
+    .nav-actions .btn{min-height:44px;padding:10px 18px;font-size:.93rem}
+    .nav-right{display:flex;align-items:center;gap:10px}
+    .menu-toggle{display:block;width:46px;height:46px;padding:0;border:1px solid var(--grey-200);border-radius:12px;background:var(--white);cursor:pointer}
+    .menu-toggle span{display:block;width:21px;height:2px;margin:4px auto;background:var(--green-950);border-radius:99px;transition:transform .2s ease,opacity .2s ease}
+    .menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+    .menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+    .menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+    .mobile-menu{display:none;position:fixed;z-index:99;top:72px;right:max(16px,calc((100vw - var(--container)) / 2));width:min(340px,calc(100vw - 32px));max-height:calc(100dvh - 92px);overflow-y:auto;padding:16px 18px 20px;background:var(--white);border:1px solid var(--grey-200);border-radius:18px;box-shadow:var(--shadow)}
+    .mobile-menu.open{display:grid;gap:6px}
+    .mobile-menu a{min-height:44px;display:flex;align-items:center;padding:6px 8px;border-radius:10px;color:var(--grey-700);font-weight:600}
+    .mobile-menu a:hover{background:var(--green-50);color:var(--green-800)}
+    .mobile-menu .btn{margin-top:10px;color:var(--white);padding-inline:18px}
+    .mm-label{font-size:.68rem;font-weight:800;letter-spacing:.08em;color:var(--grey-500);text-transform:uppercase;margin:10px 8px 2px}
+    .mm-sections{display:grid;gap:6px}
+    @media(min-width:1024px){.mobile-menu{top:80px}.mm-sections{display:none}}
+
+    .hero{min-height:720px;padding:144px 0 78px;background:linear-gradient(135deg,var(--green-950) 0%,var(--green-900) 58%,#126044 100%);color:var(--white);position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;width:620px;height:620px;border:1px solid rgba(255,255,255,.08);border-radius:50%;right:-190px;top:-250px;box-shadow:0 0 0 90px rgba(255,255,255,.025),0 0 0 180px rgba(255,255,255,.018)}
+    .hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(390px,.88fr);gap:64px;align-items:center}
+    .hero h1{color:var(--white)}
+    .hero h1 span{color:#9de3ba}
+    .hero-copy>.lead{color:#d7e8e1;max-width:58ch;margin-bottom:30px}
+    .hero-badge{display:inline-flex;align-items:center;gap:10px;margin-bottom:24px;padding:8px 13px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(255,255,255,.07);color:#e9f7ef;font-size:.875rem;font-weight:700;letter-spacing:.04em}
+    .pulse{width:8px;height:8px;background:#4ade80;border-radius:50%;box-shadow:0 0 0 5px rgba(74,222,128,.13)}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+    .hero-note{display:flex;align-items:center;gap:9px;margin:0;color:#c7d8d1;font-size:.92rem}
+    .hero-note::before{content:'✓';width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:rgba(157,227,186,.13);color:#9de3ba;font-weight:700}
+    .hero-panel{position:relative;padding:24px;border:1px solid rgba(255,255,255,.15);border-radius:26px;background:rgba(255,255,255,.97);box-shadow:0 32px 80px rgba(0,0,0,.24);color:var(--grey-900)}
+    .hero-panel-title{font-size:.78rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--grey-600);margin-bottom:8px;padding-left:8px}
+    .hp-row{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:12px;padding:14px 8px;border-radius:14px;border-bottom:1px solid var(--grey-100);transition:background .15s ease}
+    .hp-row:last-of-type{border-bottom:0}
+    .hp-row:hover{background:var(--green-50)}
+    .hp-num{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--green-50);color:var(--green-800);font-size:.78rem;font-weight:800}
+    .hp-row:hover .hp-num{background:var(--green-100)}
+    .hp-row strong{display:block;font-size:.96rem;color:var(--grey-900);line-height:1.3}
+    .hp-sub{display:block;font-size:.8rem;color:var(--grey-600)}
+    .hp-tag{padding:6px 10px;border-radius:999px;background:var(--green-100);color:var(--green-800);font-size:.72rem;font-weight:800;white-space:nowrap}
+
+    .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .svc-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .2s ease,transform .2s ease,border-color .2s ease}
+    .svc-card:hover{box-shadow:var(--shadow);transform:translateY(-3px);border-color:#8dc9a7}
+    .svc-img{display:block;aspect-ratio:16/10;overflow:hidden}
+    .svc-img img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+    .svc-card:hover .svc-img img{transform:scale(1.03)}
+    .svc-body{padding:22px 22px 24px;display:flex;flex-direction:column;gap:10px;flex:1}
+    .svc-kicker{color:var(--green-700);font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+    .svc-body h3{font-size:clamp(1.15rem,1.05rem + .4vw,1.45rem);margin:0}
+    .svc-body p{margin:0;color:var(--grey-600);font-size:var(--font-small);flex:1}
+    .svc-body .btn{width:100%;margin-top:8px;min-height:48px;font-size:.95rem}
+
+    .benefits-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .benefit-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:28px;display:grid;grid-template-columns:48px 1fr;gap:18px;align-items:start}
+    .benefit-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:var(--green-100);color:var(--green-800);font-weight:800}
+    .benefit-card h3{font-size:clamp(1.12rem,1.05rem + .24vw,1.32rem);margin-bottom:8px}
+    .benefit-card p{margin:0;color:var(--grey-600);font-size:var(--font-small);line-height:1.6}
+
+    .step-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .step-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:28px;position:relative;overflow:visible}
+    .step-card::after{content:'→';position:absolute;top:34px;right:-14px;z-index:2;width:28px;height:28px;display:grid;place-items:center;border:1px solid var(--grey-200);border-radius:50%;background:var(--white);color:var(--green-700);font-weight:700}
+    .step-card:last-child::after{display:none}
+    .step-num{font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;line-height:1;color:#83c8a0;font-weight:800;margin-bottom:14px}
+    .step-card h3{font-size:clamp(1.12rem,1.06rem + .2vw,1.3rem);margin-bottom:8px}
+    .step-card p{margin:0;color:var(--grey-600);font-size:var(--font-small);line-height:1.6}
+
+    .faq-layout{display:grid;grid-template-columns:.65fr 1.35fr;gap:70px;align-items:start}
+    .faq-list{border-top:1px solid var(--grey-200)}
+    .faq-item{border-bottom:1px solid var(--grey-200)}
+    .faq-question{width:100%;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 0;border:0;background:transparent;color:var(--grey-900);font-family:'Bricolage Grotesque',sans-serif;font-size:1.08rem;font-weight:700;text-align:left;cursor:pointer}
+    .faq-plus{flex:0 0 34px;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--green-100);color:var(--green-800);font-family:'Figtree',sans-serif;font-size:1.2rem;transition:transform .2s ease,background .2s ease}
+    .faq-question[aria-expanded="true"] .faq-plus{transform:rotate(45deg);background:var(--green-700);color:var(--white)}
+    .faq-answer{padding:0 52px 20px 0;color:var(--grey-600);font-size:var(--font-small)}
+    .faq-answer p{margin-bottom:0}
+
+    .final-cta{padding-block:clamp(68px,7vw,92px);background:linear-gradient(135deg,var(--green-900),var(--green-700));color:var(--white)}
+    .final-inner{display:flex;align-items:center;justify-content:space-between;gap:50px}
+    .final-cta h2{color:var(--white);margin-bottom:14px}
+    .final-cta p{margin-bottom:0;color:#d7e8e1}
+    .final-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+
+    .site-footer{padding:42px 0 30px;background:var(--green-950);color:#c7d8d1;font-size:.9rem}
+    .footer-grid{display:grid;gap:18px}
+    @media(min-width:768px){.footer-grid{grid-template-columns:1.25fr 1fr 1fr 1fr;gap:26px;align-items:start}}
+    .footer-col1 strong{display:block;color:var(--white);font-family:'Bricolage Grotesque',sans-serif;font-size:1.15rem;margin-bottom:8px}
+    .footer-col1 p{margin:0;color:#c7d8d1;font-size:.88rem;line-height:1.6;max-width:32ch}
+    .f-wa{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:9px 15px;border:1px solid rgba(255,255,255,.25);border-radius:999px;color:var(--white);font-size:.85rem;font-weight:700;transition:background .2s ease}
+    .f-wa:hover{background:rgba(255,255,255,.08)}
+    .f-acc{border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.04)}
+    .f-acc summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;color:var(--white);font-weight:700;font-size:.95rem}
+    .f-acc summary::-webkit-details-marker{display:none}
+    .f-acc summary::after{content:'+';font-size:1.15rem;color:#9de3ba;transition:transform .2s ease}
+    .f-acc[open] summary::after{transform:rotate(45deg)}
+    .f-links{display:grid;gap:2px;padding:0 16px 12px}
+    .f-links a{padding:8px 0;color:#c7d8d1;font-size:.9rem}
+    .f-links a:hover{color:var(--white)}
+    .f-acc.static{border:0;background:transparent}
+    .f-acc.static summary{pointer-events:none;cursor:default;padding:0 0 10px;color:#9de3ba;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase}
+    .f-acc.static summary::after{display:none}
+    .f-acc.static .f-links{padding:0}
+    .footer-bottom{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:center;text-align:center;gap:16px;flex-wrap:wrap;font-size:.82rem;color:#9fb8ae}
+
+    .desktop-wa{position:fixed;right:22px;bottom:22px;z-index:50;min-height:50px;padding:13px 18px;border-radius:999px;background:var(--wa);color:var(--white);box-shadow:0 14px 32px rgba(0,0,0,.2);font-size:.92rem;font-weight:700;transition:opacity .2s ease,transform .2s ease}
+    .desktop-wa.is-hidden{opacity:0;transform:translateY(14px);pointer-events:none}
+    .mobile-sticky{display:none}
+
+    .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
+    .js .reveal.visible,.js.js-fallback .reveal{opacity:1;transform:none}
+
+    @media(max-width:1023px){
+      .container{width:min(calc(100% - 40px),var(--container))}
+      .site-nav{height:64px}
+      .nav-links,.nav-actions{display:none}
+      .hero{min-height:auto;padding:116px 0 72px}
+      .hero-grid{grid-template-columns:1fr;gap:0}
+      .hero-copy{display:contents}
+      .hero-badge{order:1;justify-self:start}
+      .hero-copy h1{order:2}
+      .hero-copy .lead{order:3;margin-bottom:26px}
+      .hero-panel{order:4;margin:0 0 28px;max-width:680px}
+      .hero-actions{order:5}
+      .hero-note{order:6}
+      .svc-grid{grid-template-columns:1fr}
+      .step-grid{grid-template-columns:1fr}
+      .step-card::after{display:none}
+      .faq-layout{grid-template-columns:1fr;gap:44px}
+      .final-inner{align-items:flex-start;flex-direction:column;gap:28px}
+      .final-actions{justify-content:flex-start}
+      .desktop-wa{display:none}
+      body{padding-bottom:78px}
+      .mobile-sticky{position:fixed;left:0;right:0;bottom:0;z-index:90;display:block;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);border-top:1px solid var(--grey-200);box-shadow:0 -8px 24px rgba(17,24,39,.08)}
+      .mobile-sticky .btn{width:100%;min-height:52px}
+      .mobile-sticky.is-hidden{display:none}
+    }
+
+    @media(max-width:767px){
+      .container{width:min(calc(100% - 32px),var(--container))}
+      .section{padding-block:64px;scroll-margin-top:72px}
+      h1{font-size:clamp(2.3rem,10.3vw,3.1rem);line-height:1.08}
+      h2{font-size:clamp(2rem,8.2vw,2.55rem);line-height:1.14}
+      .section-head{display:block;margin-bottom:32px}
+      .section-head h2{margin-bottom:14px}
+      .btn{width:100%;min-height:52px;padding-inline:18px}
+      .hero{padding:102px 0 58px}
+      .hero::before{width:430px;height:430px;right:-240px;top:-180px}
+      .hero-badge{font-size:.82rem}
+      .hero-actions{display:grid}
+      .hero-note{align-items:flex-start;font-size:.87rem}
+      .hero-panel{padding:18px;border-radius:20px}
+      .benefits-grid{grid-template-columns:1fr}
+      .benefit-card{grid-template-columns:42px 1fr;padding:22px;gap:14px}
+      .benefit-icon{width:42px;height:42px}
+      .faq-answer{padding-right:0}
+      .footer-bottom{flex-direction:column;gap:6px;align-items:center}
+    }
+
+    @media(max-width:380px){
+      .container{width:min(calc(100% - 28px),var(--container))}
+      .hp-row{grid-template-columns:34px 1fr}
+      .hp-tag{grid-column:2;justify-self:start}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+      .js .reveal{opacity:1;transform:none}
+    }
+  </style>
+  <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
+</head>
+<body>
+  <nav class="site-nav" aria-label="Navigasi utama">
+    <div class="container nav-inner">
+      <a class="brand" href="#hero" aria-label="JAYABINA - kembali ke atas"><img class="brand-mark" src="/favicon.png" width="38" height="38" alt=""><span>JAYABINA</span></a>
+      <ul class="nav-links">
+        <li><a href="#servis">Servis</a></li>
+        <li><a href="#kenapa">Kenapa Kami</a></li>
+        <li><a href="#proses">Proses</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+      <div class="nav-right">
+        <div class="nav-actions"><a class="btn btn-primary js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya nak tanya pasal servis: ____ (tukar atap / cuci tangki / mengecat). Poskod saya: ____. Cerita masalah: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">WhatsApp Kami</a></div>
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Buka menu" aria-controls="mobileMenu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
     </div>
-    <div class="service-grid">
-      {{ range hugo.Data.services }}
-      {{ $base := "/images/roof/roof-hero" }}
-      {{ if eq .key "tank" }}{{ $base = "/images/tank/tank-emotional" }}{{ else if eq .key "paint" }}{{ $base = "/images/paint/paint-hero" }}{{ end }}
-      <article class="service-card">
-        <a class="service-image" href="{{ .url }}">{{ partial "responsive-image.html" (dict "base" $base "alt" .alt "sizes" "(max-width: 767px) calc(100vw - 32px), (max-width: 1023px) 48vw, 31vw") }}</a>
-        <div class="service-body">
-          <span class="card-kicker">{{ .kicker }}</span>
-          <h3>{{ .title }}</h3>
-          <p>{{ .summary }}</p>
-          <a class="btn btn-secondary" href="{{ .url }}">Lihat Servis Ini</a>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <div class="mm-sections">
+      <div class="mm-label">Seksyen page ini</div>
+      <a href="#servis">Servis kami</a>
+      <a href="#kenapa">Kenapa JAYABINA</a>
+      <a href="#proses">Cara nak mula</a>
+      <a href="#faq">Soalan lazim</a>
+    </div>
+    <div class="mm-label">Halaman utama</div>
+    <a href="/servis/">Semua Servis</a>
+    <a href="/tentang-kami/">Tentang Kami</a>
+    <a href="/blog/">Blog</a>
+    <a href="/hubungi-kami/">Hubungi</a>
+    <div class="mm-label">Portal</div>
+    <a href="https://akaun.jayabina.com/">Akaun Pelanggan</a>
+    <a href="https://staff.jayabina.com/">Portal Staff</a>
+    <a class="btn btn-primary js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya nak tanya pasal servis: ____ (tukar atap / cuci tangki / mengecat). Poskod saya: ____. Cerita masalah: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">WhatsApp — Semakan Percuma</a>
+  </div>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="hero-badge"><span class="pulse"></span>Servis selenggara rumah · KL &amp; Selangor</div>
+          <h1>Atap bocor, tangki kotor, dinding kusam — <span>rumah anda dah tak rasa macam rumah.</span></h1>
+          <p class="lead">Atap yang bocor setiap hujan. Air tangki yang entah bila kali terakhir dicuci. Dinding yang dah bertahun kusam. Anda layak tinggal dalam rumah yang tenang — bukan rumah yang bagi masalah.</p>
+          <div class="hero-actions">
+            <a class="btn btn-light js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya nak tanya pasal servis: ____ (tukar atap / cuci tangki / mengecat). Poskod saya: ____. Cerita masalah: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">WhatsApp — Semakan Percuma</a>
+            <a class="btn btn-hero-ghost" href="#servis">Lihat Servis Kami</a>
+          </div>
+          <p class="hero-note">Hantar gambar &amp; poskod — kami semak dulu. Percuma, tak perlu komitmen apa-apa.</p>
         </div>
-      </article>
-      {{ end }}
-    </div>
-  </div>
-</section>
-
-<section class="section section-grey">
-  <div class="container">
-    <div class="section-head">
-      <span class="section-kicker">MASALAH MANA YANG PALING MENGGANGGU?</span>
-      <h2>Mulakan daripada masalah yang anda nampak hari ini.</h2>
-    </div>
-    <div class="problem-grid">
-      <a class="problem-card" href="/servis-tukar-atap/">
-        <h3>“Setiap kali hujan, saya masih risau.”</h3>
-        <p>Repair sudah dibuat berkali-kali tetapi kesan bocor kembali. Nilai sama ada tampalan masih munasabah atau atap baharu patut dipertimbangkan.</p>
-      </a>
-      <a class="problem-card" href="/servis-cuci-tangki-air/">
-        <h3>“Air nampak jernih, tapi tangki bagaimana?”</h3>
-        <p>Mendapan di dasar tangki mudah terlepas pandang. Lihat proses pemeriksaan, pembuangan mendapan, cucian dan dokumentasi.</p>
-      </a>
-      <a class="problem-card" href="/servis-mengecat/">
-        <h3>“Ruang masih nampak lama dan tidak terurus.”</h3>
-        <p>Cat pudar, bertompok atau mengelupas boleh menjejaskan keseluruhan suasana rumah dan ofis. Ketahui skop persediaan sebelum mengecat.</p>
-      </a>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="section-head">
-      <span class="section-kicker">CARA BERMULA</span>
-      <h2>Mudah untuk bertanya. Jelas sebelum membuat keputusan.</h2>
-    </div>
-    <div class="step-grid">
-      <article class="step-card"><span class="step-number">1</span><h3>Ceritakan masalah</h3><p>Nyatakan servis, lokasi atau poskod dan bila masalah mula berlaku. Hantar gambar jika berkaitan.</p></article>
-      <article class="step-card"><span class="step-number">2</span><h3>Semakan awal</h3><p>Kami semak maklumat yang diberi dan tentukan sama ada lawatan atau ukuran lanjut diperlukan.</p></article>
-      <article class="step-card"><span class="step-number">3</span><h3>Nilai skop kerja</h3><p>Teliti cadangan dan skop yang diterangkan sebelum anda bersetuju meneruskan kerja.</p></article>
-    </div>
-  </div>
-</section>
-
-<section class="section section-mint">
-  <div class="container">
-    <div class="company-panel">
-      <div class="company-copy">
-        <span class="section-kicker">SIAPA DI SEBALIK JAYABINA</span>
-        <h2>Jenama servis rumah oleh Primex Jaya Bina Solutions.</h2>
-        <p>JAYABINA menghimpunkan servis atap, tangki air dan mengecat di bawah satu identiti yang mudah dikenal. Kami mengutamakan penerangan yang terus, skop yang boleh difahami dan saluran hubungan yang jelas.</p>
-        <a class="btn btn-secondary" href="/tentang-kami/">Kenali Syarikat Kami</a>
+        <aside class="hero-panel reveal" aria-label="Tiga servis utama JAYABINA">
+          <div class="hero-panel-title">Apa yang kami buat:</div>
+          <a class="hp-row" href="/servis-tukar-atap/"><span class="hp-num">01</span><span><strong>Tukar Atap Baharu</strong><span class="hp-sub">Berhenti tampal — ganti terus.</span></span><span class="hp-tag">Sebut harga percuma</span></a>
+          <a class="hp-row" href="/servis-cuci-tangki-air/"><span class="hp-num">02</span><span><strong>Cuci Tangki Air</strong><span class="hp-sub">Air bersih, mandi tak was-was.</span></span><span class="hp-tag">RM300 tetap</span></a>
+          <a class="hp-row" href="/servis-mengecat/"><span class="hp-num">03</span><span><strong>Cat Rumah &amp; Ofis</strong><span class="hp-sub">Dinding segar, rumah nampak baru.</span></span><span class="hp-tag">Sebut harga percuma</span></a>
+        </aside>
       </div>
-      <div class="company-facts">
-        <div><strong>Nama syarikat</strong>{{ $b.legal_name }}</div>
-        <div><strong>No. pendaftaran</strong>{{ $b.company_number }}</div>
-        <div><strong>Kawasan servis</strong>{{ $b.service_area }}</div>
-        <div><strong>Hubungan</strong>{{ $b.phone_display }}</div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section class="section">
-  <div class="container faq-layout">
-    <div class="section-head">
-      <span class="section-kicker">SOALAN LAZIM</span>
-      <h2>Sebelum anda hubungi kami.</h2>
-      <p>Jawapan ringkas untuk membantu anda bersedia dengan maklumat yang betul.</p>
-    </div>
-    <div class="faq-list">
-      {{ $faqs := slice
-        (dict "q" "Apakah kawasan servis JAYABINA?" "a" "Fokus servis ialah Kuala Lumpur, Lembah Klang dan Selangor. Kongsi poskod supaya liputan untuk lokasi anda boleh disemak.")
-        (dict "q" "Maklumat apa yang perlu saya hantar?" "a" "Nyatakan jenis servis, lokasi atau poskod, penerangan ringkas masalah dan beberapa gambar yang jelas jika ada.")
-        (dict "q" "Bolehkah saya terus dapat harga melalui WhatsApp?" "a" "Anggaran yang bertanggungjawab bergantung pada keadaan tapak dan skop. Untuk sesetengah kerja, lawatan atau ukuran diperlukan sebelum sebut harga boleh disediakan.")
-        (dict "q" "Adakah saya wajib meneruskan selepas bertanya?" "a" "Tidak. Anda boleh minta semakan awal dan menilai cadangan yang diterangkan sebelum membuat keputusan.")
-      }}
-      {{ range $i,$faq := $faqs }}
-      <div class="faq-item">
-        <button class="faq-question" type="button" data-faq-button aria-expanded="false" aria-controls="home-faq-{{ $i }}"><span>{{ $faq.q }}</span><span class="faq-plus" aria-hidden="true">+</span></button>
-        <div class="faq-answer" id="home-faq-{{ $i }}" hidden>{{ $faq.a }}</div>
+    <section class="section" id="servis">
+      <div class="container">
+        <div class="section-head reveal">
+          <div><span class="section-kicker">Servis kami</span><h2>Satu team. Tiga cara kami baiki rumah anda.</h2></div>
+          <p>Pilih yang anda perlu dulu. Nanti yang lain — kami masih di sini.</p>
+        </div>
+        <div class="svc-grid reveal">
+          <article class="svc-card">
+            <a class="svc-img" href="/servis-tukar-atap/"><img src="/images/roof/roof-hero-1200.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Pemilik rumah memandang kesan kebocoran berulang pada siling"></a>
+            <div class="svc-body">
+              <span class="svc-kicker">Tukar Atap Baharu</span>
+              <h3>Setiap kali hujan lebat, dada anda berdebar?</h3>
+              <p>Dah tiga, empat kali repair — masalah sama berulang. Kali ini tukar terus. Atap baharu dipasang dengan rekod foto penuh, harga anda setuju dulu.</p>
+              <a class="btn btn-primary" href="/servis-tukar-atap/">Lihat Servis Atap</a>
+            </div>
+          </article>
+          <article class="svc-card">
+            <a class="svc-img" href="/servis-cuci-tangki-air/"><img src="/images/tank/tank-emotional-1200.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Ilustrasi penggunaan air bersih dan keadaan dalam tangki air rumah"></a>
+            <div class="svc-body">
+              <span class="svc-kicker">Cuci Tangki Air</span>
+              <h3>Bila kali terakhir anda tengok dalam tangki rumah?</h3>
+              <p>Air yang anda guna mandi, masak, basuh muka anak — lalu celah kelodak bertahun. Harga tetap RM300. Deposit RM150, terus tempah &amp; bayar online.</p>
+              <a class="btn btn-primary" href="/servis-cuci-tangki-air/">Tempah Online — Deposit RM150</a>
+            </div>
+          </article>
+          <article class="svc-card">
+            <a class="svc-img" href="/servis-mengecat/"><img src="/images/paint/paint-hero-1200.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Ruang rumah kelihatan segar selepas dinding dicat semula"></a>
+            <div class="svc-body">
+              <span class="svc-kicker">Cat Rumah &amp; Ofis</span>
+              <h3>Dinding dah kusam, tetamu pun perasan?</h3>
+              <p>Cat mengelupas bukan je nampak buruk — ia dedahkan dinding pada lembap. Kami cat semula sampai segar. Perabot dilindungi, harga dipersetujui dulu.</p>
+              <a class="btn btn-primary" href="/servis-mengecat/">Lihat Servis Cat</a>
+            </div>
+          </article>
+        </div>
       </div>
-      {{ end }}
-    </div>
-  </div>
-</section>
+    </section>
 
-<section class="final-cta" data-lead-section>
-  <div class="container final-inner">
-    <div><h2>Apa masalah utama di rumah atau ofis anda sekarang?</h2><p>Pilih servis atau terus hantar penerangan ringkas melalui WhatsApp.</p></div>
-    <div class="final-actions"><a class="btn btn-secondary" href="#servis">Pilih Servis</a><a class="btn btn-primary" href="https://wa.me/{{ $b.whatsapp }}?text={{ "Assalamualaikum JAYABINA. Saya mahu bertanya tentang servis. Masalah: ____. Lokasi/poskod: ____." | urlquery }}" target="_blank" rel="noopener">WhatsApp JAYABINA</a></div>
-  </div>
-</section>
-{{ end }}
+    <section class="section section-grey" id="kenapa">
+      <div class="container">
+        <div class="section-head reveal">
+          <div><span class="section-kicker">Kenapa JAYABINA</span><h2>Kami tak minta anda percaya. Kami minta anda semak.</h2></div>
+          <p>Cara kami kerja — telus, direkod, dan anda tahu setiap langkah.</p>
+        </div>
+        <div class="benefits-grid reveal">
+          <article class="benefit-card"><span class="benefit-icon">01</span><div><h3>Harga dipersetujui dahulu</h3><p>Anda tahu skop dan kos sebelum kerja mula. Tiada kejutan lepas siap.</p></div></article>
+          <article class="benefit-card"><span class="benefit-icon">02</span><div><h3>Rekod foto sebelum, semasa, selepas</h3><p>Setiap peringkat ada gambar — anda lihat sendiri, bukan dengar cakap kami.</p></div></article>
+          <article class="benefit-card"><span class="benefit-icon">03</span><div><h3>Tiada kerja tambahan rahsia</h3><p>Jumpa isu lain semasa kerja? Kami bagitahu dan tunggu kebenaran anda.</p></div></article>
+          <article class="benefit-card"><span class="benefit-icon">04</span><div><h3>Semakan WhatsApp percuma</h3><p>Hantar gambar dan poskod. Kami semak dulu — tak perlu komitmen apa-apa.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="proses">
+      <div class="container">
+        <div class="section-head reveal">
+          <div><span class="section-kicker">Cara nak mula</span><h2>Tiga langkah. Satu WhatsApp. Kerja siap.</h2></div>
+          <p>Tak perlu isi borang panjang. Tak perlu jumpa ramai orang.</p>
+        </div>
+        <div class="step-grid reveal">
+          <article class="step-card"><div class="step-num">01</div><h3>WhatsApp dulu</h3><p>Hantar gambar &amp; poskod. Ceritakan masalah — atap, tangki, atau cat.</p></article>
+          <article class="step-card"><div class="step-num">02</div><h3>Semak &amp; setuju</h3><p>Kami beri anggaran atau sebut harga. Anda setuju — baru kami jadualkan.</p></article>
+          <article class="step-card"><div class="step-num">03</div><h3>Kerja siap + rekod</h3><p>Kerja dijalankan. Foto penuh dihantar ke WhatsApp anda sebagai bukti.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-grey" id="faq">
+      <div class="container faq-layout">
+        <div class="reveal"><span class="section-kicker">Soalan lazim</span><h2>Jawapan jujur. Sebelum anda tanya.</h2><p class="muted">Kalau dah jelas — terus WhatsApp. Kalau belum, baca dulu.</p></div>
+        <div class="faq-list reveal">
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq1"><span>Kawasan mana JAYABINA cover?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq1" hidden><p>Kuala Lumpur &amp; Selangor sahaja. Luar kawasan? WhatsApp dulu — kami cakap jujur kalau tak dapat cover.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq2"><span>Saya tak pasti servis mana nak guna. Macam mana?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq2" hidden><p>Hantar gambar dan ceritakan masalah anda di WhatsApp. Kami bantu kenal pasti — dan kami tak akan syorkan benda yang anda tak perlu.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq3"><span>Harga macam mana? Ada yang tetap, ada yang tak?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq3" hidden><p>Cuci tangki = RM300 tetap (deposit RM150, boleh tempah online). Atap &amp; cat = harga ikut keadaan tapak, ditentukan lepas semakan dan anda setuju dulu. Semakan awal percuma.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq4"><span>Lepas tanya, wajib teruskan ke?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq4" hidden><p>Tak wajib langsung. Tanya, dapat maklumat, fikir dulu — anda yang tentukan.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div class="container final-inner reveal">
+        <div><h2>Rumah anda patut jadi tempat paling tenang. Bukan punca resah.</h2><p>Atap yang tak bocor waktu hujan. Air yang bersih setiap kali guna. Dinding yang segar dipandang. Hantar WhatsApp sekarang — ceritakan masalah anda.</p></div>
+        <div class="final-actions"><a class="btn btn-wa js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya nak tanya pasal servis: ____ (tukar atap / cuci tangki / mengecat). Poskod saya: ____. Cerita masalah: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">WhatsApp — Semakan Percuma</a><a class="btn btn-light" href="#servis">Lihat Semua Servis</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col1">
+          <strong>JAYABINA</strong>
+          <p>Servis tukar atap, cuci tangki air &amp; mengecat rumah dan ofis. Kuala Lumpur &amp; Selangor.</p>
+          <a class="f-wa js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya nak tanya pasal servis: ____. Poskod saya: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">WhatsApp Kami</a>
+        </div>
+        <details class="f-acc">
+          <summary>Servis</summary>
+          <div class="f-links">
+            <a href="/servis-tukar-atap/">Tukar Atap Baharu</a>
+            <a href="/servis-cuci-tangki-air/">Cuci Tangki Air</a>
+            <a href="/servis-mengecat/">Mengecat Rumah &amp; Ofis</a>
+          </div>
+        </details>
+        <details class="f-acc">
+          <summary>Tentang</summary>
+          <div class="f-links">
+            <a href="/">Utama</a>
+            <a href="/tentang-kami/">Tentang Kami</a>
+            <a href="/hubungi-kami/">Hubungi Kami</a>
+          </div>
+        </details>
+        <details class="f-acc">
+          <summary>Informasi</summary>
+          <div class="f-links">
+            <a href="/terma-perkhidmatan/">Terma Perkhidmatan</a>
+            <a href="/dasar-privasi/">Dasar Privasi</a>
+            <a href="/blog/">Blog</a>
+          </div>
+        </details>
+      </div>
+      <div class="footer-bottom"><span>© 2026 Primex Jaya Bina Solutions. Hak cipta terpelihara.</span><span>www.jayabina.com</span></div>
+    </div>
+  </footer>
+
+  <a class="desktop-wa js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya nak tanya pasal servis: ____ (tukar atap / cuci tangki / mengecat). Poskod saya: ____. Cerita masalah: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">WhatsApp — Semakan Percuma</a>
+  <div class="mobile-sticky" id="mobileSticky"><a class="btn btn-wa js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya nak tanya pasal servis: ____ (tukar atap / cuci tangki / mengecat). Poskod saya: ____. Cerita masalah: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">WhatsApp — Semakan Percuma</a></div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded',function(){
+      var WHATSAPP_NUMBER='60139373275';
+      document.querySelectorAll('.js-whatsapp').forEach(function(link){
+        var message=link.getAttribute('data-message')||'';
+        link.href='https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(message);
+      });
+
+      var menuToggle=document.getElementById('menuToggle');
+      var mobileMenu=document.getElementById('mobileMenu');
+      function closeMenu(returnFocus){menuToggle.setAttribute('aria-expanded','false');menuToggle.setAttribute('aria-label','Buka menu');mobileMenu.classList.remove('open');mobileMenu.setAttribute('aria-hidden','true');document.body.classList.remove('menu-open');if(returnFocus)menuToggle.focus()}
+      function openMenu(){menuToggle.setAttribute('aria-expanded','true');menuToggle.setAttribute('aria-label','Tutup menu');mobileMenu.classList.add('open');mobileMenu.setAttribute('aria-hidden','false');document.body.classList.add('menu-open');var first=mobileMenu.querySelector('a');if(first)first.focus()}
+      menuToggle.addEventListener('click',function(){this.getAttribute('aria-expanded')==='true'?closeMenu(false):openMenu()});
+      mobileMenu.querySelectorAll('a').forEach(function(link){link.addEventListener('click',function(){closeMenu(false)})});
+      document.addEventListener('keydown',function(event){if(event.key==='Escape'&&mobileMenu.classList.contains('open'))closeMenu(true);if(event.key==='Tab'&&mobileMenu.classList.contains('open')){var focusable=Array.from(mobileMenu.querySelectorAll('a[href]'));if(!focusable.length)return;var first=focusable[0],last=focusable[focusable.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}}});
+      document.addEventListener('click',function(event){if(!mobileMenu.contains(event.target)&&!menuToggle.contains(event.target)&&mobileMenu.classList.contains('open'))closeMenu()});
+
+      document.querySelectorAll('a[href^="#"]').forEach(function(link){link.addEventListener('click',function(event){var target=document.querySelector(this.getAttribute('href'));if(target){event.preventDefault();var distance=Math.abs(target.getBoundingClientRect().top);var instant=window.matchMedia('(prefers-reduced-motion: reduce)').matches||distance>2200;if(instant){var oldBehavior=document.documentElement.style.scrollBehavior;document.documentElement.style.scrollBehavior='auto';target.scrollIntoView({behavior:'auto',block:'start'});window.setTimeout(function(){document.documentElement.style.scrollBehavior=oldBehavior},0)}else{target.scrollIntoView({behavior:'smooth',block:'start'})}}})});
+
+      var navLinks=document.querySelectorAll('.nav-links a');
+      var sections=document.querySelectorAll('main section[id]');
+      var sectionObserver=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){navLinks.forEach(function(link){var active=link.getAttribute('href')==='#'+entry.target.id;link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')})}})},{rootMargin:'-30% 0px -60% 0px'});
+      sections.forEach(function(section){sectionObserver.observe(section)});
+
+      if('IntersectionObserver' in window){
+        var revealObserver=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('visible');revealObserver.unobserve(entry.target)}})},{threshold:.08});
+        document.querySelectorAll('.reveal').forEach(function(element){revealObserver.observe(element)});
+      }else{document.querySelectorAll('.reveal').forEach(function(element){element.classList.add('visible')})}
+
+      var sticky=document.getElementById('mobileSticky');
+      var desktopWhatsApp=document.querySelector('.desktop-wa');
+      var heroSection=document.getElementById('hero');
+      if(sticky&&heroSection&&'IntersectionObserver' in window){
+        var heroVisible=true;
+        function updateSticky(){sticky.classList.toggle('is-hidden',heroVisible)}
+        new IntersectionObserver(function(entries){entries.forEach(function(entry){heroVisible=entry.isIntersecting;updateSticky()})},{threshold:.05}).observe(heroSection);
+        updateSticky();
+      }
+
+      document.querySelectorAll('.faq-question').forEach(function(button){button.addEventListener('click',function(){
+        var open=this.getAttribute('aria-expanded')==='true';
+        document.querySelectorAll('.faq-question').forEach(function(other){other.setAttribute('aria-expanded','false');document.getElementById(other.getAttribute('aria-controls')).hidden=true});
+        if(!open){this.setAttribute('aria-expanded','true');document.getElementById(this.getAttribute('aria-controls')).hidden=false}
+      })});
+
+      function footerAcc(){var isDesktop=window.matchMedia('(min-width:768px)').matches;document.querySelectorAll('.f-acc').forEach(function(acc){acc.open=isDesktop;acc.classList.toggle('static',isDesktop)})}
+      footerAcc();window.addEventListener('resize',footerAcc);
+    });
+  </script>
+</body>
+</html>

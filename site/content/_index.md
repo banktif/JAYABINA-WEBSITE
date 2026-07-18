@@ -1,4 +1,4 @@
 ---
-title: "Servis Rumah & Ofis | Atap, Tangki Air & Cat | JAYABINA"
-description: "Primex Jaya Bina Solutions menawarkan servis tukar atap baharu, cuci tangki air rumah dan mengecat rumah atau ofis. Pilih servis untuk semakan awal."
+title: "JAYABINA — Servis Tukar Atap, Cuci Tangki Air & Mengecat | KL & Selangor"
+description: "Atap bocor, tangki kotor, dinding kusam? JAYABINA uruskan — tukar atap, cuci tangki air (RM300) dan mengecat rumah & ofis. Semakan WhatsApp percuma."
 ---
