@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "jayabina-akaun-router",
+  "account_id": "9b9af0328258f9bd59c1c3b955ddb616",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-15",
+  "routes": [
+    {
+      "pattern": "akaun.jayabina.com",
+      "custom_domain": true
+    }
+  ]
+}

@@ -461,7 +461,7 @@
             <a class="btn btn-light" href="#tempah">Semak Slot &amp; Harga</a>
             <a class="btn btn-hero-ghost" href="#bukti">Lihat Visual Proses</a>
           </div>
-          <p class="hero-note">Tanya dahulu pun boleh · Tiada bayaran sebelum harga, skop dan tarikh dipersetujui.</p>
+          <p class="hero-note">Tanya dahulu pun boleh · Deposit RM150 sahkan slot, baki selepas servis selesai.</p>
         </div>
         <aside class="hero-panel" aria-label="Ringkasan servis JAYABINA">
           <div class="hero-panel-top">
@@ -604,7 +604,7 @@
             <div class="payment-box"><span>Baki selepas servis</span><strong>RM150</strong></div>
           </div>
           <a class="btn btn-primary" href="#tempah">Semak Slot &amp; Harga</a>
-          <p class="price-note">Tiada bayaran sehingga lokasi, skop dan tarikh disahkan.</p>
+          <p class="price-note">Deposit RM150 sahkan slot anda · Baki RM150 selepas servis selesai.</p>
         </div>
         </div>
       </div>
@@ -613,9 +613,9 @@
     <section class="section section-dark" id="tempah">
       <div class="container booking-layout">
         <div class="booking-copy reveal">
-          <span class="section-kicker">Semakan slot</span>
-          <h2>Minta slot servis yang sesuai.</h2>
-          <p class="lead">Hantar pilihan tarikh dan butiran asas. Ini ialah permintaan slot; pasukan kami akan semak liputan, jenis tangki dan skop sebelum mengesahkan tempahan.</p>
+          <span class="section-kicker">Tempahan slot</span>
+          <h2>Tempah slot &amp; bayar deposit.</h2>
+          <p class="lead">Pilih tarikh, isi butiran dan bayar deposit RM150 melalui halaman bayaran selamat (DuitNow). Slot anda dikunci sebaik bayaran diterima.</p>
           <ul class="booking-points">
             <li>Tarikh boleh ditukar tertakluk ketersediaan</li>
             <li>Baki RM150 selepas servis selesai</li>
@@ -624,8 +624,8 @@
         </div>
         <div class="booking-card reveal" id="bookingCard">
           <form id="bookingForm" novalidate>
-            <h3>Permintaan slot servis</h3>
-            <p class="booking-sub">Pilih tarikh pilihan dan lengkapkan butiran di bawah.</p>
+            <h3>Tempahan slot servis</h3>
+            <p class="booking-sub">Pilih tarikh, lengkapkan butiran dan teruskan ke bayaran deposit.</p>
 
             <div class="form-step"><span>1</span>Pilih tarikh</div>
             <div class="calendar-head"><button id="prevMonth" type="button" aria-label="Bulan sebelumnya" disabled>←</button><strong class="calendar-month" id="calendarMonth">…</strong><button id="nextMonth" type="button" aria-label="Bulan seterusnya">→</button></div>
@@ -652,12 +652,12 @@
               <div class="summary-row"><span>Deposit selepas pengesahan</span><strong>RM150</strong></div>
               <div class="summary-row total"><span>Baki selepas servis</span><strong>RM150</strong></div>
             </div>
-            <button class="btn btn-primary submit-btn" id="submitBooking" type="submit">Hantar Permintaan Slot</button>
-            <p class="form-note">Tiada bayaran dibuat sekarang. Slot hanya disahkan selepas harga, skop dan deposit dipersetujui. Maklumat anda digunakan untuk mengurus permintaan servis ini.</p>
+            <button class="btn btn-primary submit-btn" id="submitBooking" type="submit">Bayar Deposit RM150 →</button>
+            <p class="form-note">Anda akan dibawa ke halaman bayaran selamat (DuitNow) untuk deposit RM150. Baki RM150 dibayar selepas servis selesai. Maklumat anda digunakan untuk mengurus tempahan ini.</p>
           </form>
           <div class="confirmation" id="confirmation" hidden aria-live="polite">
             <div class="confirmation-mark">✓</div>
-            <h3>Permintaan slot diterima</h3>
+            <h3>Tempahan direkodkan</h3>
             <p id="confirmationText"></p>
             <a class="btn btn-wa js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya mahu semak slot dan harga servis cuci tangki. Poskod saya: ____. Jenis rumah: ____. Bilangan tangki: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">Teruskan di WhatsApp</a>
           </div>
@@ -817,7 +817,7 @@
         if(!selectedSlot){document.getElementById('slots').style.outline='2px solid var(--error)';valid=false}else{document.getElementById('slots').style.outline=''}
         if(!valid){var firstInvalid=this.querySelector('[aria-invalid="true"]');if(firstInvalid)firstInvalid.focus();else if(!selectedDate){var firstDate=document.querySelector('.calendar-day:not(:disabled)');if(firstDate)firstDate.focus()}else{var firstSlot=document.querySelector('.slot:not(:disabled)');if(firstSlot)firstSlot.focus()}return}
         var submit=document.getElementById('submitBooking');submit.disabled=true;submit.textContent='Menghantar...';
-        if(!SB){alert('Sistem tempahan belum bersambung. Sila gunakan WhatsApp.');submit.disabled=false;submit.textContent='Hantar Permintaan Slot';return}
+        if(!SB){alert('Sistem tempahan belum bersambung. Sila gunakan WhatsApp.');submit.disabled=false;submit.textContent='Bayar Deposit RM150 →';return}
         try{
           var existing=await fetchBookedSlots(selectedDate);if(existing.indexOf(selectedSlot)>-1)throw new Error('SLOT_TAKEN');
           var bookingResult=await SB.from('bookings').insert({customer_name:name,customer_phone:phone,customer_address:address,booking_date:selectedDate,booking_time:selectedSlot,amount:300,deposit_amount:150,status:'pending_payment',payment_status:'pending'});
@@ -825,16 +825,20 @@
           var booking=Array.isArray(bookingResult.data)?bookingResult.data[0]:bookingResult.data;
           if(!booking||!booking.id)throw new Error('BOOKING_FAILED');
           var bookingId=booking.id;
+          submit.textContent='Ke halaman bayaran...';
+          var payResponse=await fetch(API_URL+'/api/payments/create-intent',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({booking_id:bookingId})});
+          var payData=null;try{payData=await payResponse.json()}catch(payErr){}
+          if(payResponse.ok&&payData&&payData.url){window.location.href=payData.url;return}
           this.hidden=true;
           var slotLabels={"9am":"9:00 pagi","11am":"11:00 pagi","2pm":"2:00 petang","4pm":"4:00 petang"};
-          document.getElementById('confirmationText').innerHTML='Terima kasih, <strong>'+name.replace(/[<>&"']/g,function(char){return({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'})[char]})+'</strong>. Permintaan untuk <strong>'+formatDate(selectedDate)+', '+slotLabels[selectedSlot]+'</strong> telah direkodkan. Slot belum disahkan sehingga semakan skop dan deposit selesai. Rujukan: <strong>'+bookingId.substring(0,8)+'</strong>.';
+          document.getElementById('confirmationText').innerHTML='Terima kasih, <strong>'+name.replace(/[<>&"']/g,function(char){return({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'})[char]})+'</strong>. Tempahan untuk <strong>'+formatDate(selectedDate)+', '+slotLabels[selectedSlot]+'</strong> telah direkodkan tetapi halaman bayaran tidak dapat dibuka. Bayar deposit <strong>RM150</strong> melalui WhatsApp di bawah untuk sahkan slot. Rujukan: <strong>'+bookingId.substring(0,8)+'</strong>.';
           var confirmLink=document.querySelector('#confirmation .js-whatsapp');
-          confirmLink.href='https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent('Assalamualaikum JAYABINA. Saya mahu sahkan tempahan. Rujukan: '+bookingId.substring(0,8));
+          confirmLink.href='https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent('Assalamualaikum JAYABINA. Saya mahu bayar deposit RM150 untuk sahkan tempahan. Rujukan: '+bookingId.substring(0,8));
           document.getElementById('confirmation').hidden=false;
         }catch(error){
           var message=String(error&&error.message||'');
           if(message.indexOf('SLOT_TAKEN')>-1||message.toLowerCase().indexOf('already booked')>-1||message.indexOf('duplicate')>-1){alert('Maaf, slot ini baru sahaja ditempah. Sila pilih masa lain.')}else{alert('Tempahan belum berjaya dihantar. Sila cuba lagi atau hubungi kami melalui WhatsApp.')}
-          submit.disabled=false;submit.textContent='Hantar Permintaan Slot';
+          submit.disabled=false;submit.textContent='Bayar Deposit RM150 →';
         }
       });
     });

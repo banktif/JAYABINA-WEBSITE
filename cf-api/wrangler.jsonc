@@ -3,6 +3,7 @@
   "name": "jayaclean-api",
   "account_id": "9b9af0328258f9bd59c1c3b955ddb616",
   "main": "src/index.ts",
+  "workers_dev": true,
   "compatibility_date": "2026-07-15",
   "compatibility_flags": [
     "nodejs_compat"
@@ -22,7 +23,7 @@
   ],
   "vars": {
     "BAYARCASH_PAYMENT_CHANNEL": "5",
-    "SITE_URL": "https://cuci.jayabina.com"
+    "SITE_URL": "https://www.jayabina.com"
   },
   "routes": [
     {

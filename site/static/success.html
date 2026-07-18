@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Status Bayaran — JAYABINA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Poppins',sans-serif;background:linear-gradient(180deg,#F0FDF4,#fff);min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+    .card{background:#fff;border-radius:24px;padding:48px 36px;max-width:480px;width:100%;box-shadow:0 4px 40px rgba(0,0,0,.06)}
+    .check{width:80px;height:80px;border-radius:50%;background:#F0FDF4;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:2.5rem}
+    h1{font-size:1.5rem;color:#14532D;margin-bottom:8px}
+    p{color:#555;font-size:.9rem;line-height:1.7;margin-bottom:12px}
+    .info{background:#f9fafb;border-radius:12px;padding:16px;margin:24px 0;text-align:left;font-size:.82rem}
+    .info .row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee}
+    .info .row:last-child{border:none}
+    .info .k{color:#888}.info .v{color:#1a1a1a;font-weight:600}
+    .btn{display:inline-block;padding:14px 36px;background:#166534;color:#fff;border-radius:50px;font-weight:700;text-decoration:none;font-size:.9rem;transition:all .2s}
+    .btn:hover{background:#14532D}
+    .wa{display:inline-flex;align-items:center;gap:6px;padding:12px 28px;background:#25D366;color:#fff;border-radius:50px;font-weight:700;text-decoration:none;font-size:.85rem;margin-top:12px}
+    .wa:hover{background:#1da851}
+    .spin{width:44px;height:44px;border:4px solid #F0FDF4;border-top-color:#166534;border-radius:50%;animation:sp 1s linear infinite;margin:0 auto}
+    @keyframes sp{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="check" id="icon"><div class="spin"></div></div>
+  <h1 id="title">Menyemak Bayaran...</h1>
+  <p id="msg">Sila tunggu sebentar, kami sedang mengesahkan bayaran anda.</p>
+  <p style="font-size:.78rem;color:#999" id="sub"></p>
+  <div class="info">
+    <div class="row"><span class="k">Ref</span><span class="v" id="ref">-</span></div>
+    <div class="row"><span class="k">Servis</span><span class="v">Cuci Tangki Air</span></div>
+    <div class="row"><span class="k">Deposit</span><span class="v">RM150</span></div>
+    <div class="row"><span class="k">Baki</span><span class="v">RM150 (selepas servis)</span></div>
+  </div>
+  <a href="/servis-cuci-tangki-air/" class="btn">&larr; Kembali ke Laman Servis</a>
+  <br>
+  <a href="https://wa.me/60139373275?text=Assalamualaikum%20JAYABINA.%20Saya%20baru%20buat%20bayaran." class="wa" target="_blank">&#128172; WhatsApp Kami</a>
+</div>
+
+<script src="/jc-api.js"></script>
+<script>
+var API_URL=localStorage.getItem('jc_api_url')||'https://api.jayabina.com';
+var SB=JCApi.create(API_URL);
+var params=new URLSearchParams(window.location.search);
+var orderId=params.get('order')||params.get('order_number');
+if(orderId)document.getElementById('ref').textContent=orderId.substring(0,8)+'...';
+
+function render(state){
+  var icon=document.getElementById('icon'),title=document.getElementById('title'),msg=document.getElementById('msg'),sub=document.getElementById('sub');
+  if(state==='paid'){
+    icon.innerHTML='&#9989;';title.textContent='Bayaran Diterima!';
+    msg.textContent='Terima kasih. Deposit RM150 anda telah berjaya dibayar.';
+    sub.innerHTML='Kami akan hubungi anda dalam masa <strong>24 jam</strong> untuk pengesahan tarikh servis.';
+  }else if(state==='failed'){
+    icon.innerHTML='&#10060;';title.textContent='Bayaran Tidak Berjaya';
+    msg.textContent='Maaf, bayaran anda tidak berjaya atau dibatalkan.';
+    sub.innerHTML='Sila cuba semula atau hubungi kami melalui WhatsApp untuk bantuan.';
+  }else{
+    icon.innerHTML='&#9203;';title.textContent='Bayaran Sedang Diproses';
+    msg.textContent='Tempahan anda telah disimpan. Status bayaran sedang disahkan.';
+    sub.innerHTML='Jika anda telah membayar, status akan dikemas kini sebentar lagi. Kami akan hubungi anda dalam 24 jam.';
+  }
+}
+
+async function poll(tries){
+  if(!orderId){render('pending');return;}
+  try{
+    var resp=await SB.from('bookings').select('*').eq('id',orderId).single();
+    var booking=resp.data||resp;
+    if(booking){
+      if(booking.payment_status==='paid'){render('paid');return;}
+      if(booking.payment_status==='failed'){render('failed');return;}
+    }
+  }catch(e){}
+  if(tries>0){setTimeout(function(){poll(tries-1)},2000);}
+  else{render('pending');}
+}
+poll(5);
+</script>
+</body>
+</html>

@@ -1,25 +1,22 @@
-const PUBLIC_ORIGIN = 'https://cuci.jayabina.com';
+const PUBLIC_ORIGIN = 'https://akaun.jayabina.com';
 const PAGES_ORIGIN = 'https://jayaclean-29f.pages.dev';
+const APP_PATH = '/customer/';
 
 function rewritePublicUrl(value) {
   return value
     .replaceAll(PAGES_ORIGIN, PUBLIC_ORIGIN)
-    .replaceAll('https:\\/\\/jayaclean-29f.pages.dev', 'https:\\/\\/cuci.jayabina.com');
+    .replaceAll('https:\\/\\/jayaclean-29f.pages.dev', 'https:\\/\\/akaun.jayabina.com');
 }
 
 export default {
   async fetch(request) {
-    const requestUrl = new URL(request.url);
-    if (requestUrl.pathname === '/' || requestUrl.pathname === '/index.html') {
-      return Response.redirect('https://www.jayabina.com/servis-cuci-tangki-air/', 301);
-    }
-    if (requestUrl.pathname === '/success.html' || requestUrl.pathname === '/success') {
-      return Response.redirect('https://www.jayabina.com/success.html' + requestUrl.search, 301);
-    }
     const upstreamUrl = new URL(request.url);
     upstreamUrl.protocol = 'https:';
     upstreamUrl.hostname = 'jayaclean-29f.pages.dev';
     upstreamUrl.port = '';
+    if (upstreamUrl.pathname === '/' || upstreamUrl.pathname === '/index.html') {
+      upstreamUrl.pathname = APP_PATH;
+    }
     const init = {
       method: request.method,
       headers: request.headers,
