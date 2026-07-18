@@ -243,16 +243,13 @@
     .booking-card .btn{width:100%;margin-top:22px}
     .form-note{margin:12px auto 0;color:var(--grey-600);font-size:.875rem;text-align:center;line-height:1.5}
 
-    .faq-head{text-align:center;max-width:660px;margin:0 auto 42px}
-    .faq-head h2{margin-left:auto;margin-right:auto}
-    .faq-head p{margin:0 auto;color:var(--grey-600)}
-    .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
-    .faq-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:4px 20px;box-shadow:var(--shadow-sm);transition:border-color .2s ease,box-shadow .2s ease}
-    .faq-card:hover{border-color:#8dc9a7;box-shadow:var(--shadow)}
-    .faq-question{width:100%;min-height:62px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 0;border:0;background:transparent;color:var(--grey-900);font-family:'Bricolage Grotesque',sans-serif;font-size:1.02rem;font-weight:700;text-align:left;cursor:pointer}
+    .faq-layout{display:grid;grid-template-columns:.65fr 1.35fr;gap:70px;align-items:start}
+    .faq-list{border-top:1px solid var(--grey-200)}
+    .faq-item{border-bottom:1px solid var(--grey-200)}
+    .faq-question{width:100%;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 0;border:0;background:transparent;color:var(--grey-900);font-family:'Bricolage Grotesque',sans-serif;font-size:1.08rem;font-weight:700;text-align:left;cursor:pointer}
     .faq-plus{flex:0 0 34px;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--green-100);color:var(--green-800);font-family:'Figtree',sans-serif;font-size:1.2rem;transition:transform .2s ease,background .2s ease}
     .faq-question[aria-expanded="true"] .faq-plus{transform:rotate(45deg);background:var(--green-700);color:var(--white)}
-    .faq-answer{padding:0 0 18px;color:var(--grey-600);font-size:var(--font-small)}
+    .faq-answer{padding:0 52px 20px 0;color:var(--grey-600);font-size:var(--font-small)}
     .faq-answer p{margin-bottom:0}
 
     .final-cta{padding-block:clamp(68px,7vw,92px);background:linear-gradient(135deg,var(--green-900),var(--green-700));color:var(--white)}
@@ -280,7 +277,7 @@
     .f-acc.static summary{pointer-events:none;cursor:default;padding:0 0 10px;color:#9de3ba;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase}
     .f-acc.static summary::after{display:none}
     .f-acc.static .f-links{padding:0}
-    .footer-bottom{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:.82rem;color:#9fb8ae}
+    .footer-bottom{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:center;text-align:center;gap:16px;flex-wrap:wrap;font-size:.82rem;color:#9fb8ae}
 
     .desktop-wa{position:fixed;right:22px;bottom:22px;z-index:50;min-height:50px;padding:13px 18px;border-radius:999px;background:var(--wa);color:var(--white);box-shadow:0 14px 32px rgba(0,0,0,.2);font-size:.92rem;font-weight:700;transition:opacity .2s ease,transform .2s ease}
     .desktop-wa.is-hidden{opacity:0;transform:translateY(14px);pointer-events:none}
@@ -351,8 +348,8 @@
       .scope-list{grid-template-columns:1fr}
       .payment-split{grid-template-columns:1fr}
       .booking-card{padding:24px 18px;border-radius:20px}
-      .faq-grid{grid-template-columns:1fr}
-      .footer-bottom{flex-direction:column;gap:6px}
+      .faq-answer{padding-right:0}
+      .footer-bottom{flex-direction:column;gap:6px;align-items:center}
     }
 
     @media(max-width:380px){
@@ -402,6 +399,9 @@
     <a href="/tentang-kami/">Tentang Kami</a>
     <a href="/blog/">Blog</a>
     <a href="/hubungi-kami/">Hubungi</a>
+    <div class="mm-label">Portal</div>
+    <a href="https://akaun.jayabina.com/">Akaun Pelanggan</a>
+    <a href="https://staff.jayabina.com/">Portal Staff</a>
     <a class="btn btn-primary" href="#hubungi">Semakan Percuma di WhatsApp</a>
   </div>
 
@@ -572,16 +572,16 @@
       </div>
     </section>
 
-    <section class="section section-mint" id="faq">
-      <div class="container">
-        <div class="faq-head reveal"><span class="section-kicker">Soalan lazim</span><h2>Jawapan ringkas sebelum anda hubungi kami.</h2><p class="muted">Masih was-was? Baca dulu. Dah jelas? Terus WhatsApp.</p></div>
-        <div class="faq-grid reveal">
-          <div class="faq-card"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq1"><span>Perabot &amp; lantai saya macam mana?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq1" hidden><p>Kami tutup perabot, lantai dan lekapan dengan pelindung sebelum kerja. Lepas siap, kami kemas semula — ruang balik macam asal, cuma dinding dah baru.</p></div></div>
-          <div class="faq-card"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq2"><span>Bau cat kuat tak? Ada anak kecil.</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq2" hidden><p>Kami guna cat pilihan anda — ada jenis kurang bau yang lebih mesra keluarga. Ruang berudara baik, anak di ruang lain semasa kerja, dan bau hilang tak lama selepas siap.</p></div></div>
-          <div class="faq-card"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq3"><span>Berapa lama nak siap?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq3" hidden><p>Ikut saiz ruang dan bilangan lapisan. Anggaran tempoh diberikan sekali dengan sebut harga — dan kami ikut jadual yang dipersetujui.</p></div></div>
-          <div class="faq-card"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq4"><span>Tak reti pilih warna. Macam mana?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq4" hidden><p>Hantar gambar ruang anda dan ceritakan gaya yang anda suka — cerah, tenang, moden. Kami cadangkan pilihan warna yang padan dengan pencahayaan dan saiz ruang.</p></div></div>
-          <div class="faq-card"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq5"><span>Dalam rumah je ke? Luar pun boleh?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq5" hidden><p>Dua-dua. Dinding dalam, luar, siling — semua kami semak permukaannya dulu, lepas tu beri sebut harga ikut keperluan. Ceritakan je apa yang anda nak.</p></div></div>
-          <div class="faq-card"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq6"><span>Macam mana nak tahu harga sebelum setuju?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq6" hidden><p>Hantar gambar dan ukuran kasar — kami beri anggaran awal percuma. Bila anda okey, kami datang ukur tepat dan sahkan harga muktamad. Tak ada istilah "lepas kerja baru tahu harga".</p></div></div>
+    <section class="section" id="faq">
+      <div class="container faq-layout">
+        <div class="reveal"><span class="section-kicker">Soalan lazim</span><h2>Jawapan ringkas sebelum anda hubungi kami.</h2><p class="muted">Masih was-was? Baca dulu. Dah jelas? Terus WhatsApp.</p></div>
+        <div class="faq-list reveal">
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq1"><span>Perabot &amp; lantai saya macam mana?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq1" hidden><p>Kami tutup perabot, lantai dan lekapan dengan pelindung sebelum kerja. Lepas siap, kami kemas semula — ruang balik macam asal, cuma dinding dah baru.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq2"><span>Bau cat kuat tak? Ada anak kecil.</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq2" hidden><p>Kami guna cat pilihan anda — ada jenis kurang bau yang lebih mesra keluarga. Ruang berudara baik, anak di ruang lain semasa kerja, dan bau hilang tak lama selepas siap.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq3"><span>Berapa lama nak siap?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq3" hidden><p>Ikut saiz ruang dan bilangan lapisan. Anggaran tempoh diberikan sekali dengan sebut harga — dan kami ikut jadual yang dipersetujui.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq4"><span>Tak reti pilih warna. Macam mana?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq4" hidden><p>Hantar gambar ruang anda dan ceritakan gaya yang anda suka — cerah, tenang, moden. Kami cadangkan pilihan warna yang padan dengan pencahayaan dan saiz ruang.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq5"><span>Dalam rumah je ke? Luar pun boleh?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq5" hidden><p>Dua-dua. Dinding dalam, luar, siling — semua kami semak permukaannya dulu, lepas tu beri sebut harga ikut keperluan. Ceritakan je apa yang anda nak.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq6"><span>Macam mana nak tahu harga sebelum setuju?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq6" hidden><p>Hantar gambar dan ukuran kasar — kami beri anggaran awal percuma. Bila anda okey, kami datang ukur tepat dan sahkan harga muktamad. Tak ada istilah "lepas kerja baru tahu harga".</p></div></div>
         </div>
       </div>
     </section>

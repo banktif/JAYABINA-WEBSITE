@@ -123,7 +123,7 @@
 
     .hero{min-height:760px;padding:144px 0 78px;background:linear-gradient(135deg,var(--green-950) 0%,var(--green-900) 58%,#126044 100%);color:var(--white);position:relative;overflow:hidden}
     .hero::before{content:'';position:absolute;width:620px;height:620px;border:1px solid rgba(255,255,255,.08);border-radius:50%;right:-190px;top:-250px;box-shadow:0 0 0 90px rgba(255,255,255,.025),0 0 0 180px rgba(255,255,255,.018)}
-    .hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(390px,.88fr);gap:72px;align-items:center}
+    .hero-grid{position:relative;display:grid;grid-template-columns:1fr 1.5fr;gap:56px;align-items:center}
     .hero h1{color:var(--white)}
     .hero h1 span{color:#9de3ba}
     .hero-copy>.lead{color:#d7e8e1;max-width:58ch;margin-bottom:30px}
@@ -132,22 +132,9 @@
     .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
     .hero-note{display:flex;align-items:center;gap:9px;margin:0;color:#c7d8d1;font-size:.92rem}
     .hero-note::before{content:'✓';width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:rgba(157,227,186,.13);color:#9de3ba;font-weight:700}
-    .hero-panel{position:relative;padding:28px;border:1px solid rgba(255,255,255,.15);border-radius:28px;background:rgba(255,255,255,.97);box-shadow:0 32px 80px rgba(0,0,0,.24);color:var(--grey-900)}
-    .hero-panel-top{display:flex;align-items:start;justify-content:space-between;gap:20px;padding-bottom:22px;border-bottom:1px solid var(--grey-200)}
-    .hero-panel-label{margin-bottom:5px;color:var(--grey-600);font-size:.88rem;font-weight:600}
-    .hero-price{font-family:'Bricolage Grotesque',sans-serif;font-size:3.25rem;line-height:1;font-weight:800;color:var(--green-900);letter-spacing:-.05em}
-    .hero-price small{font-family:'Figtree',sans-serif;font-size:.85rem;font-weight:600;color:var(--grey-600);letter-spacing:0}
-    .status-pill{padding:7px 11px;border-radius:999px;background:var(--green-100);color:var(--green-800);font-size:.875rem;font-weight:700;white-space:nowrap}
-    .service-list{display:grid;gap:0;margin:18px 0 22px}
-    .service-row{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--grey-100)}
-    .service-row:last-child{border-bottom:0}
-    .service-num{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--green-50);color:var(--green-800);font-size:.78rem;font-weight:700}
-    .service-row strong{display:block;font-size:.98rem}
-    .service-row span:last-child{color:var(--green-700);font-size:.875rem;font-weight:700}
-    .hero-panel-foot{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .mini-stat{padding:14px;border-radius:13px;background:var(--grey-50);border:1px solid var(--grey-200)}
-    .mini-stat strong{display:block;color:var(--green-900);font-size:1.06rem}
-    .mini-stat span{display:block;color:var(--grey-600);font-size:.875rem}
+    .hero-visual{position:relative;margin:0;padding:10px;border:1px solid rgba(255,255,255,.18);border-radius:28px;background:rgba(255,255,255,.06);box-shadow:0 32px 80px rgba(0,0,0,.24)}
+    .hero-visual img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:20px}
+    .hero-visual-badge{position:absolute;left:24px;bottom:24px;padding:9px 14px;border-radius:999px;background:rgba(5,46,34,.9);border:1px solid rgba(255,255,255,.25);color:var(--white);font-size:.82rem;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 
     .trust-strip{background:var(--white);border-bottom:1px solid var(--grey-200)}
     .trust-grid{display:grid;grid-template-columns:repeat(4,1fr)}
@@ -170,6 +157,7 @@
     .emotion-label{max-width:190px;padding:10px 13px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(5,46,34,.88);color:var(--white);box-shadow:0 8px 24px rgba(0,0,0,.2);font-size:.82rem;font-weight:700;line-height:1.35}
     .emotion-label:last-child{text-align:right}
     .emotion-caption{margin:11px 6px 2px;color:var(--grey-600);font-size:.875rem;line-height:1.5}
+    .emotion-ph{aspect-ratio:3/2;border-radius:20px;background:var(--green-100);display:grid;place-items:center;color:var(--green-800);font-weight:700;font-size:.88rem;text-align:center;padding:18px;line-height:1.6}
 
     .signs-layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:72px;align-items:start}
     .sign-intro{position:sticky;top:112px}
@@ -300,16 +288,13 @@
     .confirmation p{margin-inline:auto;color:var(--grey-600)}
     .confirmation .btn{margin-top:8px}
 
-    .faq-head{text-align:center;max-width:660px;margin:0 auto 42px}
-    .faq-head h2{margin-left:auto;margin-right:auto}
-    .faq-head p{margin:0 auto;color:var(--grey-600)}
-    .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
-    .faq-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:4px 20px;box-shadow:var(--shadow-sm);transition:border-color .2s ease,box-shadow .2s ease}
-    .faq-card:hover{border-color:#8dc9a7;box-shadow:var(--shadow)}
-    .faq-question{width:100%;min-height:62px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 0;border:0;background:transparent;color:var(--grey-900);font-family:'Bricolage Grotesque',sans-serif;font-size:1.02rem;font-weight:700;text-align:left;cursor:pointer}
+    .faq-layout{display:grid;grid-template-columns:.65fr 1.35fr;gap:70px;align-items:start}
+    .faq-list{border-top:1px solid var(--grey-200)}
+    .faq-item{border-bottom:1px solid var(--grey-200)}
+    .faq-question{width:100%;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 0;border:0;background:transparent;color:var(--grey-900);font-family:'Bricolage Grotesque',sans-serif;font-size:1.08rem;font-weight:700;text-align:left;cursor:pointer}
     .faq-plus{flex:0 0 34px;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--green-100);color:var(--green-800);font-family:'Figtree',sans-serif;font-size:1.2rem;transition:transform .2s ease,background .2s ease}
     .faq-question[aria-expanded="true"] .faq-plus{transform:rotate(45deg);background:var(--green-700);color:var(--white)}
-    .faq-answer{padding:0 0 18px;color:var(--grey-600);font-size:var(--font-small)}
+    .faq-answer{padding:0 52px 20px 0;color:var(--grey-600);font-size:var(--font-small)}
     .faq-answer p{margin-bottom:0}
 
     .final-cta{padding-block:clamp(68px,7vw,92px);background:linear-gradient(135deg,var(--green-900),var(--green-700));color:var(--white)}
@@ -336,7 +321,7 @@
     .f-acc.static summary{pointer-events:none;cursor:default;padding:0 0 10px;color:#9de3ba;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase}
     .f-acc.static summary::after{display:none}
     .f-acc.static .f-links{padding:0}
-    .footer-bottom{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:.82rem;color:#9fb8ae}
+    .footer-bottom{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:center;text-align:center;gap:16px;flex-wrap:wrap;font-size:.82rem;color:#9fb8ae}
 
     .desktop-wa{position:fixed;right:22px;bottom:22px;z-index:50;min-height:50px;padding:13px 18px;border-radius:999px;background:var(--wa);color:var(--white);box-shadow:0 14px 32px rgba(0,0,0,.2);font-size:.92rem;font-weight:700;transition:opacity .2s ease,transform .2s ease}
     .desktop-wa.is-hidden{opacity:0;transform:translateY(14px);pointer-events:none}
@@ -352,7 +337,7 @@
       .hero{min-height:auto;padding:116px 0 72px}
       .hero-grid{grid-template-columns:1fr;gap:44px}
       .hero-copy{max-width:760px}
-      .hero-panel{max-width:680px}
+      .hero-visual{max-width:680px}
       .trust-grid{grid-template-columns:1fr 1fr}
       .trust-item:nth-child(2){border-right:0}
       .trust-item:nth-child(-n+2){border-bottom:1px solid var(--grey-200)}
@@ -389,11 +374,8 @@
       .hero-badge{font-size:.82rem}
       .hero-actions{display:grid}
       .hero-note{align-items:flex-start;font-size:.87rem}
-      .hero-panel{padding:22px;border-radius:22px}
-      .hero-panel-top{display:block}
-      .status-pill{display:inline-block;margin-top:14px}
-      .hero-price{font-size:2.9rem}
-      .hero-panel-foot{grid-template-columns:1fr}
+      .hero-visual{padding:8px;border-radius:22px}
+      .hero-visual-badge{left:16px;bottom:16px;font-size:.76rem}
       .emotion-visual img{aspect-ratio:auto;object-fit:contain}
       .emotion-labels{position:static;display:grid;grid-template-columns:1fr 1fr;margin:10px 2px 2px}
       .emotion-label{max-width:none;background:var(--green-900);font-size:.8rem}
@@ -423,15 +405,13 @@
       .calendar-grid{gap:4px}
       .calendar-day,.calendar-empty{min-height:42px}
       .calendar-day-name{font-size:.75rem}
-      .faq-grid{grid-template-columns:1fr}
-      .footer-bottom{flex-direction:column;gap:6px}
+      .faq-answer{padding-right:0}
+      .footer-bottom{flex-direction:column;gap:6px;align-items:center}
     }
 
     @media(max-width:380px){
       .container{width:min(calc(100% - 28px),var(--container))}
-      .hero-panel{padding:18px}
-      .service-row{grid-template-columns:34px 1fr}
-      .service-row span:last-child{grid-column:2}
+      .hero-visual{padding:6px}
       .emotion-labels{grid-template-columns:1fr}
       .emotion-label{font-size:.78rem}
       .price-main{font-size:3.15rem}
@@ -478,6 +458,9 @@
     <a href="/tentang-kami/">Tentang Kami</a>
     <a href="/blog/">Blog</a>
     <a href="/hubungi-kami/">Hubungi</a>
+    <div class="mm-label">Portal</div>
+    <a href="https://akaun.jayabina.com/">Akaun Pelanggan</a>
+    <a href="https://staff.jayabina.com/">Portal Staff</a>
     <a class="btn btn-primary" href="#tempah">Semak Slot &amp; Harga</a>
   </div>
 
@@ -494,22 +477,10 @@
           </div>
           <p class="hero-note">Tanya dahulu pun boleh · Deposit RM150 sahkan slot, baki selepas servis selesai.</p>
         </div>
-        <aside class="hero-panel" aria-label="Ringkasan servis JAYABINA">
-          <div class="hero-panel-top">
-            <div><div class="hero-panel-label">Pakej 1 tangki rumah standard*</div><div class="hero-price">RM300 <small>/ servis</small></div></div>
-            <span class="status-pill">Harga disahkan awal</span>
-          </div>
-          <div class="service-list">
-            <div class="service-row"><span class="service-num">01</span><strong>Periksa &amp; tunjuk keadaan</strong><span>TERMASUK</span></div>
-            <div class="service-row"><span class="service-num">02</span><strong>Keluarkan air &amp; mendapan</strong><span>TERMASUK</span></div>
-            <div class="service-row"><span class="service-num">03</span><strong>Cuci dinding &amp; dasar</strong><span>TERMASUK</span></div>
-            <div class="service-row"><span class="service-num">04</span><strong>Bilas &amp; bukti foto</strong><span>TERMASUK</span></div>
-          </div>
-          <div class="hero-panel-foot">
-            <div class="mini-stat"><strong>RM150</strong><span>Deposit selepas skop disahkan</span></div>
-            <div class="mini-stat"><strong>RM150</strong><span>Baki selepas servis selesai</span></div>
-          </div>
-        </aside>
+        <figure class="hero-visual reveal" aria-label="Gambaran keadaan tangki air rumah">
+          <img src="/images/tank/tank-emotional-1200.webp" width="1200" height="800" loading="eager" decoding="async" alt="Ilustrasi seorang pakcik mengambil wuduk dengan air paip yang kelihatan jernih, bersebelahan keadaan dalaman tangki yang mempunyai mendapan">
+          <span class="hero-visual-badge">Tempah online · Deposit RM150 sahkan slot</span>
+        </figure>
       </div>
     </section>
 
@@ -523,9 +494,9 @@
           <a class="btn btn-primary" href="#tanda">Lihat Tanda Yang Perlu Diperiksa</a>
         </div>
         <figure class="emotion-visual reveal">
-          <img src="/images/tank/tank-emotional-1200.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Ilustrasi seorang pakcik mengambil wuduk dengan air paip yang kelihatan jernih, bersebelahan keadaan dalaman tangki yang mempunyai mendapan dan kesan karat">
+          <div class="emotion-ph">[GAMBAR: keadaan dalam tangki air sebelum &amp; selepas dicuci —<br>foto sebenar akan dimuat naik]</div>
           <div class="emotion-labels" aria-hidden="true"><span class="emotion-label">Apa yang kita nampak: air jernih di paip</span><span class="emotion-label">Apa yang mungkin tersembunyi: mendapan di dasar tangki</span></div>
-          <figcaption class="emotion-caption">Ilustrasi dijana AI untuk menerangkan konsep. Bukan foto pelanggan atau bukti servis.</figcaption>
+          <figcaption class="emotion-caption">Ruang gambar disediakan — foto sebenar akan dimuat naik kemudian.</figcaption>
         </figure>
       </div>
     </section>
@@ -687,16 +658,16 @@
       </div>
     </section>
 
-    <section class="section section-mint" id="faq">
-      <div class="container">
-        <div class="faq-head reveal"><span class="section-kicker">Soalan lazim</span><h2>Jawapan ringkas sebelum anda hantar permintaan.</h2><p class="muted">Masih tak pasti? Hantar gambar tangki atau lokasi pemasangannya melalui WhatsApp untuk semakan awal.</p></div>
-        <div class="faq-grid reveal">
-          <div class="faq-card"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq1"><span>Berapa lama proses cuci?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq1" hidden><p>Kebiasaannya sekitar 1–2 jam untuk satu tangki rumah standard. Tempoh sebenar bergantung pada saiz, keadaan dan akses tangki.</p></div></div>
-          <div class="faq-card"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq2"><span>Apa yang termasuk dalam RM300?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq2" hidden><p>Pemeriksaan awal, pengeluaran mendapan, cucian dinding dan dasar, bilasan akhir serta foto sebelum dan selepas untuk satu tangki rumah standard. Skop akhir disahkan sebelum deposit.</p></div></div>
-          <div class="faq-card"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq3"><span>Kenapa perlu deposit RM150?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq3" hidden><p>Deposit digunakan untuk mengesahkan tarikh dan pasukan servis selepas lokasi serta skop dipersetujui. Baki RM150 dibayar selepas kerja selesai.</p></div></div>
-          <div class="faq-card"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq4"><span>Kalau akses tangki sukar?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq4" hidden><p>Hantar gambar lokasi tangki kepada kami. Kami akan semak aspek akses dan keselamatan terlebih dahulu, termasuk sebarang perubahan skop atau harga.</p></div></div>
-          <div class="faq-card"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq5"><span>Kawasan mana yang diliputi?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq5" hidden><p>Kawasan utama ialah Kuala Lumpur dan Selangor. Berikan poskod anda supaya pasukan boleh mengesahkan liputan dan jadual.</p></div></div>
-          <div class="faq-card"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq6"><span>Boleh tukar tarikh jika hujan atau ada kecemasan?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq6" hidden><p>Boleh, tertakluk pada polisi penjadualan dan slot yang tersedia. Terma pembatalan, pertukaran tarikh dan pemulangan deposit perlu disahkan semasa tempahan.</p></div></div>
+    <section class="section" id="faq">
+      <div class="container faq-layout">
+        <div class="reveal"><span class="section-kicker">Soalan lazim</span><h2>Jawapan ringkas sebelum anda hantar permintaan.</h2><p class="muted">Masih tak pasti? Hantar gambar tangki atau lokasi pemasangannya melalui WhatsApp untuk semakan awal.</p></div>
+        <div class="faq-list reveal">
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq1"><span>Berapa lama proses cuci?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq1" hidden><p>Kebiasaannya sekitar 1–2 jam untuk satu tangki rumah standard. Tempoh sebenar bergantung pada saiz, keadaan dan akses tangki.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq2"><span>Apa yang termasuk dalam RM300?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq2" hidden><p>Pemeriksaan awal, pengeluaran mendapan, cucian dinding dan dasar, bilasan akhir serta foto sebelum dan selepas untuk satu tangki rumah standard. Skop akhir disahkan sebelum deposit.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq3"><span>Kenapa perlu deposit RM150?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq3" hidden><p>Deposit digunakan untuk mengesahkan tarikh dan pasukan servis selepas lokasi serta skop dipersetujui. Baki RM150 dibayar selepas kerja selesai.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq4"><span>Kalau akses tangki sukar?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq4" hidden><p>Hantar gambar lokasi tangki kepada kami. Kami akan semak aspek akses dan keselamatan terlebih dahulu, termasuk sebarang perubahan skop atau harga.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq5"><span>Kawasan mana yang diliputi?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq5" hidden><p>Kawasan utama ialah Kuala Lumpur dan Selangor. Berikan poskod anda supaya pasukan boleh mengesahkan liputan dan jadual.</p></div></div>
+          <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="faq6"><span>Boleh tukar tarikh jika hujan atau ada kecemasan?</span><span class="faq-plus" aria-hidden="true">+</span></button><div class="faq-answer" id="faq6" hidden><p>Boleh, tertakluk pada polisi penjadualan dan slot yang tersedia. Terma pembatalan, pertukaran tarikh dan pemulangan deposit perlu disahkan semasa tempahan.</p></div></div>
         </div>
       </div>
     </section>
