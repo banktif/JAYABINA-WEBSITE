@@ -1,0 +1,20 @@
+.menu-toggle{display:block;width:46px;height:46px;padding:0;border:1px solid var(--grey-200);border-radius:12px;background:var(--white);cursor:pointer}
+.menu-toggle span{display:block;width:21px;height:2px;margin:4px auto;background:var(--green-950);border-radius:99px;transition:transform .2s ease,opacity .2s ease}
+.menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+.menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.mobile-menu{display:none;position:fixed;z-index:99;top:72px;right:max(16px,calc((100vw - var(--container)) / 2));width:min(340px,calc(100vw - 32px));max-height:calc(100dvh - 92px);overflow-y:auto;overscroll-behavior:contain;padding:8px 12px 12px;background:var(--white);border:1px solid var(--grey-200);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.12)}
+.mobile-menu.open{display:block}
+.mm-section{border-bottom:1px solid var(--grey-100);margin:0 -12px;padding:0 12px}
+.mm-section:last-of-type{border-bottom:0}
+.mm-summary{width:100%;min-height:50px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 6px;border:0;background:transparent;cursor:pointer;color:var(--grey-900);font-weight:700;font-size:.95rem;font-family:inherit;text-align:left;border-radius:10px;transition:background .15s ease}
+.mm-summary:hover{background:var(--green-50)}
+.mm-summary::after{content:'+';flex:0 0 28px;width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--grey-50);color:var(--green-700);font-size:1.1rem;font-weight:600;transition:transform .2s ease,background .2s ease}
+.mm-section.open .mm-summary::after{transform:rotate(45deg);background:var(--green-100)}
+.mm-links{display:none;padding:0 0 12px 8px}
+.mm-section.open .mm-links{display:grid;gap:2px}
+.mm-links a{min-height:42px;display:flex;align-items:center;padding:6px 10px;border-radius:10px;color:var(--grey-700);font-weight:600;font-size:.9rem;transition:background .15s ease}
+.mm-links a:hover{background:var(--green-50);color:var(--green-800)}
+.mm-portal{padding:14px 0 6px;display:grid;gap:10px}
+.mm-portal .btn{min-height:48px;justify-content:flex-start;padding:12px 16px;font-size:.92rem;gap:10px;border-radius:14px}
+@media(min-width:1024px){.mobile-menu{top:80px}}

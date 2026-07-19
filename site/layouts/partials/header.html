@@ -1,27 +1,17 @@
-<header class="site-header" id="siteHeader">
+<nav class="site-nav" aria-label="Navigasi utama">
   <div class="container nav-inner">
     <a class="brand" href="/" aria-label="JAYABINA - halaman utama">
-      <img src="/favicon.png" width="38" height="38" alt="">
-      <span>JAYABINA</span>
+      <img class="brand-mark" src="/logo.png" width="768" height="123" alt="JAYABINA">
     </a>
-    <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="primaryNavigation" aria-label="Buka menu">
-      <span></span><span></span><span></span>
-    </button>
-    <nav class="primary-nav" id="primaryNavigation" data-primary-nav aria-label="Navigasi utama">
-      <a href="/">Utama</a>
-      <div class="nav-services">
-        <button type="button" data-services-toggle aria-expanded="false">Servis <span aria-hidden="true">⌄</span></button>
-        <div class="service-menu" data-services-menu>
-          <a href="/servis-tukar-atap/"><strong>Tukar Atap Baharu</strong><span>Untuk kebocoran berulang dan penilaian menyeluruh.</span></a>
-          <a href="/servis-cuci-tangki-air/"><strong>Cuci Tangki Air</strong><span>Pemeriksaan, cucian dan rekod keadaan tangki.</span></a>
-          <a href="/servis-mengecat/"><strong>Mengecat Rumah & Ofis</strong><span>Persediaan, perlindungan dan kemasan ruang.</span></a>
-          <a class="all-services-link" href="/servis/">Lihat semua servis →</a>
-        </div>
-      </div>
-      <a href="/tentang-kami/">Tentang Kami</a>
-      <a href="/blog/">Blog</a>
-      <a href="/hubungi-kami/">Hubungi</a>
-      <a class="btn btn-primary nav-cta" href="/servis/">Pilih Servis</a>
-    </nav>
+    <ul class="nav-links">
+      <li><a href="/servis/">Servis</a></li>
+      <li><a href="/tentang-kami/">Tentang Kami</a></li>
+      <li><a href="/blog/">Blog</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="nav-actions"><a class="btn btn-primary" href="/servis/">Pilih Servis</a></div>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Buka menu" aria-controls="mobileMenu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
   </div>
-</header>
+</nav>
+{{ partial "burger-menu.html" . }}
