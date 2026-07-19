@@ -29,6 +29,19 @@ app.all('/api/health', async (c) => {
   return ok({ service: 'jayaclean-api', database: 'ok' });
 });
 
+app.all('/api/health/github', async (c) => {
+  if (c.req.raw.method !== 'GET') return err('Not found', 404);
+  const hasToken = !!c.env.GH_PAT;
+  if (!hasToken) return ok({ connected: false, error: 'GH_PAT secret not found' });
+  try {
+    const r = await fetch('https://api.github.com/repos/banktif/JAYABINA-WEBSITE/contents/site/content/blog?ref=master', {
+      headers: { Authorization: `Bearer ${c.env.GH_PAT}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'JAYABINA-Admin' }
+    });
+    const data: any = await r.json();
+    return ok({ connected: r.ok, status: r.status, message: data?.message || '', files: Array.isArray(data) ? data.length : 0 });
+  } catch (e: any) { return ok({ connected: false, error: e?.message || String(e) }); }
+});
+
 const handleSettingsRoute = (req: Request, env: Env) => {
   const path = new URL(req.url).pathname.replace(/\/+$/, '') || '/';
   return handleSettings(req, env, path);
