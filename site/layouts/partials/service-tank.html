@@ -112,14 +112,21 @@
     .menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
     .menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
     .menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-    .mobile-menu{display:none;position:fixed;z-index:99;top:72px;right:max(16px,calc((100vw - var(--container)) / 2));width:min(340px,calc(100vw - 32px));max-height:calc(100dvh - 92px);overflow-y:auto;padding:16px 18px 20px;background:var(--white);border:1px solid var(--grey-200);border-radius:18px;box-shadow:var(--shadow)}
-    .mobile-menu.open{display:grid;gap:6px}
-    .mobile-menu a{min-height:44px;display:flex;align-items:center;padding:6px 8px;border-radius:10px;color:var(--grey-700);font-weight:600}
-    .mobile-menu a:hover{background:var(--green-50);color:var(--green-800)}
-    .mobile-menu .btn{margin-top:10px;color:var(--white);padding-inline:18px}
-    .mm-label{font-size:.68rem;font-weight:800;letter-spacing:.08em;color:var(--grey-500);text-transform:uppercase;margin:10px 8px 2px}
-    .mm-sections{display:grid;gap:6px}
-    @media(min-width:1024px){.mobile-menu{top:80px}.mm-sections{display:none}}
+    .mobile-menu{display:none;position:fixed;z-index:99;top:72px;right:max(16px,calc((100vw - var(--container)) / 2));width:min(340px,calc(100vw - 32px));max-height:calc(100dvh - 92px);overflow-y:auto;overscroll-behavior:contain;padding:8px 12px 12px;background:var(--white);border:1px solid var(--grey-200);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.12)}
+    .mobile-menu.open{display:block}
+    .mm-section{border-bottom:1px solid var(--grey-100);margin:0 -12px;padding:0 12px}
+    .mm-section:last-of-type{border-bottom:0}
+    .mm-summary{width:100%;min-height:50px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 6px;border:0;background:0 0;cursor:pointer;color:var(--grey-900);font-weight:700;font-size:.95rem;font-family:inherit;text-align:left;border-radius:10px;transition:background .15s ease}
+    .mm-summary:hover{background:var(--green-50)}
+    .mm-summary::after{content:'+';flex:0 0 28px;width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--grey-50);color:var(--green-700);font-size:1.1rem;font-weight:600;transition:transform .2s ease,background .2s ease}
+    .mm-section.open .mm-summary::after{transform:rotate(45deg);background:var(--green-100)}
+    .mm-links{display:none;padding:0 0 12px 8px}
+    .mm-section.open .mm-links{display:grid;gap:2px}
+    .mm-links a{min-height:42px;display:flex;align-items:center;padding:6px 10px;border-radius:10px;color:var(--grey-700);font-weight:600;font-size:.9rem;transition:background .15s ease}
+    .mm-links a:hover{background:var(--green-50);color:var(--green-800)}
+    .mm-portal{padding:14px 0 6px;display:grid;gap:10px}
+    .mm-portal .btn{min-height:48px;justify-content:flex-start;padding:12px 16px;font-size:.92rem;gap:10px;border-radius:14px}
+    @media(min-width:1024px){.mobile-menu{top:80px}}
 
     .hero{min-height:760px;padding:144px 0 78px;background:linear-gradient(135deg,var(--green-950) 0%,var(--green-900) 58%,#126044 100%);color:var(--white);position:relative;overflow:hidden}
     .hero::before{content:'';position:absolute;width:620px;height:620px;border:1px solid rgba(255,255,255,.08);border-radius:50%;right:-190px;top:-250px;box-shadow:0 0 0 90px rgba(255,255,255,.025),0 0 0 180px rgba(255,255,255,.018)}
@@ -438,20 +445,28 @@
     </div>
   </nav>
   <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-    <div class="mm-label">Servis kami</div>
-    <a href="/servis-tukar-atap/">Tukar Atap Baharu</a>
-    <a href="/servis-cuci-tangki-air/">Cuci Tangki Air</a>
-    <a href="/servis-mengecat/">Cat Rumah &amp; Ofis</a>
-    <div class="mm-label">Halaman utama</div>
-    <a href="/">Utama</a>
-    <a href="/servis/">Semua Servis</a>
-    <a href="/tentang-kami/">Tentang Kami</a>
-    <a href="/blog/">Blog</a>
-    <a href="/hubungi-kami/">Hubungi</a>
-    <div class="mm-label">Portal</div>
-    <a href="https://akaun.jayabina.com/">Akaun Pelanggan</a>
-    <a href="https://staff.jayabina.com/">Portal Staff</a>
-    <a class="btn btn-primary" href="#tempah">Semak Slot &amp; Harga</a>
+    <div class="mm-section">
+      <button class="mm-summary" type="button" data-mm-toggle aria-expanded="false">⚙️ Servis Kami</button>
+      <div class="mm-links">
+        <a href="/servis-tukar-atap/">Tukar Atap Baharu</a>
+        <a href="/servis-cuci-tangki-air/">Cuci Tangki Air</a>
+        <a href="/servis-mengecat/">Cat Rumah &amp; Ofis</a>
+      </div>
+    </div>
+    <div class="mm-section">
+      <button class="mm-summary" type="button" data-mm-toggle aria-expanded="false">📄 Halaman Utama</button>
+      <div class="mm-links">
+        <a href="/">Utama</a>
+        <a href="/servis/">Semua Servis</a>
+        <a href="/tentang-kami/">Tentang Kami</a>
+        <a href="/blog/">Blog</a>
+        <a href="/hubungi-kami/">Hubungi</a>
+      </div>
+    </div>
+    <div class="mm-portal">
+      <a class="btn btn-outline" href="https://akaun.jayabina.com/"><span style="font-size:1.1rem">👤</span> Akaun Pelanggan</a>
+      <a class="btn btn-outline" href="https://staff.jayabina.com/"><span style="font-size:1.1rem">🛠️</span> Portal Staff</a>
+    </div>
   </div>
 
   <main>
@@ -725,8 +740,9 @@
       function closeMenu(returnFocus){menuToggle.setAttribute('aria-expanded','false');menuToggle.setAttribute('aria-label','Buka menu');mobileMenu.classList.remove('open');mobileMenu.setAttribute('aria-hidden','true');document.body.classList.remove('menu-open');if(returnFocus)menuToggle.focus()}
       function openMenu(){menuToggle.setAttribute('aria-expanded','true');menuToggle.setAttribute('aria-label','Tutup menu');mobileMenu.classList.add('open');mobileMenu.setAttribute('aria-hidden','false');document.body.classList.add('menu-open');var first=mobileMenu.querySelector('a');if(first)first.focus()}
       menuToggle.addEventListener('click',function(){this.getAttribute('aria-expanded')==='true'?closeMenu(false):openMenu()});
-      mobileMenu.querySelectorAll('a').forEach(function(link){link.addEventListener('click',function(){closeMenu(false)})});
-      document.addEventListener('keydown',function(event){if(event.key==='Escape'&&mobileMenu.classList.contains('open'))closeMenu(true);if(event.key==='Tab'&&mobileMenu.classList.contains('open')){var focusable=Array.from(mobileMenu.querySelectorAll('a[href]'));if(!focusable.length)return;var first=focusable[0],last=focusable[focusable.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}}});
+      mobileMenu.querySelectorAll('[data-mm-toggle]').forEach(function(btn){btn.addEventListener('click',function(){var section=this.closest('.mm-section');if(section){var open=section.classList.toggle('open');this.setAttribute('aria-expanded',String(open))}})});
+      mobileMenu.querySelectorAll('a').forEach(function(link){link.addEventListener('click',function(){var toggle=link.closest('.mm-section');if(!toggle){closeMenu(false)}})});
+      document.addEventListener('keydown',function(event){if(event.key==='Escape'&&mobileMenu.classList.contains('open'))closeMenu(true);if(event.key==='Tab'&&mobileMenu.classList.contains('open')){var focusable=Array.from(mobileMenu.querySelectorAll('a[href], button[data-mm-toggle], .btn'));if(!focusable.length)return;var first=focusable[0],last=focusable[focusable.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}}});
       document.addEventListener('click',function(event){if(!mobileMenu.contains(event.target)&&!menuToggle.contains(event.target)&&mobileMenu.classList.contains('open'))closeMenu()});
 
       document.querySelectorAll('a[href^="#"]').forEach(function(link){link.addEventListener('click',function(event){var target=document.querySelector(this.getAttribute('href'));if(target){event.preventDefault();var distance=Math.abs(target.getBoundingClientRect().top);var instant=window.matchMedia('(prefers-reduced-motion: reduce)').matches||distance>2200;if(instant){var oldBehavior=document.documentElement.style.scrollBehavior;document.documentElement.style.scrollBehavior='auto';target.scrollIntoView({behavior:'auto',block:'start'});window.setTimeout(function(){document.documentElement.style.scrollBehavior=oldBehavior},0)}else{target.scrollIntoView({behavior:'smooth',block:'start'})}}})});
