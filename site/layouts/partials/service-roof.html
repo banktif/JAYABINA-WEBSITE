@@ -99,8 +99,8 @@
 
     .site-nav{position:fixed;inset:0 0 auto;z-index:100;height:72px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--grey-200);box-shadow:var(--shadow-sm)}
     .nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between;gap:24px}
-    .brand{display:flex;align-items:center;gap:11px;font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;color:var(--green-950);letter-spacing:-.02em}
-    .brand-mark{width:38px;height:38px;display:block;border-radius:11px;box-shadow:0 5px 14px rgba(13,59,46,.16)}
+    .brand{display:flex;align-items:center;gap:11px}
+    .brand-mark{height:32px;width:auto;display:block}
     .nav-links{display:flex;align-items:center;gap:28px;list-style:none;margin:0;padding:0}
     .nav-links a{color:var(--grey-700);font-size:.94rem;font-weight:600}
     .nav-links a:hover,.nav-links a.active{color:var(--green-700)}
@@ -258,7 +258,7 @@
     .final-cta p{margin-bottom:0;color:#d7e8e1}
     .final-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}
 
-    .site-footer{padding:42px 0 30px;background:var(--green-950);color:#c7d8d1;font-size:.9rem}
+    .site-footer{padding:42px 0 30px;background:var(--green-950);color:#c7d8d1;font-size:.95rem}
     .footer-grid{display:grid;gap:18px}
     @media(min-width:768px){.footer-grid{grid-template-columns:1.25fr 1fr 1fr 1fr;gap:26px;align-items:start}}
     .footer-col1 strong{display:block;color:var(--white);font-family:'Bricolage Grotesque',sans-serif;font-size:1.15rem;margin-bottom:8px}
@@ -374,7 +374,7 @@
 <body>
   <nav class="site-nav" aria-label="Navigasi utama">
     <div class="container nav-inner">
-      <a class="brand" href="#hero" aria-label="JAYABINA - kembali ke atas"><img class="brand-mark" src="/favicon.png" width="38" height="38" alt=""><span>JAYABINA</span></a>
+      <a class="brand" href="/" aria-label="JAYABINA - halaman utama"><img class="brand-mark" src="/logo.png" width="768" height="123" alt="JAYABINA"></a>
       <ul class="nav-links">
         <li><a href="#tanda">Tanda</a></li>
         <li><a href="#bukti">Bukti</a></li>
@@ -601,7 +601,7 @@
     <div class="container">
       <div class="footer-grid">
         <div class="footer-col1">
-          <strong>JAYABINA</strong>
+          <img src="/logo.png" width="768" height="123" alt="JAYABINA" style="height:30px;width:auto;margin-bottom:12px;display:block">
           <p>Servis tukar atap, cuci tangki air &amp; mengecat rumah dan ofis. Kuala Lumpur &amp; Selangor.</p>
           <a class="f-wa js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya mahu dapatkan sebutan harga untuk tukar atap. Poskod saya: ____. Jenis rumah: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">WhatsApp Kami</a>
         </div>
@@ -634,9 +634,7 @@
     </div>
   </footer>
 
-  <a class="desktop-wa js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya mahu semakan percuma untuk tukar atap. Poskod saya: ____. Jenis rumah: ____. Masalah utama: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">Semakan Percuma di WhatsApp</a>
-  <div class="mobile-sticky" id="mobileSticky"><a class="btn btn-wa js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya mahu semakan percuma untuk tukar atap. Poskod saya: ____. Jenis rumah: ____. Masalah utama: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">Semakan Percuma di WhatsApp</a></div>
-
+    
   <script>
     window.addEventListener('DOMContentLoaded',function(){
       var WHATSAPP_NUMBER='60139373275';
