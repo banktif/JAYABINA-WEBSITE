@@ -1054,6 +1054,7 @@ async function showStaff(){
         h+='<button class="d-btn" onclick="openEditStaff(\''+p.id+'\')">Edit</button>';
         h+='<button class="d-btn" onclick="resetStaffPassword(\''+p.id+'\')">Reset PW</button>';
         h+=p.is_active?'<button class="d-btn del" onclick="setStaffActive(\''+p.id+'\',false)">Deactivate</button>':'<button class="d-btn acc" onclick="setStaffActive(\''+p.id+'\',true)">Activate</button>';
+        h+='<button class="d-btn del" onclick="deleteStaff(\''+p.id+'\',\''+esc(p.full_name.replace(/'/g,"\\'"))+'\')">Delete</button>';
         h+='</div></td></tr>';
       });
       h+='</tbody></table></div>';
@@ -1088,7 +1089,8 @@ function openEditStaff(id){
     '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Email</div><input id="edEmail" class="mv-sel" value="'+esc(p.email)+'">'+
     '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Address</div><textarea id="edAddress" class="mv-sel" rows="2">'+esc(p.address)+'</textarea>'+
     '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Assigned Area</div><select id="edArea" class="mv-sel">'+aHTML+'</select>'+
-    '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Phone (login ID)</div><input class="mv-sel" value="'+esc(p.phone)+'" disabled style="opacity:.6">';
+    '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Phone (login ID)</div><input class="mv-sel" value="'+esc(p.phone)+'" disabled style="opacity:.6">'+
+    '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">New Password (leave blank to keep current)</div><input type="password" id="edPass" class="mv-sel" placeholder="Min 8 characters" autocomplete="new-password">';
   document.getElementById('mActs').innerHTML='<button class="m-btn accept" onclick="saveEditStaff(\''+id+'\')">Save</button><button class="m-btn close" onclick="closeModal()">Close</button>';
   openModalFrame();
   relucide();
@@ -1101,7 +1103,8 @@ function pickEditAvatar(){
   inp.click();
 }
 async function saveEditStaff(id){
-  var r=await callStaffAdmin({action:'update',user_id:id,full_name:document.getElementById('edName').value.trim(),email:document.getElementById('edEmail').value.trim(),address:document.getElementById('edAddress').value.trim(),service_area:document.getElementById('edArea').value,avatar_url:editAvatar});
+  var newPass=document.getElementById('edPass').value.trim();
+  var r=await callStaffAdmin({action:'update',user_id:id,full_name:document.getElementById('edName').value.trim(),email:document.getElementById('edEmail').value.trim(),address:document.getElementById('edAddress').value.trim(),service_area:document.getElementById('edArea').value,avatar_url:editAvatar,password:newPass||null});
   if(r.ok){closeModal();showStaff();}else alert('Error: '+(r.body.error||'failed'));
 }
 
@@ -1111,6 +1114,10 @@ async function callStaffAdmin(payload){
   if(payload.action==='update'){
     url=API_URL+'/api/profiles/'+payload.user_id;method='PATCH';
     body={full_name:payload.full_name,email:payload.email,address:payload.address,service_area:payload.service_area,avatar_url:payload.avatar_url};
+    if(payload.password){body.password=payload.password}
+  }else if(payload.action==='delete'){
+    url=API_URL+'/api/profiles/'+payload.user_id;method='DELETE';
+    body=null;
   }else if(payload.action==='set_active'){
     url=API_URL+'/api/profiles/'+payload.user_id;method='PATCH';
     body={is_active:payload.is_active};
@@ -1124,7 +1131,7 @@ async function callStaffAdmin(payload){
     // create
     body={full_name:payload.full_name,phone:payload.phone,password:payload.password,email:payload.email,address:payload.address,service_area:payload.service_area,avatar_url:payload.avatar_url,role:'staff'};
   }
-  var res=await fetch(url,{method:method,headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(body)});
+  var res=await fetch(url,{method:method,headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:body?JSON.stringify(body):undefined});
   return {ok:res.ok,body:await res.json()};
 }
 async function addStaff(){
@@ -1139,6 +1146,11 @@ async function addStaff(){
 }
 async function setStaffActive(id,active){
   var r=await callStaffAdmin({action:'set_active',user_id:id,is_active:active});
+  if(r.ok)showStaff();else alert('Error: '+(r.body.error||'failed'));
+}
+async function deleteStaff(id,name){
+  if(!confirm('Delete staff "'+name+'"? This cannot be undone.'))return;
+  var r=await callStaffAdmin({action:'delete',user_id:id});
   if(r.ok)showStaff();else alert('Error: '+(r.body.error||'failed'));
 }
 async function resetStaffPassword(id){
