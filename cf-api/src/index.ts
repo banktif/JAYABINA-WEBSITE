@@ -111,12 +111,12 @@ app.all('/api/website/*', (c) => handleWebsiteRoute(c.req.raw, c.env));
 
 app.all('/api/admin/purge-cache', async (c) => {
   if (c.req.raw.method !== 'POST') return err('Method not allowed', 405);
-  const auth = await requireAdmin(c.req.raw, c.env);
-  if (auth) return auth;
-  const token = c.env.CF_PURGE_TOKEN;
-  const zoneId = c.env.CF_ZONE_ID;
-  if (!token || !zoneId) return err('Cloudflare API credentials not configured', 503);
   try {
+    const payload = await requireAuth(c.req.raw, c.env);
+    requireAdmin(payload);
+    const token = c.env.CF_PURGE_TOKEN;
+    const zoneId = c.env.CF_ZONE_ID;
+    if (!token || !zoneId) return err('Cloudflare API credentials not configured', 503);
     const body = await c.req.raw.json().catch(() => ({}));
     const cfBody = body.everything ? { purge_everything: true } : (body.files ? { files: body.files } : { purge_everything: true });
     const cfResp = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`, {
@@ -128,7 +128,7 @@ app.all('/api/admin/purge-cache', async (c) => {
     if (!cfData.success) return err(cfData.errors?.[0]?.message || 'Cloudflare purge failed', 502);
     return ok({ purged: true, result: cfData.result });
   } catch (e: any) {
-    return err('Purge request failed', 502);
+    return err(e && e.msg ? e.msg : (e && e.message ? e.message : 'Purge failed'), (e && e.status) ? e.status : 502);
   }
 });
 
