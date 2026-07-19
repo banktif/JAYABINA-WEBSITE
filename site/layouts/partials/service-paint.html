@@ -107,26 +107,7 @@
     .nav-actions{display:flex;align-items:center;gap:12px}
     .nav-actions .btn{min-height:44px;padding:10px 18px;font-size:.93rem}
     .nav-right{display:flex;align-items:center;gap:10px}
-    .menu-toggle{display:block;width:46px;height:46px;padding:0;border:1px solid var(--grey-200);border-radius:12px;background:var(--white);cursor:pointer}
-    .menu-toggle span{display:block;width:21px;height:2px;margin:4px auto;background:var(--green-950);border-radius:99px;transition:transform .2s ease,opacity .2s ease}
-    .menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
-    .menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
-    .menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-    .mobile-menu{display:none;position:fixed;z-index:99;top:72px;right:max(16px,calc((100vw - var(--container)) / 2));width:min(340px,calc(100vw - 32px));max-height:calc(100dvh - 92px);overflow-y:auto;overscroll-behavior:contain;padding:8px 12px 12px;background:var(--white);border:1px solid var(--grey-200);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.12)}
-    .mobile-menu.open{display:block}
-    .mm-section{border-bottom:1px solid var(--grey-100);margin:0 -12px;padding:0 12px}
-    .mm-section:last-of-type{border-bottom:0}
-    .mm-summary{width:100%;min-height:50px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 6px;border:0;background:0 0;cursor:pointer;color:var(--grey-900);font-weight:700;font-size:.95rem;font-family:inherit;text-align:left;border-radius:10px;transition:background .15s ease}
-    .mm-summary:hover{background:var(--green-50)}
-    .mm-summary::after{content:'+';flex:0 0 28px;width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--grey-50);color:var(--green-700);font-size:1.1rem;font-weight:600;transition:transform .2s ease,background .2s ease}
-    .mm-section.open .mm-summary::after{transform:rotate(45deg);background:var(--green-100)}
-    .mm-links{display:none;padding:0 0 12px 8px}
-    .mm-section.open .mm-links{display:grid;gap:2px}
-    .mm-links a{min-height:42px;display:flex;align-items:center;padding:6px 10px;border-radius:10px;color:var(--grey-700);font-weight:600;font-size:.9rem;transition:background .15s ease}
-    .mm-links a:hover{background:var(--green-50);color:var(--green-800)}
-    .mm-portal{padding:14px 0 6px;display:grid;gap:10px}
-    .mm-portal .btn{min-height:48px;justify-content:flex-start;padding:12px 16px;font-size:.92rem;gap:10px;border-radius:14px}
-    @media(min-width:1024px){.mobile-menu{top:80px}}
+    {{ partial "burger-menu.css" . | safeCSS }}
 
     .hero{min-height:760px;padding:144px 0 78px;background:linear-gradient(135deg,var(--green-950) 0%,var(--green-900) 58%,#126044 100%);color:var(--white);position:relative;overflow:hidden}
     .hero::before{content:'';position:absolute;width:620px;height:620px;border:1px solid rgba(255,255,255,.08);border-radius:50%;right:-190px;top:-250px;box-shadow:0 0 0 90px rgba(255,255,255,.025),0 0 0 180px rgba(255,255,255,.018)}
@@ -387,30 +368,7 @@
       </div>
     </div>
   </nav>
-  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-    <div class="mm-section">
-      <button class="mm-summary" type="button" data-mm-toggle aria-expanded="false">⚙️ Servis Kami</button>
-      <div class="mm-links">
-        <a href="/servis-tukar-atap/">Tukar Atap Baharu</a>
-        <a href="/servis-cuci-tangki-air/">Cuci Tangki Air</a>
-        <a href="/servis-mengecat/">Cat Rumah &amp; Ofis</a>
-      </div>
-    </div>
-    <div class="mm-section">
-      <button class="mm-summary" type="button" data-mm-toggle aria-expanded="false">📄 Halaman Utama</button>
-      <div class="mm-links">
-        <a href="/">Utama</a>
-        <a href="/servis/">Semua Servis</a>
-        <a href="/tentang-kami/">Tentang Kami</a>
-        <a href="/blog/">Blog</a>
-        <a href="/hubungi-kami/">Hubungi</a>
-      </div>
-    </div>
-    <div class="mm-portal">
-      <a class="btn btn-outline" href="https://akaun.jayabina.com/"><span style="font-size:1.1rem">👤</span> Akaun Pelanggan</a>
-      <a class="btn btn-outline" href="https://staff.jayabina.com/"><span style="font-size:1.1rem">🛠️</span> Portal Staff</a>
-    </div>
-  </div>
+  {{ partial "burger-menu.html" . }}
 
   <main>
     <section class="hero" id="hero">
@@ -600,45 +558,7 @@
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-col1">
-          <img src="/logo.png" width="768" height="123" alt="JAYABINA" style="height:30px;width:auto;margin-bottom:12px;display:block">
-          <p>Servis mengecat, tukar atap &amp; cuci tangki air rumah dan ofis. Kuala Lumpur &amp; Selangor.</p>
-          <div class="footer-info">
-            <span>Primex Jaya Bina Solutions</span>
-            <span>JR0188646-T</span>
-          </div>
-        </div>
-        <details class="f-acc">
-          <summary>Servis</summary>
-          <div class="f-links">
-            <a href="/servis-tukar-atap/">Tukar Atap Baharu</a>
-            <a href="/servis-cuci-tangki-air/">Cuci Tangki Air</a>
-            <a href="/servis-mengecat/">Mengecat Rumah &amp; Ofis</a>
-          </div>
-        </details>
-        <details class="f-acc">
-          <summary>Tentang</summary>
-          <div class="f-links">
-            <a href="/">Utama</a>
-            <a href="/tentang-kami/">Tentang Kami</a>
-            <a href="/hubungi-kami/">Hubungi Kami</a>
-          </div>
-        </details>
-        <details class="f-acc">
-          <summary>Informasi</summary>
-          <div class="f-links">
-            <a href="/terma-perkhidmatan/">Terma Perkhidmatan</a>
-            <a href="/dasar-privasi/">Dasar Privasi</a>
-            <a href="/blog/">Blog</a>
-          </div>
-        </details>
-      </div>
-      <div class="footer-bottom"><span>© 2026 Primex Jaya Bina Solutions.</span></div>
-    </div>
-  </footer>
+  {{ partial "footer.html" . }}
 
     
   <script>
