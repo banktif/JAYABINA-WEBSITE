@@ -300,7 +300,7 @@ export async function handleCreateIntent(req: Request, env: Env): Promise<Respon
 
   await db.update(bookings).set({ bayarcashRef: orderRef }).where(eq(bookings.id, booking_id));
 
-  const siteUrl = (env.SITE_URL || 'https://cuci.jayabina.com').replace(/\/$/, '');
+  const siteUrl = (env.SITE_URL || 'https://www.jayabina.com').replace(/\/$/, '');
   const amount = Number(booking.deposit_amount).toFixed(2);
   const payerName = String(booking.customer_name || 'Pelanggan').slice(0, 100);
   const payerEmail = `${booking.id.slice(0, 8)}@jayabina.local`;

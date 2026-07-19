@@ -182,7 +182,7 @@ async function handleCreateBalanceIntent(req: Request, env: Env): Promise<Respon
 
   const orderRef = `BB${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).substring(2,6).toUpperCase()}`.substring(0, 30);
 
-  const siteUrl = (env.SITE_URL || 'https://cuci.jayabina.com').replace(/\/$/, '');
+  const siteUrl = (env.SITE_URL || 'https://www.jayabina.com').replace(/\/$/, '');
   const amount = Number(balanceAmount).toFixed(2);
   const payerName = String(booking.customer_name || 'Pelanggan').slice(0, 100);
   const payerEmail = `${booking.id.slice(0, 8)}@jayabina.local`;

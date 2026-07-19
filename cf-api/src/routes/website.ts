@@ -31,7 +31,7 @@ export const DEFAULT_EDITOR_SITES: WebsiteEditorSite[] = [{
   repo: REPO,
   branch: BRANCH,
   file: 'index.html',
-  live_url: 'https://cuci.jayabina.com/',
+  live_url: 'https://www.jayabina.com/',
   asset_dir: 'assets/editor'
 }, {
   id: 'jayabina-header',

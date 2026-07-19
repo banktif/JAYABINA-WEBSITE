@@ -12,7 +12,6 @@ This section supersedes older Supabase architecture and deploy notes below.
 
 - ⛔ **ADMIN SYSTEM LOCKED (owner order, 2026-07-18):** `admin.jayabina.com` (Pages project `jayabina-admin`, `admin/index.html`, `admin/editor.html`, `admin/vendor/`) must NEVER be deleted, modified, or redeployed without an explicit owner instruction in the current session.
 - Frontend: Cloudflare Pages project `jayaclean` (`jayaclean-29f.pages.dev`). Booking funnel PRIMARY (2026-07-18) di `www.jayabina.com/servis-cuci-tangki-air/`: booking → Bayarcash deposit RM150 → `www.jayabina.com/success.html`. Worker var `SITE_URL=https://www.jayabina.com`.
-- `cuci.jayabina.com` (Worker `jayabina-cuci-router`, `cf-cuci-router/`): `/` dan `/success.html` = 301 ke www (query dikekalkan); `/worker/`, `/customer/`, `/blog/` masih proxy ke Pages `jayaclean`.
 - Portals (2026-07-18): staff → `staff.jayabina.com` (Worker `jayabina-staff-router`, `cf-staff-router/`, serve app `/worker/`); pelanggan → `akaun.jayabina.com` (Worker `jayabina-akaun-router`, `cf-akaun-router/`, serve app `/customer/`). Path lama cuci kekal berfungsi.
 - CI: `.github/workflows/deploy-cloudflare-pages.yml` deploys ALL THREE on push to master: `jayabina` (www, `--branch main`), `jayabina-admin` (`--branch master`), `jayaclean` (cuci booking site, `bash build.sh` then `--branch master`).
 - API: Cloudflare Worker `jayaclean-api` (`cf-api/`). **Canonical public URL: `https://api.jayabina.com`** (Worker custom domain, added 2026-07-18). The legacy `https://jayaclean-api.banktifweb.workers.dev` hostname still works but must not be referenced in frontend code. Do NOT redeploy the Worker under a new name — secrets (Bayarcash, backup, GH_PAT) cannot be copied and payments would break.
@@ -57,12 +56,12 @@ Owner: Abdul Latif / banktifweb@gmail.com
 
 Supabase project ref: `thbscwlcyhcnqsppoyfn` — https://thbscwlcyhcnqsppoyfn.supabase.co
 GitHub repo: `banktif/jayaclean-salespage` (branch `master`)
-Domain: `cuci.jayabina.com` (Cloudflare Pages; CNAME file present for migration)
+Domain: `www.jayabina.com` (Cloudflare Pages; CNAME file present for migration)
 
 ---
 
 ## 3. LOCKED DECISIONS (do not change without explicit owner approval)
-- **Brand name:** JAYACLEAN (renamed from JAYACUCI). Company name **Jaya Bina Services** stays. Domain `cuci.jayabina.com` stays. Logo initials `JC` stay.
+- **Brand name:** JAYACLEAN (renamed from JAYACUCI). Company name **Jaya Bina Services** stays. Domain `www.jayabina.com` stays. Logo initials `JC` stay.
 - **Language:** All admin/staff system UI + docs + code = **English**. WhatsApp message templates = **Bahasa Melayu**. Customer-facing pages (`index.html`, `success.html`, `test-pay.html`) stay **Bahasa Melayu**.
 - **WhatsApp:** Semi-auto `wa.me` (free). No paid gateway. Messages pre-filled, sent with one tap.
 - **Auth:** Supabase Auth. Admin + 50 staff have real accounts. Staff login via phone → synthetic email (`<digits>@staff.jayabina.local`) + password set by admin.
@@ -284,7 +283,7 @@ Deploy Edge Functions + git ops from repo root (`Downloads/Jayaclean`). Manageme
 | `/blog/admin/` | Decap CMS editor |
 
 ### Hugo config (`blog/config.toml`)
-- `baseURL`: `https://cuci.jayabina.com/`
+- `baseURL`: `https://www.jayabina.com/`
 - `disableKinds: ["home"]` — prevents Hugo from generating root `/` (sales page handles root)
 - Custom taxonomies: `kategori`, `tag` (Bahasa Melayu)
 - Permalinks: categories at `/blog/kategori/:slug/`, tags at `/blog/tag/:slug/`
