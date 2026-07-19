@@ -1175,7 +1175,7 @@ async function showWebsite(){
     '<div class="kpi blue"><div class="kpi-ic"><i data-lucide="git-branch"></i></div><div class="kpi-v" id="siteConnect" style="font-size:1rem">Checking...</div><div class="kpi-l">GitHub source</div></div>'+
     '<div class="kpi violet"><div class="kpi-ic"><i data-lucide="sliders-horizontal"></i></div><div class="kpi-v" id="siteConfigStatus" style="font-size:1rem">Loading...</div><div class="kpi-l">Website settings</div></div>'+
     '<div class="kpi amber"><div class="kpi-ic"><i data-lucide="cloud"></i></div><div class="kpi-v" style="font-size:1rem">Cloudflare</div><div class="kpi-l">Hugo publishing</div></div>'+
-    '</div><div class="site-actions"><button class="d-btn acc" onclick="window.open(\'https://www.jayabina.com\',\'_blank\',\'noopener\')"><i data-lucide="external-link"></i> Open live site</button><button class="d-btn" onclick="window.open(\'https://github.com/banktif/JAYABINA-WEBSITE/tree/master/site\',\'_blank\',\'noopener\')"><i data-lucide="git-branch"></i> View source</button><button class="d-btn don" onclick="publishWebsite()"><i data-lucide="rocket"></i> Deploy now</button><button class="d-btn" onclick="newWebsiteArticle()"><i data-lucide="file-plus-2"></i> New article</button></div>'+
+    '</div><div class="site-actions"><button class="d-btn acc" onclick="window.open(\'https://www.jayabina.com\',\'_blank\',\'noopener\')"><i data-lucide="external-link"></i> Open live site</button><button class="d-btn" onclick="window.open(\'https://github.com/banktif/JAYABINA-WEBSITE/tree/master/site\',\'_blank\',\'noopener\')"><i data-lucide="git-branch"></i> View source</button><button class="d-btn don" onclick="publishWebsite()"><i data-lucide="rocket"></i> Deploy now</button><button class="d-btn" onclick="newWebsiteArticle()"><i data-lucide="file-plus-2"></i> New article</button><button class="d-btn" style="background:var(--warning-bg, #fff3cd);color:var(--warning, #856404);border-color:var(--warning)" onclick="purgeCache()" id="purgeCacheBtn"><i data-lucide="zap"></i> Purge CDN Cache</button></div>'+
     '<div class="site-tabs" role="tablist" aria-label="Website management"><button id="siteTabSettings" class="active" onclick="switchWebsiteTab(\'settings\')"><i data-lucide="settings-2"></i><span><b>Settings</b><small>Guided configuration</small></span></button><button id="siteTabVisual" onclick="switchWebsiteTab(\'visual\')"><i data-lucide="panels-top-left"></i><span><b>Visual editor</b><small>GrapesJS · up to 10 websites</small></span></button><button id="siteTabPages" onclick="switchWebsiteTab(\'pages\')"><i data-lucide="file-code-2"></i><span><b>Page HTML</b><small>Paste or upload HTML</small></span></button><button id="siteTabContent" onclick="switchWebsiteTab(\'content\')"><i data-lucide="folder-code"></i><span><b>Content &amp; code</b><small>Markdown, YAML and templates</small></span></button><button id="siteTabDesign" onclick="switchWebsiteTab(\'design\')"><i data-lucide="palette"></i><span><b>Design Spec</b><small>Tokens, sections, buttons</small></span></button></div>'+
     '<div id="siteSettingsView">'+
     '<div class="sGrp" style="margin-bottom:16px"><div class="sGrpH">Water Tank Sales Page Version</div><div class="sFields" style="gap:12px">'+
@@ -1322,6 +1322,19 @@ function newWebsiteArticle(){
   websiteState.files.push({path:path,label:title,group:'Content',mode:'markdown'});websiteState.path=path;websiteState.sha='';websiteState.dirty=true;renderWebsiteFiles();
   switchWebsiteTab('content');
   document.getElementById('siteEmpty').style.display='none';document.getElementById('siteEditorForm').style.display='block';document.getElementById('siteFileLabel').textContent=title;document.getElementById('siteFilePath').textContent=path;document.getElementById('siteFileMode').textContent='MARKDOWN';document.getElementById('siteCode').value=content;document.getElementById('siteEditorMsg').textContent='New draft — save to create it.';
+}
+async function purgeCache(){
+  if(!confirm('Purge seluruh Cloudflare CDN cache untuk jayabina.com? Ini akan memaksa semua pelawat dapat versi terkini.'))return;
+  var btn=document.getElementById('purgeCacheBtn');btn.disabled=true;btn.innerHTML='<i data-lucide="loader"></i> Purging...';
+  try{
+    var res=await fetch(API_URL+'/api/admin/purge-cache',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem('jc_token')},body:JSON.stringify({everything:true})});
+    var body=await res.json();
+    if(!res.ok)throw new Error(body.error||'Purge failed');
+    btn.innerHTML='<i data-lucide="check-circle"></i> Cache purged!';btn.style.background='var(--accent)';btn.style.color='#fff';btn.style.borderColor='var(--accent)';
+    setTimeout(function(){btn.disabled=false;btn.innerHTML='<i data-lucide="zap"></i> Purge CDN Cache';btn.style.background='';btn.style.color='';btn.style.borderColor=''},3000);
+  }catch(e){
+    btn.disabled=false;btn.innerHTML='<i data-lucide="zap"></i> Purge CDN Cache';alert('Purge gagal: '+e.message+'\n\nPastikan CF_PURGE_TOKEN telah diset pada worker.');
+  }
 }
 async function publishWebsite(){
   if(!confirm('Start a fresh Hugo deployment to www.jayabina.com?'))return;var msg=document.getElementById('siteEditorMsg')||document.getElementById('sitePublishMsg');if(msg){msg.className='';msg.textContent='Starting deployment...'}

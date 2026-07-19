@@ -23,7 +23,8 @@
   ],
   "vars": {
     "BAYARCASH_PAYMENT_CHANNEL": "5",
-    "SITE_URL": "https://www.jayabina.com"
+    "SITE_URL": "https://www.jayabina.com",
+    "CF_ZONE_ID": "916289c458db6233106080096fe910ed"
   },
   "routes": [
     {
