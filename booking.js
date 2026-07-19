@@ -1,5 +1,5 @@
 /* ============================================================
-   JAYABINA — Shared Booking + Bayarcash Module (booking.js)
+   JAYACLEAN — Shared Booking + Bayarcash Module (booking.js)
    Drop this into any homepage version. Replaces placeholder
    booking forms with the real Supabase/Bayarcash flow.
    ============================================================ */

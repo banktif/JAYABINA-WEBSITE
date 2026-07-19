@@ -1,5 +1,5 @@
 -- =============================================
--- JAYABINA - Dynamic Slots
+-- JAYACLEAN - Dynamic Slots
 -- Remove hardcoded 4-slot limit. Slots from app_settings.
 -- Multi-booking per slot. Limit per day via max_slots_per_day.
 -- =============================================

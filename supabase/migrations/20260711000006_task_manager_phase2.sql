@@ -1,5 +1,5 @@
 -- =============================================
--- JAYABINA - Task Manager Phase 2
+-- JAYACLEAN - Task Manager Phase 2
 -- Tasks + task_photos + trigger + backfill
 -- (ASCII only - no em dashes)
 -- =============================================

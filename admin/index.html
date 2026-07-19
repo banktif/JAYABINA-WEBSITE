@@ -63,7 +63,7 @@
       .d-sidebar-footer{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px}
       .d-sidebar-footer button{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;color:var(--text3);font-size:.75rem;font-weight:500;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:var(--font);transition:all .15s}
       .d-sidebar-footer button:hover{color:var(--text);background:var(--bg)}
-      .d-main{flex:1;margin-left:260px;padding:28px 32px;width:calc(100vw - 260px);max-width:100vw !important}
+      .d-main{flex:1;margin-left:260px;padding:32px 40px;max-width:1100px}
       .d-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
       .d-hdr h1{font-size:1.6rem;font-weight:800;letter-spacing:-.5px}
       .d-hdr p{font-size:.8rem;color:var(--text3);margin-top:4px}
@@ -327,6 +327,7 @@
       .list{padding:18px 16px 24px}
     }
     @media(min-width:1024px){
+      .d-main{padding:28px 32px}
       .d-hdr{margin-bottom:24px}
       .stats-grid{padding:0;margin-bottom:20px}
       .sec{padding:0 0 14px}
@@ -429,7 +430,6 @@
   <button class="d-nav-item" id="dsWebsite" onclick="showWebsite()"><span class="dni"><i data-lucide="globe-2"></i></span> Website</button>
   <button class="d-nav-item" id="dsSettings" onclick="showSettings()"><span class="dni"><i data-lucide="settings"></i></span> Settings</button>
   <button class="d-nav-item" id="dsBackup" onclick="showBackup()"><span class="dni"><i data-lucide="database-backup"></i></span> Backup</button>
-  <button class="d-nav-item" id="dsNotif" onclick="showNotifications()"><span class="dni"><i data-lucide="radio"></i></span> Live Feed</button>
   <div class="d-sidebar-footer">
     <button onclick="refreshView()"><i data-lucide="refresh-cw"></i> Refresh data</button>
     <button onclick="toggleTheme()"><i data-lucide="sun-moon"></i> Theme</button>
@@ -667,7 +667,7 @@ function clearNav(){document.querySelectorAll('.d-nav-item,.bnav-item').forEach(
 function setNav(id){var el=document.getElementById(id);if(el){el.classList.add('active');el.setAttribute('aria-current','page')}}
 function setHeader(title,sub){var t=document.getElementById('dTitle'),s=document.getElementById('dSub'),m=document.getElementById('mTitleView');if(t)t.textContent=title;if(s)s.textContent=sub;if(m)m.textContent=title;document.title=title+' — JAYABINA';}
 function showBookings(filter){setChrome(true);setHeader('Bookings','All customer bookings');var tm={'today':"Today's Bookings",'pending_payment':'Pending Payment','confirmed':'Confirmed','completed':'Completed'};document.getElementById('secTitle').textContent=tm[filter]||'Bookings';location.hash=filter==='pending_payment'?'#pending':'#bookings';load(filter);}
-function refreshView(){if(currentView==='staff')showStaff();else if(currentView==='settings')showSettings();else if(currentView==='schedule')showSchedule();else if(currentView==='dashboard')showDashboard();else if(currentView==='reports')showReports();else if(currentView==='backup')showBackup();else if(currentView==='customers')showCustomers();else if(currentView==='website')showWebsite();else if(currentView==='notifications')showNotifications();else load(cf);}
+function refreshView(){if(currentView==='staff')showStaff();else if(currentView==='settings')showSettings();else if(currentView==='schedule')showSchedule();else if(currentView==='dashboard')showDashboard();else if(currentView==='reports')showReports();else if(currentView==='backup')showBackup();else if(currentView==='customers')showCustomers();else if(currentView==='website')showWebsite();else load(cf);}
 
 // ═══════════ CUSTOMER CRM ═══════════
 var custState={q:'',status:'',sort:'last',page:0,per:25,total:0,timer:null,sel:{},req:0};
@@ -906,53 +906,11 @@ async function showDashboard(){
     if(!bookings.length)h+='<div class="panel-empty"><i data-lucide="inbox"></i>No bookings yet.</div>';
     else bookings.slice(0,5).forEach(function(b){h+='<div class="mrow" onclick="showModal(\''+b.id+'\')"><span class="mslot">'+ft(b.booking_time)+'</span><div class="mb"><div class="mn">'+esc(b.customer_name)+'</div><div class="ma">'+fd(b.booking_date)+'</div></div>'+badge(b.status)+'</div>';});
     h+='</div>';
-    h+='<div class="panel" style="margin-top:16px"><div class="panel-h"><h3><i data-lucide="radio"></i> Live Feed</h3><button class="lnk" onclick="showNotifications()">View all</button></div><div id="liveFeed"><div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div></div></div>';
     l.innerHTML=h;
-    loadLiveFeed();
   }catch(e){if(viewActive(viewId,'dashboard'))l.innerHTML='<div class="empty"><div class="eicon"><i data-lucide="alert-triangle"></i></div><h2>Error</h2><p>'+esc(errorMessage(e))+'</p></div>';}
 }
 
-async function loadLiveFeed(){
-  try{
-    var token=await authToken();
-    var res=await fetch(API_URL+'/api/notifications?limit=8',{headers:{'Authorization':'Bearer '+token}});
-    var data=await res.json();
-    var feed=document.getElementById('liveFeed');
-    if(!data||!data.length){feed.innerHTML='<div class="panel-empty"><i data-lucide="radio"></i>No events yet.</div>';return}
-    var icons={info:'<i data-lucide="info" style="color:var(--accent2)"></i>',success:'<i data-lucide="check-circle" style="color:var(--accent)"></i>',warning:'<i data-lucide="alert-triangle" style="color:var(--warning)"></i>',danger:'<i data-lucide="x-circle" style="color:var(--danger)"></i>'};
-    var h='';
-    data.forEach(function(n){
-      var t=n.created_at?new Date(n.created_at):new Date();
-      var time=t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');
-      h+='<div class="mrow" style="align-items:flex-start;gap:10px"><span style="flex-shrink:0;margin-top:2px">'+(icons[n.type]||icons.info)+'</span><div style="flex:1;min-width:0"><div style="font-size:.76rem;font-weight:600;line-height:1.35">'+esc(n.message)+'</div></div><span style="font-size:.62rem;color:var(--text3);flex-shrink:0">'+time+'</span></div>';
-    });
-    feed.innerHTML=h||'<div class="panel-empty"><i data-lucide="radio"></i>No events yet.</div>';
-  }catch(e){}
-}
-async function showNotifications(){
-  var viewId=beginView('notifications');setChrome(false);clearNav();
-  setHeader('Live Feed','Workflow event log');location.hash='#notifications';
-  var l=document.getElementById('list');
-  l.innerHTML='<div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div>';
-  try{
-    var token=await authToken();
-    var res=await fetch(API_URL+'/api/notifications?limit=100',{headers:{'Authorization':'Bearer '+token}});
-    var data=await res.json();
-    if(!viewActive(viewId,'notifications'))return;
-    var icons={info:'<i data-lucide="info"></i>',success:'<i data-lucide="check-circle"></i>',warning:'<i data-lucide="alert-triangle"></i>',danger:'<i data-lucide="x-circle"></i>'};
-    var cols={info:'var(--accent2)',success:'var(--accent)',warning:'var(--warning)',danger:'var(--danger)'};
-    var h='<div class="d-card"><table><thead><tr><th style="width:40px"></th><th>Event</th><th>Time</th></tr></thead><tbody>';
-    data.forEach(function(n){
-      var t=n.created_at?new Date(n.created_at):new Date();
-      var ts=t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');
-      var d=fd(t.toISOString().split('T')[0]);
-      h+='<tr><td style="color:'+(cols[n.type]||'var(--text3)')+'">'+icons[n.type]+'</td><td><div style="font-weight:600;font-size:.82rem">'+esc(n.message)+'</div></td><td style="font-size:.7rem;color:var(--text3)">'+d+' '+ts+'</td></tr>';
-    });
-    h+='</tbody></table></div>';
-    if(!data||!data.length)h='<div class="empty"><div class="eicon"><i data-lucide="radio"></i></div><h2>No events</h2><p>Workflow events will appear here automatically.</p></div>';
-    l.innerHTML=h;
-  }catch(e){if(viewActive(viewId,'notifications'))l.innerHTML='<div class="empty"><div class="eicon"><i data-lucide="alert-triangle"></i></div><h2>Error</h2><p>'+esc(errorMessage(e))+'</p></div>';}
-}
+// ═══════════ REPORTS ═══════════
 async function showReports(){
   var viewId=beginView('reports');setChrome(false);clearNav();setNav('dsReports');
   setHeader('Reports','Performance & revenue analytics');location.hash='#reports';
@@ -1096,7 +1054,6 @@ async function showStaff(){
         h+='<button class="d-btn" onclick="openEditStaff(\''+p.id+'\')">Edit</button>';
         h+='<button class="d-btn" onclick="resetStaffPassword(\''+p.id+'\')">Reset PW</button>';
         h+=p.is_active?'<button class="d-btn del" onclick="setStaffActive(\''+p.id+'\',false)">Deactivate</button>':'<button class="d-btn acc" onclick="setStaffActive(\''+p.id+'\',true)">Activate</button>';
-        h+='<button class="d-btn del" onclick="deleteStaff(\''+p.id+'\',\''+esc(p.full_name.replace(/'/g,"\\'"))+'\')">Delete</button>';
         h+='</div></td></tr>';
       });
       h+='</tbody></table></div>';
@@ -1116,7 +1073,7 @@ async function cloudinaryUpload(file,folder){
 function pickStaffAvatar(){
   var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
   inp.onchange=async function(){if(!inp.files||!inp.files[0])return;var prev=document.getElementById('stAvPrev');prev.textContent='...';
-    try{var url=await cloudinaryUpload(inp.files[0],'jayabina/staff');newStaffAvatar=url;prev.innerHTML='<img src="'+url+'">';}
+    try{var url=await cloudinaryUpload(inp.files[0],'jayaclean/staff');newStaffAvatar=url;prev.innerHTML='<img src="'+url+'">';}
     catch(e){alert(e.message);prev.innerHTML='<i data-lucide="user"></i>';relucide();}};
   inp.click();
 }
@@ -1131,8 +1088,7 @@ function openEditStaff(id){
     '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Email</div><input id="edEmail" class="mv-sel" value="'+esc(p.email)+'">'+
     '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Address</div><textarea id="edAddress" class="mv-sel" rows="2">'+esc(p.address)+'</textarea>'+
     '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Assigned Area</div><select id="edArea" class="mv-sel">'+aHTML+'</select>'+
-    '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Phone (login ID)</div><input class="mv-sel" value="'+esc(p.phone)+'" disabled style="opacity:.6">'+
-    '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">New Password (leave blank to keep current)</div><input type="password" id="edPass" class="mv-sel" placeholder="Min 8 characters" autocomplete="new-password">';
+    '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Phone (login ID)</div><input class="mv-sel" value="'+esc(p.phone)+'" disabled style="opacity:.6">';
   document.getElementById('mActs').innerHTML='<button class="m-btn accept" onclick="saveEditStaff(\''+id+'\')">Save</button><button class="m-btn close" onclick="closeModal()">Close</button>';
   openModalFrame();
   relucide();
@@ -1140,13 +1096,12 @@ function openEditStaff(id){
 function pickEditAvatar(){
   var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
   inp.onchange=async function(){if(!inp.files||!inp.files[0])return;var prev=document.getElementById('edAvPrev');prev.textContent='...';
-    try{var url=await cloudinaryUpload(inp.files[0],'jayabina/staff');editAvatar=url;prev.innerHTML='<img src="'+url+'">';}
+    try{var url=await cloudinaryUpload(inp.files[0],'jayaclean/staff');editAvatar=url;prev.innerHTML='<img src="'+url+'">';}
     catch(e){alert(e.message);prev.innerHTML='<i data-lucide="user"></i>';relucide();}};
   inp.click();
 }
 async function saveEditStaff(id){
-  var newPass=document.getElementById('edPass').value.trim();
-  var r=await callStaffAdmin({action:'update',user_id:id,full_name:document.getElementById('edName').value.trim(),email:document.getElementById('edEmail').value.trim(),address:document.getElementById('edAddress').value.trim(),service_area:document.getElementById('edArea').value,avatar_url:editAvatar,password:newPass||null});
+  var r=await callStaffAdmin({action:'update',user_id:id,full_name:document.getElementById('edName').value.trim(),email:document.getElementById('edEmail').value.trim(),address:document.getElementById('edAddress').value.trim(),service_area:document.getElementById('edArea').value,avatar_url:editAvatar});
   if(r.ok){closeModal();showStaff();}else alert('Error: '+(r.body.error||'failed'));
 }
 
@@ -1156,10 +1111,6 @@ async function callStaffAdmin(payload){
   if(payload.action==='update'){
     url=API_URL+'/api/profiles/'+payload.user_id;method='PATCH';
     body={full_name:payload.full_name,email:payload.email,address:payload.address,service_area:payload.service_area,avatar_url:payload.avatar_url};
-    if(payload.password){body.password=payload.password}
-  }else if(payload.action==='delete'){
-    url=API_URL+'/api/profiles/'+payload.user_id;method='DELETE';
-    body=null;
   }else if(payload.action==='set_active'){
     url=API_URL+'/api/profiles/'+payload.user_id;method='PATCH';
     body={is_active:payload.is_active};
@@ -1173,7 +1124,7 @@ async function callStaffAdmin(payload){
     // create
     body={full_name:payload.full_name,phone:payload.phone,password:payload.password,email:payload.email,address:payload.address,service_area:payload.service_area,avatar_url:payload.avatar_url,role:'staff'};
   }
-  var res=await fetch(url,{method:method,headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:body?JSON.stringify(body):undefined});
+  var res=await fetch(url,{method:method,headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(body)});
   return {ok:res.ok,body:await res.json()};
 }
 async function addStaff(){
@@ -1188,11 +1139,6 @@ async function addStaff(){
 }
 async function setStaffActive(id,active){
   var r=await callStaffAdmin({action:'set_active',user_id:id,is_active:active});
-  if(r.ok)showStaff();else alert('Error: '+(r.body.error||'failed'));
-}
-async function deleteStaff(id,name){
-  if(!confirm('Delete staff "'+name+'"? This cannot be undone.'))return;
-  var r=await callStaffAdmin({action:'delete',user_id:id});
   if(r.ok)showStaff();else alert('Error: '+(r.body.error||'failed'));
 }
 async function resetStaffPassword(id){
@@ -1217,7 +1163,7 @@ async function showWebsite(){
     '<div class="kpi blue"><div class="kpi-ic"><i data-lucide="git-branch"></i></div><div class="kpi-v" id="siteConnect" style="font-size:1rem">Checking...</div><div class="kpi-l">GitHub source</div></div>'+
     '<div class="kpi violet"><div class="kpi-ic"><i data-lucide="sliders-horizontal"></i></div><div class="kpi-v" id="siteConfigStatus" style="font-size:1rem">Loading...</div><div class="kpi-l">Website settings</div></div>'+
     '<div class="kpi amber"><div class="kpi-ic"><i data-lucide="cloud"></i></div><div class="kpi-v" style="font-size:1rem">Cloudflare</div><div class="kpi-l">Hugo publishing</div></div>'+
-    '</div><div class="site-actions"><button class="d-btn acc" onclick="window.open(\'https://www.jayabina.com\',\'_blank\',\'noopener\')"><i data-lucide="external-link"></i> Open live site</button><button class="d-btn" onclick="window.open(\'https://github.com/banktif/JAYABINA-WEBSITE/tree/master/site\',\'_blank\',\'noopener\')"><i data-lucide="git-branch"></i> View source</button><button class="d-btn don" onclick="publishWebsite()"><i data-lucide="rocket"></i> Deploy now</button><button class="d-btn" onclick="newWebsiteArticle()"><i data-lucide="file-plus-2"></i> New article</button><button class="d-btn" style="background:var(--warning-bg, #fff3cd);color:var(--warning, #856404);border-color:var(--warning)" onclick="purgeCache()" id="purgeCacheBtn"><i data-lucide="zap"></i> Purge CDN Cache</button></div>'+
+    '</div><div class="site-actions"><button class="d-btn acc" onclick="window.open(\'https://www.jayabina.com\',\'_blank\',\'noopener\')"><i data-lucide="external-link"></i> Open live site</button><button class="d-btn" onclick="window.open(\'https://github.com/banktif/jayaclean-salespage/tree/master/site\',\'_blank\',\'noopener\')"><i data-lucide="git-branch"></i> View source</button><button class="d-btn don" onclick="publishWebsite()"><i data-lucide="rocket"></i> Deploy now</button><button class="d-btn" onclick="newWebsiteArticle()"><i data-lucide="file-plus-2"></i> New article</button></div>'+
     '<div class="site-tabs" role="tablist" aria-label="Website management"><button id="siteTabSettings" class="active" onclick="switchWebsiteTab(\'settings\')"><i data-lucide="settings-2"></i><span><b>Settings</b><small>Guided configuration</small></span></button><button id="siteTabVisual" onclick="switchWebsiteTab(\'visual\')"><i data-lucide="panels-top-left"></i><span><b>Visual editor</b><small>GrapesJS · up to 10 websites</small></span></button><button id="siteTabPages" onclick="switchWebsiteTab(\'pages\')"><i data-lucide="file-code-2"></i><span><b>Page HTML</b><small>Paste or upload HTML</small></span></button><button id="siteTabContent" onclick="switchWebsiteTab(\'content\')"><i data-lucide="folder-code"></i><span><b>Content &amp; code</b><small>Markdown, YAML and templates</small></span></button><button id="siteTabDesign" onclick="switchWebsiteTab(\'design\')"><i data-lucide="palette"></i><span><b>Design Spec</b><small>Tokens, sections, buttons</small></span></button></div>'+
     '<div id="siteSettingsView">'+
     '<div class="sGrp" style="margin-bottom:16px"><div class="sGrpH">Water Tank Sales Page Version</div><div class="sFields" style="gap:12px">'+
@@ -1232,7 +1178,7 @@ async function showWebsite(){
     '<div id="sitePagesView" style="display:none"><div class="panel" style="display:grid;gap:16px"><div class="site-settings-card-head"><span><i data-lucide="file-code-2"></i></span><div><h3>Page HTML Editor</h3><p>Select a service page, paste HTML from Claude Design, or upload an HTML file.</p></div></div><div style="display:grid;gap:12px"><div><label style="font-size:.72rem;color:var(--text2);display:block;margin-bottom:4px">Select page</label><select id="pageSelect" class="mv-sel" onchange="loadPageHTML()"><option value="">-- Pilih page --</option><option value="tank">Tank Sales Page (servis/cuci-tangki-air)</option><option value="roof">Roof Service Page</option><option value="paint">Paint Service Page</option></select></div><div><label style="font-size:.72rem;color:var(--text2);display:block;margin-bottom:4px">HTML code</label><textarea id="pageHTML" class="site-code" style="min-height:400px;font-size:.82rem;font-family:monospace" spellcheck="false" placeholder="Pilih page untuk load HTML, atau paste/upload kod baru..."></textarea></div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="d-btn acc" onclick="savePageHTML()"><i data-lucide="save"></i> Save &amp; Publish</button><label class="d-btn" style="cursor:pointer"><i data-lucide="upload"></i> Upload HTML file<input type="file" id="pageUpload" accept=".html,.htm" style="display:none" onchange="uploadPageHTML(event)"></label><button class="d-btn" onclick="loadPageHTML()"><i data-lucide="refresh-cw"></i> Reload from GitHub</button></div><div id="pageMsg" style="font-size:.78rem;color:var(--text3)">Select a page to get started.</div></div></div></div>'+
     '<div id="siteContentView" style="display:none"><div class="site-shell"><aside class="site-browser panel"><div class="site-browser-head"><div><b>Hugo files</b><span>Safe, version-controlled editing</span></div></div><div id="siteFiles"><div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div></div></aside>'+
     '<section class="site-editor panel"><div class="site-editor-empty" id="siteEmpty"><i data-lucide="file-code-2"></i><b>Select a file to edit</b><span>Content is saved to GitHub and deployed through Cloudflare Pages.</span></div><div id="siteEditorForm" style="display:none"><div class="site-editor-head"><div><div class="site-editor-title" id="siteFileLabel">Hugo file</div><code id="siteFilePath"></code></div><span class="site-mode" id="siteFileMode">MD</span></div><textarea id="siteCode" class="site-code" spellcheck="false" aria-label="Hugo file content"></textarea><div class="site-editor-foot"><span id="siteEditorMsg">No unsaved changes.</span><div><button class="d-btn" onclick="reloadWebsiteFile()"><i data-lucide="rotate-ccw"></i> Reload</button><button class="d-btn acc" id="siteSaveBtn" onclick="saveWebsiteFile()"><i data-lucide="save"></i> Save &amp; publish</button></div></div></div></section></div>'+
-    '<div id="siteDesignView" style="display:none"><div class="panel" style="max-height:calc(100vh - 280px);overflow-y:auto"><span class="site-settings-eyebrow">LOCKED DESIGN SYSTEM — DO NOT EDIT</span><h2>JAYABINA Sales Page Design Spec</h2><p style="color:var(--text2)">Reference: <code>www.jayabina.com/servis/cuci-tangki-air/</code></p><div style="display:grid;gap:8px">'+buildDesignSpec()+'</div></div></div>'+
+    '<div id="siteDesignView" style="display:none"><div class="panel" style="max-height:calc(100vh - 280px);overflow-y:auto"><span class="site-settings-eyebrow">LOCKED DESIGN SYSTEM — DO NOT EDIT</span><h2>JAYACLEAN Sales Page Design Spec</h2><p style="color:var(--text2)">Reference: <code>www.jayabina.com/servis/cuci-tangki-air/</code></p><div style="display:grid;gap:8px">'+buildDesignSpec()+'</div></div></div>'+
     '</div><div class="site-note"><i data-lucide="shield-check"></i><div><b>Protected publishing flow</b><span>Settings are validated and saved as one GitHub commit. Hugo builds the website and Cloudflare publishes it; previous versions remain recoverable in Git history.</span></div></div>';
   try{
     var res=await websiteRequest('/files'),body=await res.json();if(!res.ok)throw new Error(body.error||'Unable to load website manager');
@@ -1301,7 +1247,7 @@ function renderWebsiteSettings(){
   var icons={roof:'home',tank:'waves',paint:'paint-roller'},labels={roof:'Roof replacement',tank:'Water tank cleaning',paint:'House & office painting'};
   s.services.forEach(function(service,index){h+='<details class="site-service-card"'+(index===0?' open':'')+'><summary><span><i data-lucide="'+icons[service.key]+'"></i></span><div><b>'+esc(labels[service.key])+'</b><small>'+esc(service.name)+'</small></div><i data-lucide="chevron-down"></i></summary><div class="site-service-fields">'+siteSettingField('services',index,'name','Service name',service.name,{maxlength:80})+siteSettingField('services',index,'kicker','Kicker',service.kicker,{maxlength:80})+siteSettingField('services',index,'title','Card headline',service.title,{type:'textarea',rows:2,maxlength:180,wide:true})+siteSettingField('services',index,'summary','Summary',service.summary,{type:'textarea',rows:4,maxlength:400,wide:true})+siteSettingField('services',index,'url','Sales page path',service.url,{hint:'Internal URL beginning with /.'})+siteSettingField('services',index,'image','Card image path',service.image,{hint:'Image in site/static, beginning with /.'})+siteSettingField('services',index,'alt','Image alternative text',service.alt,{type:'textarea',rows:2,maxlength:220,wide:true})+'</div></details>'});
   h+='</div></section>';
-  h+='<section class="panel site-settings-card" id="sitePublishing"><div class="site-settings-card-head"><span><i data-lucide="rocket"></i></span><div><h3>Publishing</h3><p>Version control and production deployment details.</p></div></div><div class="site-publish-grid"><div><span>Repository</span><b>banktif/JAYABINA-WEBSITE</b></div><div><span>Source branch</span><b>master</b></div><div><span>Cloudflare project</span><b>jayabina</b></div><div><span>Current source</span><b>'+esc((websiteState.settingsCommit||'').slice(0,7)||'—')+'</b></div></div><div class="site-publish-note"><i data-lucide="git-commit-horizontal"></i><span>Saving creates one atomic commit for Hugo config, company details, homepage SEO and service cards.</span></div><div id="sitePublishMsg" class="site-settings-message">No unsaved changes.</div></section>';
+  h+='<section class="panel site-settings-card" id="sitePublishing"><div class="site-settings-card-head"><span><i data-lucide="rocket"></i></span><div><h3>Publishing</h3><p>Version control and production deployment details.</p></div></div><div class="site-publish-grid"><div><span>Repository</span><b>banktif/jayaclean-salespage</b></div><div><span>Source branch</span><b>master</b></div><div><span>Cloudflare project</span><b>jayabina</b></div><div><span>Current source</span><b>'+esc((websiteState.settingsCommit||'').slice(0,7)||'—')+'</b></div></div><div class="site-publish-note"><i data-lucide="git-commit-horizontal"></i><span>Saving creates one atomic commit for Hugo config, company details, homepage SEO and service cards.</span></div><div id="sitePublishMsg" class="site-settings-message">No unsaved changes.</div></section>';
   h+='</div></div><div class="site-settings-savebar"><div><span id="siteSettingsState">All settings are up to date.</span><small>Changes are validated before they reach GitHub.</small></div><div><button class="d-btn" onclick="resetWebsiteSettings()"><i data-lucide="rotate-ccw"></i> Reset</button><button class="d-btn acc" id="siteSettingsSave" onclick="saveWebsiteSettings()" disabled><i data-lucide="save"></i> Save website settings</button></div></div>';
   el.innerHTML=h;relucide();
 }
@@ -1364,19 +1310,6 @@ function newWebsiteArticle(){
   websiteState.files.push({path:path,label:title,group:'Content',mode:'markdown'});websiteState.path=path;websiteState.sha='';websiteState.dirty=true;renderWebsiteFiles();
   switchWebsiteTab('content');
   document.getElementById('siteEmpty').style.display='none';document.getElementById('siteEditorForm').style.display='block';document.getElementById('siteFileLabel').textContent=title;document.getElementById('siteFilePath').textContent=path;document.getElementById('siteFileMode').textContent='MARKDOWN';document.getElementById('siteCode').value=content;document.getElementById('siteEditorMsg').textContent='New draft — save to create it.';
-}
-async function purgeCache(){
-  if(!confirm('Purge seluruh Cloudflare CDN cache untuk jayabina.com? Ini akan memaksa semua pelawat dapat versi terkini.'))return;
-  var btn=document.getElementById('purgeCacheBtn');btn.disabled=true;btn.innerHTML='<i data-lucide="loader"></i> Purging...';
-  try{
-    var res=await fetch(API_URL+'/api/admin/purge-cache',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem('jc_token')},body:JSON.stringify({everything:true})});
-    var body=await res.json();
-    if(!res.ok)throw new Error(body.error||'Purge failed');
-    btn.innerHTML='<i data-lucide="check-circle"></i> Cache purged!';btn.style.background='var(--accent)';btn.style.color='#fff';btn.style.borderColor='var(--accent)';
-    setTimeout(function(){btn.disabled=false;btn.innerHTML='<i data-lucide="zap"></i> Purge CDN Cache';btn.style.background='';btn.style.color='';btn.style.borderColor=''},3000);
-  }catch(e){
-    btn.disabled=false;btn.innerHTML='<i data-lucide="zap"></i> Purge CDN Cache';alert('Purge gagal: '+e.message+'\n\nPastikan CF_PURGE_TOKEN telah diset pada worker.');
-  }
 }
 async function publishWebsite(){
   if(!confirm('Start a fresh Hugo deployment to www.jayabina.com?'))return;var msg=document.getElementById('siteEditorMsg')||document.getElementById('sitePublishMsg');if(msg){msg.className='';msg.textContent='Starting deployment...'}
@@ -1495,7 +1428,7 @@ function uploadQR(){
     if(!inp.files||!inp.files[0])return;
     var msg=document.getElementById('qrMsg');msg.style.color='var(--text3)';msg.textContent='Uploading...';
     try{
-      var fd2=new FormData();fd2.append('file',inp.files[0]);fd2.append('upload_preset',up);fd2.append('folder','jayabina/qr');
+      var fd2=new FormData();fd2.append('file',inp.files[0]);fd2.append('upload_preset',up);fd2.append('folder','jayaclean/qr');
       var res=await fetch('https://api.cloudinary.com/v1_1/'+cn+'/image/upload',{method:'POST',body:fd2});
       var data=await res.json();
       if(!data.secure_url)throw new Error(data.error?data.error.message:'Upload failed');

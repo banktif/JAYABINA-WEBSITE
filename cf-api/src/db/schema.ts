@@ -64,7 +64,6 @@ export const bookings = sqliteTable('bookings', {
   customerName: text('customer_name').notNull(),
   customerPhone: text('customer_phone').notNull(),
   customerAddress: text('customer_address').notNull(),
-  customerEmail: text('customer_email').default(''),
   bookingDate: text('booking_date').notNull(),
   bookingTime: text('booking_time').notNull(),
   amount: real('amount').notNull().default(300),
@@ -89,8 +88,9 @@ export const slots = sqliteTable('slots', {
   isBooked: integer('is_booked').notNull().default(0),
   bookingId: text('booking_id').references(() => bookings.id)
 }, (table) => [
-   index('idx_slots_date').on(table.date),
-   check('slots_booked_check', sql`${table.isBooked} IN (0,1)`)
+  index('idx_slots_date').on(table.date),
+  uniqueIndex('idx_slots_date_time_booked').on(table.date, table.timeSlot).where(sql`${table.isBooked} = 1`),
+  check('slots_booked_check', sql`${table.isBooked} IN (0,1)`)
 ]);
 
 export const tasks = sqliteTable('tasks', {
@@ -134,18 +134,6 @@ export const backupLog = sqliteTable('backup_log', {
   index('idx_backup_log_dest').on(table.destination, table.createdAt)
 ]);
 
-export const notifications = sqliteTable('notifications', {
-  id: text('id').primaryKey(),
-  type: text('type').notNull().default('info'),
-  message: text('message').notNull().default(''),
-  taskId: text('task_id'),
-  bookingId: text('booking_id'),
-  staffId: text('staff_id'),
-  createdAt: text('created_at').notNull().default(sqliteNow)
-}, (table) => [
-  index('idx_notifications_created').on(table.createdAt)
-]);
-
 export const schema = {
   profiles,
   appSettings,
@@ -155,7 +143,6 @@ export const schema = {
   slots,
   tasks,
   taskPhotos,
-  backupLog,
-  notifications
+  backupLog
 };
 

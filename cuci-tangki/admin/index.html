@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#f5f7f5">
   <link rel="manifest" href="/manifest.json">
-  <title>JAYABINA — Admin</title>
+  <title>JAYACLEAN — Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/theme.css">
   <style>
@@ -352,7 +352,7 @@
 <aside class="d-sidebar" id="dSidebar">
   <div class="d-brand">
     <div class="hdr-logo">JC</div>
-    <div class="d-brand-text"><h1>JAYABINA</h1><span>Admin Panel</span></div>
+    <div class="d-brand-text"><h1>JAYACLEAN</h1><span>Admin Panel</span></div>
   </div>
   <button class="d-nav-item active" id="dsDash" onclick="showDashboard()"><span class="dni"><i data-lucide="layout-dashboard"></i></span> Dashboard</button>
   <button class="d-nav-item" id="dsAll" onclick="showBookings()"><span class="dni"><i data-lucide="layout-grid"></i></span> All Bookings</button>
@@ -390,7 +390,7 @@
 <header class="hdr">
   <div class="hdr-l">
     <div class="hdr-logo">JC</div>
-    <div class="hdr-title"><h1>JAYABINA</h1></div>
+    <div class="hdr-title"><h1>JAYACLEAN</h1></div>
   </div>
   <div class="hdr-r">
     <button class="hdr-btn" onclick="toggleTheme()"><i data-lucide="sun-moon"></i></button>
@@ -403,7 +403,7 @@
 <div class="drawer" id="drawer">
   <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
     <div class="hdr-logo" style="width:36px;height:36px;font-size:.75rem">JC</div>
-    <div><div style="font-weight:700;font-size:.9rem">JAYABINA</div><div style="font-size:.62rem;color:var(--text3)">Admin Panel</div></div>
+    <div><div style="font-weight:700;font-size:.9rem">JAYACLEAN</div><div style="font-size:.62rem;color:var(--text3)">Admin Panel</div></div>
   </div>
   <div class="drawer-menu">
     <button class="drawer-item" onclick="showDashboard();toggleDrawer()"><span><i data-lucide="layout-dashboard"></i></span> Dashboard</button>
@@ -437,7 +437,7 @@
 <!-- ═══════════ AUTH GATE ═══════════ -->
 <div class="login" id="loginOverlay"><div class="login-box">
   <div class="login-avatar">JC</div>
-  <h2>JAYABINA</h2>
+  <h2>JAYACLEAN</h2>
   <p class="sub">Admin Sign In</p>
   <input type="text" id="loginEmail" placeholder="Email" autocomplete="email">
   <input type="password" id="loginPass" placeholder="Password" autocomplete="current-password">
@@ -798,7 +798,7 @@ async function cloudinaryUpload(file,folder){
 function pickStaffAvatar(){
   var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
   inp.onchange=async function(){if(!inp.files||!inp.files[0])return;var prev=document.getElementById('stAvPrev');prev.textContent='...';
-    try{var url=await cloudinaryUpload(inp.files[0],'jayabina/staff');newStaffAvatar=url;prev.innerHTML='<img src="'+url+'">';}
+    try{var url=await cloudinaryUpload(inp.files[0],'jayaclean/staff');newStaffAvatar=url;prev.innerHTML='<img src="'+url+'">';}
     catch(e){alert(e.message);prev.innerHTML='<i data-lucide="user"></i>';relucide();}};
   inp.click();
 }
@@ -821,7 +821,7 @@ function openEditStaff(id){
 function pickEditAvatar(){
   var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
   inp.onchange=async function(){if(!inp.files||!inp.files[0])return;var prev=document.getElementById('edAvPrev');prev.textContent='...';
-    try{var url=await cloudinaryUpload(inp.files[0],'jayabina/staff');editAvatar=url;prev.innerHTML='<img src="'+url+'">';}
+    try{var url=await cloudinaryUpload(inp.files[0],'jayaclean/staff');editAvatar=url;prev.innerHTML='<img src="'+url+'">';}
     catch(e){alert(e.message);prev.innerHTML='<i data-lucide="user"></i>';relucide();}};
   inp.click();
 }
@@ -933,7 +933,7 @@ function uploadQR(){
     if(!inp.files||!inp.files[0])return;
     var msg=document.getElementById('qrMsg');msg.style.color='var(--text3)';msg.textContent='Uploading...';
     try{
-      var fd2=new FormData();fd2.append('file',inp.files[0]);fd2.append('upload_preset',up);fd2.append('folder','jayabina/qr');
+      var fd2=new FormData();fd2.append('file',inp.files[0]);fd2.append('upload_preset',up);fd2.append('folder','jayaclean/qr');
       var res=await fetch('https://api.cloudinary.com/v1_1/'+cn+'/image/upload',{method:'POST',body:fd2});
       var data=await res.json();
       if(!data.secure_url)throw new Error(data.error?data.error.message:'Upload failed');
@@ -1073,12 +1073,12 @@ function completeTask(taskId){
         var payData=await payRes.json();
         var payUrl=payData.url||'';
         if(useAPI){
-          var waRes=await fetch(FN_WA_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({booking_id:b.id,template:'wa_tmpl_balance_link',extra:{baki:settings.price_balance||'150',business:settings.business_name||'JAYABINA'},pay_url:payUrl})});
+          var waRes=await fetch(FN_WA_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({booking_id:b.id,template:'wa_tmpl_balance_link',extra:{baki:settings.price_balance||'150',business:settings.business_name||'JAYACLEAN'},pay_url:payUrl})});
           var waData=await waRes.json();
           if(!waRes.ok||waData.error){alert('WhatsApp API error: '+(waData.error||'failed')+'\nFalling back to manual wa.me.');window.open('https://wa.me/'+waNum(b.customer_phone)+'?text='+encodeURIComponent(payUrl),'_blank')}
         }else{
           var msg=fillTemplate(settings.wa_tmpl_balance_link||settings.wa_tmpl_baki||'Salam {nama}, kerja cuci tangki air di {alamat} telah siap. Sila lengkapkan baki RM{baki} melalui pautan: {pay_url}. Terima kasih {business}.',{
-            nama:b.customer_name,alamat:b.customer_address,baki:settings.price_balance||'150',bank:settings.bank_name||'',akaun:settings.bank_account_no||'',pemegang:settings.bank_account_holder||'',qr_url:settings.qr_image_url||'',business:settings.business_name||'JAYABINA',pay_url:payUrl
+            nama:b.customer_name,alamat:b.customer_address,baki:settings.price_balance||'150',bank:settings.bank_name||'',akaun:settings.bank_account_no||'',pemegang:settings.bank_account_holder||'',qr_url:settings.qr_image_url||'',business:settings.business_name||'JAYACLEAN',pay_url:payUrl
           });
           window.open('https://wa.me/'+waNum(b.customer_phone)+'?text='+encodeURIComponent(msg),'_blank');
         }

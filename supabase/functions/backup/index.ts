@@ -184,7 +184,7 @@ Deno.serve(async (req: Request) => {
       const doR2 = r2Configured && (force || isDue(C.backup_last_r2_at, C.backup_freq_r2 || "daily"));
       if (!doDrive && !doR2) return json({ status: "ok", data: { skipped: true, reason: driveConfigured || r2Configured ? "not due" : "no destination configured" } });
 
-      const dump: Record<string, unknown> = { _meta: { project: "jayabina", at: new Date().toISOString() } };
+      const dump: Record<string, unknown> = { _meta: { project: "jayaclean", at: new Date().toISOString() } };
       let total = 0;
       for (const t of TABLES) { const rows = await fetchAll(sb, t); dump[t] = rows; total += rows.length; }
       const gz = await gzipBytes(JSON.stringify(dump));
@@ -234,8 +234,8 @@ Deno.serve(async (req: Request) => {
       if (!ghpat) return json({ error: "GH_PAT not configured" }, 400);
       const version = String(body.version || "").toLowerCase().replace(/[^a-z0-9]/g, "");
       if (["v1", "v2", "v3"].indexOf(version) < 0) return json({ error: "invalid version" }, 400);
-      const repo = "banktif/JAYABINA-WEBSITE";
-      const ghHeaders = { Authorization: "Bearer " + ghpat, Accept: "application/vnd.github+json",       "User-Agent": "jayabina-home" };
+      const repo = "banktif/jayaclean-salespage";
+      const ghHeaders = { Authorization: "Bearer " + ghpat, Accept: "application/vnd.github+json", "User-Agent": "jayaclean-home" };
       const srcR = await fetch("https://api.github.com/repos/" + repo + "/contents/home/" + version + ".html", { headers: ghHeaders });
       const src = await srcR.json();
       if (!src.content) return json({ error: "source home/" + version + ".html not found" }, 404);
@@ -254,7 +254,7 @@ Deno.serve(async (req: Request) => {
     if (action === "code") {
       const ghpat = Deno.env.get("GH_PAT");
       if (!ghpat) return json({ error: "GH_PAT not configured" }, 400);
-      const res = await fetch("https://api.github.com/repos/banktif/JAYABINA-WEBSITE/actions/workflows/mirror-to-gitlab.yml/dispatches", { method: "POST", headers: { Authorization: "Bearer " + ghpat, Accept: "application/vnd.github+json",         "User-Agent": "jayabina-backup", "X-GitHub-Api-Version": "2022-11-28" }, body: JSON.stringify({ ref: "master" }) });
+      const res = await fetch("https://api.github.com/repos/banktif/jayaclean-salespage/actions/workflows/mirror-to-gitlab.yml/dispatches", { method: "POST", headers: { Authorization: "Bearer " + ghpat, Accept: "application/vnd.github+json", "User-Agent": "jayaclean-backup", "X-GitHub-Api-Version": "2022-11-28" }, body: JSON.stringify({ ref: "master" }) });
       const ok = res.status === 204;
       await setKV(sb, "backup_last_code_at", new Date().toISOString());
       await setKV(sb, "backup_last_code_status", ok ? "triggered" : ("error " + res.status));

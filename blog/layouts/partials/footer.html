@@ -1,40 +1,23 @@
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-col1">
-        <img src="/logo.png" width="768" height="123" alt="JAYABINA" style="height:30px;width:auto;margin-bottom:12px;display:block">
-        <p>Servis tukar atap, cuci tangki air &amp; mengecat rumah dan ofis. Kuala Lumpur &amp; Selangor.</p>
-        <div class="footer-info">
-          <span>Primex Jaya Bina Solutions</span>
-          <span>JR0188646-T</span>
-        </div>
-      </div>
-      <details class="f-acc">
-        <summary>Servis</summary>
-        <div class="f-links">
-          <a href="/servis-tukar-atap/">Tukar Atap Baharu</a>
-          <a href="/servis-cuci-tangki-air/">Cuci Tangki Air</a>
-          <a href="/servis-mengecat/">Mengecat Rumah &amp; Ofis</a>
-        </div>
-      </details>
-      <details class="f-acc">
-        <summary>Tentang</summary>
-        <div class="f-links">
-          <a href="/">Utama</a>
-          <a href="/tentang-kami/">Tentang Kami</a>
-          <a href="/hubungi-kami/">Hubungi Kami</a>
-        </div>
-      </details>
-      <details class="f-acc">
-        <summary>Informasi</summary>
-        <div class="f-links">
-          <a href="/terma-perkhidmatan/">Terma Perkhidmatan</a>
-          <a href="/dasar-privasi/">Dasar Privasi</a>
-          <a href="/blog/">Blog</a>
-        </div>
-      </details>
+<footer class="blog-footer">
+  <div class="blog-footer-inner">
+    <div class="blog-footer-col">
+      <span class="blog-footer-brand">JAYACLEAN</span>
+      <p class="blog-footer-desc">Servis cuci tangki air profesional. Oleh {{ .Site.Params.businessName }}.</p>
     </div>
-    <div class="footer-bottom"><span>&copy; {{ now.Format "2006" }} Primex Jaya Bina Solutions.</span></div>
+    <div class="blog-footer-col">
+      <strong>Pautan</strong>
+      <a href="https://cuci.jayabina.com/">Laman Utama</a>
+      <a href="/blog/">Blog</a>
+      <a href="https://cuci.jayabina.com/#tempah">Tempah Servis</a>
+    </div>
+    <div class="blog-footer-col">
+      <strong>Kategori</strong>
+      {{ range first 5 .Site.Taxonomies.kategori.ByCount }}
+      <a href="{{ .Page.Permalink }}">{{ .Page.Title }}</a>
+      {{ end }}
+    </div>
   </div>
-  <script>function footerAcc(){var d=window.matchMedia('(min-width:768px)').matches;document.querySelectorAll('.f-acc').forEach(function(a){a.open=d;a.classList.toggle('static',d)})}footerAcc();window.addEventListener('resize',footerAcc);</script>
+  <div class="blog-footer-bottom">
+    <p>&copy; {{ now.Format "2006" }} {{ .Site.Params.businessName }}. Hak cipta terpelihara.</p>
+  </div>
 </footer>

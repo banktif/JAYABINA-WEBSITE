@@ -5,7 +5,7 @@ import { createDb } from '../db/client';
 import { appSettings } from '../db/schema';
 import { eq, sql } from 'drizzle-orm';
 
-const REPO = 'banktif/JAYABINA-WEBSITE';
+const REPO = 'banktif/jayaclean-salespage';
 const BRANCH = 'master';
 const MAX_CONTENT_BYTES = 500_000;
 const EDITOR_SITES_KEY = 'website_visual_editor_sites_v1';
@@ -26,8 +26,8 @@ export type WebsiteEditorSite = {
 };
 
 export const DEFAULT_EDITOR_SITES: WebsiteEditorSite[] = [{
-  id: 'jayabina-sales',
-    name: 'JAYABINA Sales Page',
+  id: 'jayaclean-sales',
+  name: 'JAYACLEAN Sales Page',
   repo: REPO,
   branch: BRANCH,
   file: 'index.html',
@@ -756,8 +756,8 @@ export function editorProtectReason(repo: string, file: string): string {
   if (EDITOR_SYSTEM_SEGMENT.test(normalizedFile)) return 'App and system pages are protected from visual editing';
   const base = normalizedFile.split('/').pop()?.toLowerCase() || '';
   if (['admin.html', 'worker.html', 'customer.html', 'login.html', 'staff.html', 'dashboard.html'].includes(base)) return 'App and system pages are protected from visual editing';
-  if (/JAYABINA-WEBSITE$/i.test(normalizedRepo) && !(normalizedFile.toLowerCase() === 'index.html' || /^home\/[a-z0-9_.-]+\.html?$/i.test(normalizedFile))) {
-    return 'Only the public sales page and home page variants are editable in the JAYABINA repository';
+  if (/jayaclean-salespage$/i.test(normalizedRepo) && !(normalizedFile.toLowerCase() === 'index.html' || /^home\/[a-z0-9_.-]+\.html?$/i.test(normalizedFile))) {
+    return 'Only the public sales page and home page variants are editable in the JAYACLEAN repository';
   }
   return '';
 }

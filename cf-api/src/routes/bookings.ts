@@ -3,29 +3,7 @@ import type { Env } from '../types';
 import { json, err, ok, uuid, nowISO, normPhone, todayStr } from '../utils/helpers';
 import { requireAuth } from '../utils/middleware';
 import { createDb, type AppDb } from '../db/client';
-import { appSettings, bookings, customers, notifications, profiles, slots, tasks } from '../db/schema';
-
-// WhatsApp notification helper (mirrors tasks.ts logic for fire-and-forget)
-async function sendWa(env: Env, phone: string, message: string): Promise<void> {
-  let digits = String(phone).replace(/\D/g, '');
-  if (digits.startsWith('0')) digits = '6' + digits;
-  if (!digits.startsWith('60')) digits = '60' + digits;
-  try {
-    if (env.WA_PHONE_NUMBER_ID && env.WA_ACCESS_TOKEN) {
-      await fetch(`https://graph.facebook.com/v22.0/${env.WA_PHONE_NUMBER_ID}/messages`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${env.WA_ACCESS_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messaging_product: 'whatsapp', to: digits, type: 'text', text: { body: message } })
-      });
-    }
-  } catch {}
-}
-async function notifyAdmins(env: Env, db: AppDb, message: string): Promise<void> {
-  try {
-    const admins = await db.select({ phone: profiles.phone }).from(profiles).where(eq(profiles.role, 'admin'));
-    for (const a of admins) { if (a.phone) await sendWa(env, a.phone, message); }
-  } catch {}
-}
+import { appSettings, bookings, customers, profiles, slots, tasks } from '../db/schema';
 
 const bookingFields = {
   id: bookings.id,
@@ -34,7 +12,6 @@ const bookingFields = {
   customer_name: bookings.customerName,
   customer_phone: bookings.customerPhone,
   customer_address: bookings.customerAddress,
-  customer_email: bookings.customerEmail,
   booking_date: bookings.bookingDate,
   booking_time: bookings.bookingTime,
   amount: bookings.amount,
@@ -120,7 +97,7 @@ export async function handleBookings(req: Request, env: Env, path: string): Prom
   // POST /api/bookings - public booking creation
   if (path === '/api/bookings' && req.method === 'POST') {
     const body = await req.json() as any;
-    const { customer_name, customer_phone, customer_address, customer_email, booking_date, booking_time } = body;
+    const { customer_name, customer_phone, customer_address, booking_date, booking_time } = body;
 
     if (!customer_name || !customer_phone || !customer_address || !booking_date || !booking_time) {
       return err('Missing required fields: customer_name, customer_phone, customer_address, booking_date, booking_time');
@@ -137,6 +114,10 @@ export async function handleBookings(req: Request, env: Env, path: string): Prom
     const existing = await db.select({ cnt: count() }).from(slots)
       .where(and(eq(slots.date, booking_date), eq(slots.isBooked, 1))).get();
     if (existing && existing.cnt >= maxSlots) return err('No slots available for this date', 409);
+    const existingSlot = await db.select({ id: slots.id }).from(slots).where(and(
+      eq(slots.date, booking_date), eq(slots.timeSlot, booking_time), eq(slots.isBooked, 1)
+    )).get();
+    if (existingSlot) return err('This time slot is already booked', 409);
 
     const priceTotal = parseFloat(await getSetting(db, 'price_total') || '300');
     const priceDeposit = parseFloat(await getSetting(db, 'price_deposit') || '150');
@@ -151,24 +132,24 @@ export async function handleBookings(req: Request, env: Env, path: string): Prom
     let cust = await db.select({ id: customers.id }).from(customers).where(eq(customers.phone, phoneDigits)).get();
     if (!cust) {
       const custId = uuid();
-      await db.insert(customers).values({ id: custId, phone: phoneDigits, name: customer_name, email: (customer_email||'').trim(), address: customer_address });
+      await db.insert(customers).values({ id: custId, phone: phoneDigits, name: customer_name, address: customer_address });
       cust = { id: custId };
     } else {
-      await db.update(customers).set({ name: customer_name, email: (customer_email||'').trim(), address: customer_address }).where(eq(customers.id, cust.id));
+      await db.update(customers).set({ name: customer_name, address: customer_address }).where(eq(customers.id, cust.id));
     }
 
     try {
       await db.batch([
         db.insert(bookings).values({
           id: bookingId, customerName: customer_name, customerPhone: phoneDigits,
-          customerAddress: customer_address, customerEmail: (customer_email||'').trim(),
-          bookingDate: booking_date, bookingTime: booking_time,
+          customerAddress: customer_address, bookingDate: booking_date, bookingTime: booking_time,
           amount: priceTotal, depositAmount: priceDeposit, customerId: cust.id,
           createdAt: now, updatedAt: now
         }),
         db.insert(slots).values({ id: slotId, date: booking_date, timeSlot: booking_time, isBooked: 1, bookingId })
       ]);
     } catch (e: any) {
+      if (String(e?.message || e).includes('UNIQUE constraint')) return err('This time slot is already booked', 409);
       throw e;
     }
 
@@ -215,11 +196,12 @@ export async function handleBookings(req: Request, env: Env, path: string): Prom
         const allowedSlots = (await getSetting(db, 'slots') || '9am,11am,2pm,4pm').split(',').map(s => s.trim()).filter(Boolean);
         if (!allowedSlots.includes(nextTime)) return err('Invalid booking time');
       }
-      if (body.booking_date !== undefined || body.booking_time !== undefined) {
-        const slot = await db.select({ id: slots.id }).from(slots).where(eq(slots.bookingId, bookingId)).get();
-        if (slot) {
-          await db.update(slots).set({ date: nextDate, timeSlot: nextTime }).where(eq(slots.bookingId, bookingId));
-        }
+      if (body.booking_date !== undefined || body.booking_time !== undefined || body.status === 'confirmed') {
+        const conflict = await db.select({ booking_id: slots.bookingId }).from(slots).where(and(
+          eq(slots.date, nextDate), eq(slots.timeSlot, nextTime), eq(slots.isBooked, 1),
+          sql`${slots.bookingId} <> ${bookingId}`
+        )).get();
+        if (conflict) return err('This time slot is already booked', 409);
       }
 
       const updates: Partial<typeof bookings.$inferInsert> = { updatedAt: now };
@@ -236,35 +218,8 @@ export async function handleBookings(req: Request, env: Env, path: string): Prom
 
             // Auto-assign if enabled
             const autoEnabled = await getSetting(db, 'auto_assign_enabled');
-            if (autoEnabled !== 'false') {
-              const r = await autoAssignTask(db, taskId);
-              if (r.assigned && r.staffId) {
-                const b = await db.select({
-                  customer_name: bookings.customerName, customer_address: bookings.customerAddress,
-                  booking_date: bookings.bookingDate, booking_time: bookings.bookingTime
-                }).from(bookings).where(eq(bookings.id, bookingId)).get();
-                const s = await db.select({ full_name: profiles.fullName, phone: profiles.phone })
-                  .from(profiles).where(eq(profiles.id, r.staffId)).get();
-                if (s?.phone) {
-                  sendWa(env, s.phone,
-                    `🔔 NEW JOB: ${b?.customer_name || 'Customer'}\n`
-                    + `${b?.booking_date} ${b?.booking_time} — ${b?.customer_address || ''}\n`
-                    + `Please check dashboard to accept.`
-                  ).catch(() => {});
-                }
-                notifyAdmins(env, db,
-                  `📋 New booking ASSIGNED\n`
-                  + `${b?.customer_name || 'Customer'} → ${s?.full_name || r.staffId}\n`
-                  + `${b?.booking_date} ${b?.booking_time}`
-                ).catch(() => {});
-                try {
-                  await db.insert(notifications).values({
-                    id: uuid(), type: 'info',
-                    message: `Assigned to ${s?.full_name || r.staffId}: ${b?.customer_name || 'Customer'} — ${b?.booking_date} ${b?.booking_time}`,
-                    taskId: taskId, bookingId, staffId: r.staffId
-                  });
-                } catch {}
-              }
+            if (autoEnabled === 'true') {
+              await autoAssignTask(db, taskId);
             }
           } else if (existingTask.status === 'cancelled') {
             await db.update(tasks).set({
@@ -278,13 +233,24 @@ export async function handleBookings(req: Request, env: Env, path: string): Prom
       if (body.customer_name !== undefined) updates.customerName = body.customer_name;
       if (body.customer_phone !== undefined) updates.customerPhone = normPhone(body.customer_phone);
       if (body.customer_address !== undefined) updates.customerAddress = body.customer_address;
-      if (body.customer_email !== undefined) updates.customerEmail = (body.customer_email||'').trim();
       if (body.notes !== undefined) updates.notes = body.notes;
       if (body.booking_date !== undefined) updates.bookingDate = body.booking_date;
       if (body.booking_time !== undefined) updates.bookingTime = body.booking_time;
 
       await db.update(bookings).set(updates).where(eq(bookings.id, bookingId));
 
+      if (body.booking_date !== undefined || body.booking_time !== undefined) {
+        const slot = await db.select({ id: slots.id }).from(slots).where(eq(slots.bookingId, bookingId)).get();
+        if (slot) {
+          await db.update(slots).set({ date: nextDate, timeSlot: nextTime }).where(eq(slots.bookingId, bookingId));
+        } else {
+          await db.insert(slots).values({
+            id: uuid(), date: nextDate, timeSlot: nextTime,
+            isBooked: body.status === 'cancelled' || current.status === 'cancelled' ? 0 : 1,
+            bookingId
+          });
+        }
+      }
       if (body.status === 'cancelled') {
         await db.update(slots).set({ isBooked: 0 }).where(eq(slots.bookingId, bookingId));
         await db.update(tasks).set({ status: 'cancelled', updatedAt: now })
@@ -434,35 +400,8 @@ export async function handleBayarcashCallback(req: Request, env: Env): Promise<R
         await db.insert(tasks).values({ id: taskId, bookingId: booking.id, status: 'unassigned' });
 
         const autoEnabled = await getSetting(db, 'auto_assign_enabled');
-        if (autoEnabled !== 'false') {
-          const r = await autoAssignTask(db, taskId);
-          if (r.assigned && r.staffId) {
-            const b = await db.select({
-              customer_name: bookings.customerName, customer_address: bookings.customerAddress,
-              booking_date: bookings.bookingDate, booking_time: bookings.bookingTime
-            }).from(bookings).where(eq(bookings.id, booking.id)).get();
-            const s = await db.select({ full_name: profiles.fullName, phone: profiles.phone })
-              .from(profiles).where(eq(profiles.id, r.staffId)).get();
-            if (s?.phone) {
-              sendWa(env, s.phone,
-                `🔔 NEW JOB: ${b?.customer_name || 'Customer'}\n`
-                + `${b?.booking_date} ${b?.booking_time} — ${b?.customer_address || ''}\n`
-                + `Please check dashboard to accept.`
-              ).catch(() => {});
-            }
-            notifyAdmins(env, db,
-              `📋 New booking ASSIGNED (paid)\n`
-              + `${b?.customer_name || 'Customer'} → ${s?.full_name || r.staffId}\n`
-              + `${b?.booking_date} ${b?.booking_time}`
-            ).catch(() => {});
-            try {
-              await db.insert(notifications).values({
-                id: uuid(), type: 'success',
-                message: `Paid & assigned to ${s?.full_name || r.staffId}: ${b?.customer_name || 'Customer'} — ${b?.booking_date} ${b?.booking_time}`,
-                taskId: taskId, bookingId: booking.id, staffId: r.staffId
-              });
-            } catch {}
-          }
+        if (autoEnabled === 'true') {
+          await autoAssignTask(db, taskId);
         }
       }
     }
@@ -540,15 +479,13 @@ async function getSetting(db: AppDb, key: string): Promise<string> {
   return row?.value || '';
 }
 
-export async function autoAssignTask(db: AppDb, taskId: string, excludeStaffId?: string): Promise<{ assigned: boolean; staffId?: string }> {
+async function autoAssignTask(db: AppDb, taskId: string): Promise<boolean> {
   const rule = await getSetting(db, 'auto_assign_rule') || 'round_robin';
   const task = await db.select({ id: tasks.id }).from(tasks)
     .where(and(eq(tasks.id, taskId), sql`${tasks.assignedTo} IS NULL`)).get();
   if (!task) return false;
 
   let staff: { id: string } | null = null;
-
-  const excludeClause = excludeStaffId ? sql`AND p.id <> ${excludeStaffId}` : sql``;
 
   if (rule === 'area_based') {
     const job = await db.select({ customer_address: bookings.customerAddress }).from(tasks)
@@ -558,7 +495,6 @@ export async function autoAssignTask(db: AppDb, taskId: string, excludeStaffId?:
         SELECT p.id FROM profiles p
         WHERE p.role = 'staff' AND p.is_active = 1 AND p.service_area <> ''
           AND lower(${job.customer_address}) LIKE '%' || lower(p.service_area) || '%'
-          ${excludeClause}
         ORDER BY (SELECT COUNT(*) FROM tasks t WHERE t.assigned_to = p.id AND t.status IN ('assigned','in_progress','awaiting_review')) ASC
         LIMIT 1
       `) || null;
@@ -568,7 +504,7 @@ export async function autoAssignTask(db: AppDb, taskId: string, excludeStaffId?:
   if (!staff && rule === 'least_loaded') {
     staff = await db.get<{ id: string }>(sql`
       SELECT p.id FROM profiles p
-      WHERE p.role = 'staff' AND p.is_active = 1 ${excludeClause}
+      WHERE p.role = 'staff' AND p.is_active = 1
       ORDER BY (SELECT COUNT(*) FROM tasks t WHERE t.assigned_to = p.id AND t.status IN ('assigned','in_progress','awaiting_review')) ASC
       LIMIT 1
     `) || null;
@@ -576,7 +512,7 @@ export async function autoAssignTask(db: AppDb, taskId: string, excludeStaffId?:
     // round_robin: staff assigned least recently (or never)
     staff = await db.get<{ id: string }>(sql`
       SELECT p.id FROM profiles p
-      WHERE p.role = 'staff' AND p.is_active = 1 ${excludeClause}
+      WHERE p.role = 'staff' AND p.is_active = 1
       ORDER BY COALESCE((SELECT MAX(t.created_at) FROM tasks t WHERE t.assigned_to = p.id), '1970-01-01') ASC
       LIMIT 1
     `) || null;
@@ -585,9 +521,9 @@ export async function autoAssignTask(db: AppDb, taskId: string, excludeStaffId?:
   if (staff) {
     await db.update(tasks).set({ assignedTo: staff.id, status: 'assigned', updatedAt: nowISO() })
       .where(eq(tasks.id, taskId));
-    return { assigned: true, staffId: staff.id };
+    return true;
   }
-  return { assigned: false };
+  return false;
 }
 
 export async function handleDistributeUnassigned(req: Request, env: Env): Promise<Response> {
@@ -600,7 +536,7 @@ export async function handleDistributeUnassigned(req: Request, env: Env): Promis
       .where(and(sql`${tasks.assignedTo} IS NULL`, eq(tasks.status, 'unassigned')));
     let count = 0;
     for (const task of unassignedTasks) {
-      if ((await autoAssignTask(db, task.id)).assigned) count++;
+      if (await autoAssignTask(db, task.id)) count++;
     }
     return ok({ assigned: count });
   } catch (e: any) {

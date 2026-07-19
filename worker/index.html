@@ -3,315 +3,96 @@
 <head>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
   <meta name="robots" content="noindex,nofollow">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="theme-color" content="#f5f7f5">
-  <script>
-    (function(){
-      var saved=localStorage.getItem('theme');
-      var mode=saved==='dark'||saved==='light'?saved:'light';
-      document.documentElement.className=mode;
-      document.querySelector('meta[name=theme-color]').content=mode==='dark'?'#0a0f0a':'#f5f7f5';
-    })();
-  </script>
-  <title>JAYABINA &mdash; Worker Portal</title>
+  <meta name="theme-color" content="#166534">
+  <title>JAYACLEAN — Worker</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/theme.css?v=20260717-grapes-full1">
+  <link rel="stylesheet" href="/theme.css">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    html,body{overflow-x:hidden;scrollbar-width:none;-ms-overflow-style:none}
-    html::-webkit-scrollbar,body::-webkit-scrollbar{display:none}
-    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
-    ::selection{background:var(--accent);color:#fff}
-
-    @media(max-width:1023px){
-      body{padding:60px 0 80px 0;overflow-x:hidden}
-      .hdr{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--overlay);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-bottom:1px solid var(--border);height:56px;padding:0 16px;display:flex!important;align-items:center;justify-content:space-between;width:100%}
-      .hdr-l{display:flex;align-items:center;gap:8px;width:auto}
-      .bnav{display:flex}.d-hdr,.d-sidebar,.d-only,.mnav{display:none}
-    }
-    .hdr{display:none}
-    .hdr-l{display:flex;align-items:center;gap:10px;flex:1}
-    .hdr-logo{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#16a34a);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;letter-spacing:-.3px;box-shadow:0 4px 12px var(--accent-glow);flex-shrink:0}
-    .hdr-title h1{font-size:1.35rem;font-weight:800;letter-spacing:-.6px;line-height:36px;text-align:left}
-    .hdr-title span{font-size:.6rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.8px}
-    .hdr-r{display:flex;gap:6px;flex-shrink:0}
-    .hdr-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--border-strong);background:var(--elevated);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all .2s;box-shadow:0 1px 2px rgba(0,0,0,.03)}
-    .hdr-btn:active{transform:scale(.93);background:var(--border)}
-
-    @media(min-width:1024px){
-      body{display:flex;min-height:100vh;padding:0}
-      .d-sidebar{display:flex;flex-direction:column;width:260px;min-width:260px;background:var(--elevated);border-right:1px solid var(--border);padding:24px 16px;position:fixed;top:0;left:0;bottom:0;z-index:60;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
-      .d-sidebar::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}
-      .hdr,.bnav,.drawer,.drawer-overlay,.mnav{display:none!important}
-      .d-brand{display:flex;align-items:center;gap:12px;padding:0 8px 24px;border-bottom:1px solid var(--border);margin-bottom:20px}
-      .d-brand .hdr-logo{width:44px;height:44px;border-radius:16px;font-size:.95rem}
-      .d-brand-text h1{font-size:1.05rem;font-weight:700;letter-spacing:-.3px;line-height:1.2}
-      .d-brand-text span{font-size:.64rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.8px}
-      .d-nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--text2);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:var(--font);margin-bottom:2px}
-      .d-nav-item:hover{background:var(--bg);color:var(--text)}
-      .d-nav-item.active{background:var(--accent-light);color:var(--accent)}
-      .d-nav-item .dni{font-size:1.1rem;width:24px;text-align:center}
-      .d-sidebar-footer{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px}
-      .d-sidebar-footer button{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;color:var(--text3);font-size:.75rem;font-weight:500;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:var(--font);transition:all .15s}
-      .d-sidebar-footer button:hover{color:var(--text);background:var(--bg)}
-      .d-main{flex:1;margin-left:260px;padding:32px 40px;max-width:900px}
-      .d-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
-      .d-hdr h1{font-size:1.6rem;font-weight:800;letter-spacing:-.5px}
-      .d-hdr p{font-size:.8rem;color:var(--text3);margin-top:4px}
-      .hdr{display:none}.bnav{display:none}.modal{left:260px}
-    }
-
-    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:20px}
-    @media(min-width:1024px){.stats-grid{padding:0;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}}
-    .stat{background:var(--elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 16px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:all .25s;cursor:pointer}
-    .stat:active{transform:scale(.97)}
-    .stat:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px)}
-    @media(min-width:1024px){.stat{padding:28px 24px;border-radius:18px}}
-    .stat-icon{font-size:1.4rem;margin-bottom:8px;opacity:.8}@media(min-width:1024px){.stat-icon{font-size:1.8rem;margin-bottom:12px}}
-    .stat-val{font-size:2rem;font-weight:800;letter-spacing:-1.5px;line-height:1}@media(min-width:1024px){.stat-val{font-size:2.6rem}}
-    .stat-lbl{font-size:.64rem;color:var(--text3);margin-top:6px;font-weight:600;text-transform:uppercase;letter-spacing:.6px}
-    .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-    .stat.active .stat-val{color:var(--accent2)}.stat.active::before{background:var(--accent2)}
-    .stat.total .stat-val{color:var(--accent)}.stat.total::before{background:var(--accent)}
-    .stat.done .stat-val{color:var(--accent2)}.stat.done::before{background:var(--accent2)}
-
-    .sec{padding:0 20px 12px;display:flex;align-items:center;justify-content:space-between}
-    @media(min-width:1024px){.sec{padding:0 0 16px;margin-bottom:0}}
-    .sec-title{font-size:.68rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.2px}
-    .sec-count{font-size:.62rem;color:var(--text3);background:var(--border-strong);padding:2px 8px;border-radius:20px;font-weight:600}
-
-    @media(max-width:1023px){
-      .list{padding:0 16px;display:flex;flex-direction:column;gap:10px}
-      .card{background:var(--elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:center;cursor:pointer;transition:all .2s}
-      .card:active{transform:scale(.985);border-color:var(--accent)}
-      .card-body{flex:1;min-width:0}
-      .card-meta{display:flex;align-items:center;gap:8px;margin-bottom:5px}
-      .card-date{font-size:.72rem;font-weight:600;color:var(--text2);background:var(--bg);padding:3px 10px;border-radius:20px;white-space:nowrap}
-      .card-name{font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:1px;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-      .card-addr{font-size:.7rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
-      .card-phone{font-size:.7rem;color:var(--accent);font-weight:600}
-      .qact{display:flex;gap:6px;margin-top:10px}
-      .qact-btn{flex:1;border:1px solid var(--border-strong);background:transparent;color:var(--text2);padding:8px 0;border-radius:8px;font-size:.66rem;font-weight:700;cursor:pointer;text-align:center;transition:all .15s;font-family:var(--font)}
-      .qact-btn:active{transform:scale(.96)}
-      .qact-btn.accept{color:var(--accent);border-color:var(--accent)}.qact-btn.accept:active,.qact-btn.accept:hover{background:var(--accent);color:#fff}
-      .qact-btn.done{color:var(--accent2);border-color:var(--accent2)}.qact-btn.done:active,.qact-btn.done:hover{background:var(--accent2);color:#fff}
-    }
-
-    @media(min-width:1024px){
-      .list{padding:0;display:flex;flex-direction:column;gap:0}
-      table{width:100%;border-collapse:collapse}
-      thead th{padding:12px 16px;text-align:left;font-size:.66rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border);background:var(--bg)}
-      thead th:first-child{border-radius:12px 0 0 0}thead th:last-child{border-radius:0 12px 0 0}
-      tbody td{padding:14px 16px;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
-      tbody tr{background:var(--elevated);transition:background .12s;cursor:pointer}
-      tbody tr:hover{background:var(--border)}
-      .d-card{background:var(--elevated);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
-      .d-name strong{font-weight:700;letter-spacing:-.2px}
-      .d-addr{color:var(--text3);font-size:.74rem;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-      .d-date{padding:4px 10px;background:var(--bg);border-radius:20px;font-size:.7rem;font-weight:600;color:var(--text2);white-space:nowrap;display:inline-block}
-      .d-dot{display:inline-block;margin:0 6px;color:var(--text3)}
-      .d-acts{display:flex;gap:6px}
-      .d-btn{padding:8px 15px;border:1px solid var(--border-strong);border-radius:10px;font-size:.72rem;font-weight:700;cursor:pointer;background:transparent;color:var(--text2);transition:all .12s;font-family:var(--font);white-space:nowrap}
-      .d-btn:hover{border-color:var(--accent);color:var(--accent)}
-      .d-btn.acc:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
-      .d-btn.don:hover{background:var(--accent2);color:#fff;border-color:var(--accent2)}
-    }
-
-    .badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:.64rem;font-weight:600;text-transform:none;letter-spacing:.1px;white-space:nowrap}
+    html{overflow-x:hidden;scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar{display:none}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;padding-bottom:40px;scrollbar-width:none;-ms-overflow-style:none}body::-webkit-scrollbar{display:none}
+    .hdr{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+    .hdr-l{display:flex;align-items:center;gap:10px}
+    .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#16a34a);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem}
+    .hdr h1{font-size:.95rem;font-weight:700;line-height:1.1}.hdr .who{font-size:.62rem;color:var(--text3);font-weight:600}
+    .hbtn{padding:8px 14px;border-radius:10px;border:1px solid var(--border-strong);background:var(--elevated);color:var(--danger);font-family:var(--font);font-weight:700;font-size:.7rem;cursor:pointer}
+    .wrap{max-width:640px;margin:0 auto;padding:16px}
+    .filters{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}
+    .fpill{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid transparent;background:var(--accent-light);color:var(--text2);font-size:.74rem;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap}
+    .fpill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .daygrp{font-size:.66rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:16px 2px 8px}
+    .job{background:var(--elevated);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:all .15s;box-shadow:var(--shadow)}
+    .job:active{transform:scale(.99);border-color:var(--accent)}
+    .job .slot{font-size:.72rem;font-weight:700;color:var(--text2);background:var(--bg);padding:6px 10px;border-radius:12px;white-space:nowrap;text-align:center;min-width:62px}
+    .job .jb{flex:1;min-width:0}
+    .job .jn{font-weight:700;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .job .ja{font-size:.72rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:.6rem;font-weight:600;text-transform:none;white-space:nowrap}
     .badge .bd{width:6px;height:6px;border-radius:50%;background:currentColor}
     .badge.assigned{background:var(--accent2-light);color:var(--accent2)}
     .badge.in_progress{background:var(--warning-light);color:var(--warning)}
     .badge.awaiting_review{background:var(--warning-light);color:var(--warning)}
     .badge.completed{background:var(--accent-light);color:var(--accent)}
-    .badge.cancelled{background:var(--danger-light);color:var(--danger)}
-    @media(min-width:1024px){.badge{font-size:.66rem;padding:5px 14px}}
-
-    .empty{text-align:center;padding:64px 20px}.empty .eicon{font-size:2.8rem;margin-bottom:12px;opacity:.7}.empty h2{font-size:.95rem;font-weight:700;margin-bottom:4px}.empty p{color:var(--text3);font-size:.78rem}
-    .spin{display:flex;align-items:center;justify-content:center;padding:48px;gap:6px}.spin-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:sp 1.4s infinite}.spin-dot:nth-child(2){animation-delay:.2s}.spin-dot:nth-child(3){animation-delay:.4s}@keyframes sp{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1.3)}}
-
-    @media(max-width:1023px){
-      .modal{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:flex-end;justify-content:center;padding:10px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
-      .modal.show{display:flex}.modal.show .m-sheet{animation:mu .3s cubic-bezier(.16,1,.3,1)}
-      @keyframes mu{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
-      .m-sheet{background:var(--elevated);border:1px solid var(--border-strong);border-radius:24px 24px 0 0;padding:24px 20px 32px;width:100%;max-width:448px;max-height:82dvh;overflow-y:auto;box-shadow:0 -4px 24px rgba(0,0,0,.08)}
-    }
-    @media(min-width:1024px){
-      .modal{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
-      .modal.show{display:flex}.modal.show .m-sheet{animation:mdScale .2s cubic-bezier(.16,1,.3,1)}
-      @keyframes mdScale{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
-      .m-sheet{background:var(--elevated);border:1px solid var(--border-strong);border-radius:24px;padding:32px;width:480px;max-height:80vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.12)}
-    }
-    .m-sheet h3{font-size:1rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;letter-spacing:-.2px}
-    .m-dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
-    .m-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);font-size:.78rem}@media(min-width:1024px){.m-row{font-size:.82rem}}
-    .m-row:last-child{border:none}.m-row .mk{color:var(--text3);font-weight:500}.m-row .mv{color:var(--text);font-weight:600;text-align:right;max-width:65%;word-break:break-word}
-    .m-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}
-    .m-btn{padding:12px;border:none;border-radius:10px;font-weight:700;font-size:.74rem;cursor:pointer;transition:all .15s;font-family:var(--font);letter-spacing:-.1px}
-    .m-btn:active{transform:scale(.97)}.m-btn.accept{background:var(--accent);color:#fff}.m-btn.done{background:var(--accent2);color:#fff}.m-btn.wa{background:#25D366;color:#fff}.m-btn.close{background:var(--border-strong);color:var(--text);grid-column:1/-1}
-
-    .thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
-    .thumb{border-radius:10px;overflow:hidden;background:var(--bg);aspect-ratio:1;border:1px solid var(--border)}
+    .empty{text-align:center;padding:60px 20px;color:var(--text3)}.empty .ei{font-size:2.6rem;margin-bottom:10px}
+    .spin{display:flex;justify-content:center;padding:48px;gap:6px}.sd{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:sp 1.4s infinite}.sd:nth-child(2){animation-delay:.2s}.sd:nth-child(3){animation-delay:.4s}@keyframes sp{0%,80%,100%{opacity:.2}40%{opacity:1}}
+    /* Detail overlay */
+    .ov{position:fixed;inset:0;background:var(--bg);z-index:60;overflow-y:auto;display:none}
+    .ov.show{display:block}
+    .ov-hdr{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:5}
+    .ov-hdr button{background:none;border:none;font-size:1.3rem;color:var(--text);cursor:pointer}
+    .ov-hdr h2{font-size:.95rem;font-weight:700}
+    .ov-body{max-width:640px;margin:0 auto;padding:16px}
+    .card{background:var(--elevated);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+    .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:.82rem}.row:last-child{border:none}.row .k{color:var(--text3)}.row .v{font-weight:600;text-align:right;max-width:62%}
+    .abtn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-family:var(--font);font-weight:700;font-size:.9rem;cursor:pointer;margin-top:10px;text-align:center}
+    .abtn.primary{background:var(--accent);color:#fff}.abtn.primary:disabled{opacity:.5}
+    .abtn.blue{background:var(--accent2);color:#fff}.abtn.wa{background:#25D366;color:#fff}
+    .abtn.ghost{background:var(--elevated);border:1px solid var(--border-strong);color:var(--text2)}
+    .sec-h{font-size:.78rem;font-weight:700;margin:6px 0 10px;display:flex;align-items:center;justify-content:space-between}
+    .thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .thumb{aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--bg);border:1px solid var(--border)}
     .thumb img{width:100%;height:100%;object-fit:cover}
-    .up{border:2px dashed var(--border-strong);border-radius:12px;padding:14px;text-align:center;color:var(--text3);font-size:.76rem;cursor:pointer;margin-top:8px;font-family:var(--font)}
+    .up{border:2px dashed var(--border-strong);border-radius:12px;padding:18px;text-align:center;color:var(--text3);font-size:.8rem;cursor:pointer}
     .up.busy{opacity:.6;pointer-events:none}
-    .note{font-size:.76rem;color:var(--text3);text-align:center;padding:12px;background:var(--accent-light);color:var(--accent);border-radius:12px;font-weight:600;margin-top:8px}
-
-    .filters{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;padding:0 20px}
-    @media(min-width:1024px){.filters{padding:0}}
-    .filters::-webkit-scrollbar{display:none}
-    .fpill{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid transparent;background:var(--accent-light);color:var(--text2);font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .15s}
-    .fpill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-    .fpill:active{transform:scale(.96)}
-
-    .mnav{background:var(--overlay);border-bottom:1px solid var(--border);padding:8px 16px 10px;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;display:none}
-    .mnav::-webkit-scrollbar{display:none}
-    .mnav-item{flex-shrink:0;padding:7px 16px;border-radius:20px;border:1px solid transparent;background:var(--accent-light);color:var(--text2);font-size:.7rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:var(--font)}
-    .mnav-item.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-    .mnav-item:active{transform:scale(.96)}
-
-    .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;opacity:0;pointer-events:none;transition:opacity .25s}
-    .drawer-overlay.open{opacity:1;pointer-events:auto}
-    .drawer{position:fixed;top:0;right:0;bottom:0;width:280px;max-width:85vw;background:var(--elevated);z-index:60;transform:translateX(100%);transition:transform .25s cubic-bezier(.16,1,.3,1);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
-    .drawer::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}
-    .drawer.open{transform:translateX(0)}
-    .drawer-menu{padding:8px}
-    .drawer-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;color:var(--text2);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .12s;border:none;background:none;width:100%;text-align:left;font-family:var(--font)}
-    .drawer-item:hover{background:var(--bg);color:var(--text)}
-    .drawer-item span{width:24px;text-align:center;font-size:1rem}
-    .bnav{position:fixed;bottom:0;left:0;right:0;background:var(--overlay);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 16px;z-index:50}
-    @media(max-width:1023px){.bnav{display:flex}}
-    @supports(padding-bottom:env(safe-area-inset-bottom)){.bnav{padding-bottom:calc(8px + env(safe-area-inset-bottom))}}
-    .bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--text3);cursor:pointer;padding:6px 14px;transition:all .2s;font-family:var(--font);position:relative}
-    .bnav-item.active{color:var(--accent)}.bnav-item.active::after{content:'';position:absolute;top:-8px;width:20px;height:2px;border-radius:2px;background:var(--accent)}
-    .bnav-item .bni{font-size:1.25rem}.bnav-item.active .bni{transform:translateY(-1px)}
-    .bnav-item .bnl{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
-
-    .login{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;transition:background .4s;padding:20px}
-    .login.hidden{display:none}
-    .login-box{width:320px;max-width:90vw;text-align:center}
-    .login-avatar{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,var(--accent),#16a34a);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:1.6rem;font-weight:800;color:#fff;box-shadow:0 8px 24px var(--accent-glow)}
-    .login-box h2{font-size:1.2rem;font-weight:700;margin-bottom:6px;letter-spacing:-.2px}
-    .login-box .sub{font-size:.76rem;color:var(--text3);margin-bottom:24px}
-    .login-box input{width:100%;padding:15px 18px;background:var(--elevated);border:1px solid var(--border-strong);border-radius:14px;color:var(--text);font-family:var(--font);font-size:.88rem;margin-bottom:12px;outline:none;text-align:center;transition:all .2s;box-shadow:0 1px 2px rgba(0,0,0,.03)}
-    .login-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
-    .login-box .err{color:var(--danger);font-size:.7rem;margin-bottom:6px;display:none}
-    .login-box button{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:14px;font-weight:700;font-size:.88rem;cursor:pointer;transition:all .2s;font-family:var(--font);box-shadow:0 4px 12px var(--accent-glow);letter-spacing:-.1px}
-    .login-box button:active{transform:scale(.97);opacity:.9}
-    .login-note{font-size:.62rem;color:var(--text3);margin-top:16px;line-height:1.5}
-
-    .drawer{background:var(--menu-bg)}
-    .hdr,.bnav{background:var(--menu-bg)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
-    .d-sidebar{background:#14532d}
-    .d-brand{position:sticky;top:0;z-index:2;background:#14532d;border-bottom-color:rgba(255,255,255,.14)}
-    .d-brand-text h1{color:#fff}
-    .d-brand-text span{color:rgba(255,255,255,.6)}
-    .d-nav-item{color:rgba(255,255,255,.82)}
-    .d-nav-item .dni{color:inherit}
-    .d-nav-item:hover{background:rgba(255,255,255,.09);color:#fff}
-    .d-nav-item.active{background:rgba(255,255,255,.16);color:#fff}
-    .d-nav-item.active .dni{color:#fff}
-    .d-sidebar-footer{border-top-color:rgba(255,255,255,.14)}
-    .d-sidebar-footer button{color:rgba(255,255,255,.72)}
-    .d-sidebar-footer button:hover{background:rgba(255,255,255,.09);color:#fff}
-    .d-nav-label{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.45);padding:16px 12px 6px}
-    .cloud-status{font-size:.64rem;font-weight:600;color:var(--accent2);background:var(--accent2-light);padding:3px 10px;border-radius:20px;display:inline-block}
+    .note{font-size:.78rem;color:var(--text3);text-align:center;padding:14px;background:var(--accent-light);color:var(--accent);border-radius:12px;font-weight:600}
+    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:12px 20px;border-radius:30px;font-size:.8rem;font-weight:600;z-index:100;opacity:0;transition:opacity .2s;pointer-events:none}
+    .toast.show{opacity:1}
+    .login{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px}
   </style>
 </head>
 <body>
-
-<!-- DESKTOP SIDEBAR -->
-<aside class="d-sidebar" id="dSidebar">
-  <div class="d-brand">
-    <div class="hdr-logo">JC</div>
-    <div class="d-brand-text"><h1>JAYABINA</h1><span>Worker Portal</span></div>
-  </div>
-  <div class="d-nav-label">Work</div>
-  <button class="d-nav-item active" id="dsActive" onclick="setFilter('active')"><span class="dni"><i data-lucide="briefcase"></i></span> Active Jobs</button>
-  <button class="d-nav-item" id="dsToday" onclick="setFilter('today')"><span class="dni"><i data-lucide="calendar"></i></span> Today</button>
-  <button class="d-nav-item" id="dsAll" onclick="setFilter('all')"><span class="dni"><i data-lucide="layout-grid"></i></span> All Jobs</button>
-  <button class="d-nav-item" id="dsDone" onclick="setFilter('completed')"><span class="dni"><i data-lucide="check-check"></i></span> Completed</button>
-  <div class="d-sidebar-footer">
-    <button onclick="toggleTheme()"><i data-lucide="sun-moon"></i> Theme</button>
-    <button onclick="logout()" style="color:#fca5a5"><i data-lucide="log-out"></i> Log out</button>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<div class="d-main" id="dMain">
-  <div class="d-hdr">
-    <div><h1 id="dTitle">My Jobs</h1><p id="dSub">Assigned tasks and service records</p></div>
-    <div class="d-hdr-actions"><span class="cloud-status">Active</span></div>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat total" onclick="setFilter('active')"><div class="stat-icon"><i data-lucide="briefcase"></i></div><div class="stat-val" id="sActive">0</div><div class="stat-lbl">Active</div></div>
-    <div class="stat active" onclick="setFilter('today')"><div class="stat-icon"><i data-lucide="calendar"></i></div><div class="stat-val" id="sToday">0</div><div class="stat-lbl">Today</div></div>
-    <div class="stat done" onclick="setFilter('completed')"><div class="stat-icon"><i data-lucide="check-check"></i></div><div class="stat-val" id="sDone">0</div><div class="stat-lbl">Completed</div></div>
-  </div>
-
-  <div class="sec"><span class="sec-title" id="secTitle">Jobs</span><span class="sec-count" id="secCount">0</span></div>
-  <div class="list" id="list"><div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div></div>
+<div class="login" id="loading"><div class="logo">JC</div><h2 style="font-size:1rem;font-weight:700;margin-top:8px">JAYACLEAN</h2><p class="sub" style="font-size:.74rem;color:var(--text3);margin-top:4px">Worker Sign In</p>
+  <input type="text" id="loginPhone" placeholder="Phone number" autocomplete="tel" style="padding:12px;border:2px solid var(--border-strong);border-radius:12px;font-family:var(--font);font-size:.85rem;width:260px;text-align:center;background:var(--elevated);color:var(--text)">
+  <input type="password" id="loginPass" placeholder="Password" autocomplete="current-password" style="padding:12px;border:2px solid var(--border-strong);border-radius:12px;font-family:var(--font);font-size:.85rem;width:260px;text-align:center;background:var(--elevated);color:var(--text)">
+  <div id="authErr" style="color:var(--danger);font-size:.72rem;text-align:center;display:none;max-width:260px"></div>
+  <button id="loginBtn" onclick="doLogin()" style="padding:12px 40px;background:var(--accent);color:#fff;border:none;border-radius:14px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:var(--font)">Sign In</button>
 </div>
 
-<!-- MOBILE HEADER -->
-<header class="hdr">
-  <div class="hdr-l">
-    <div class="hdr-logo">JC</div>
-    <div class="hdr-title"><h1 id="mTitleView">My Jobs</h1><span>JAYABINA</span></div>
-  </div>
-  <div class="hdr-r">
-    <button class="hdr-btn" onclick="toggleTheme()" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
-    <button class="hdr-btn" id="burgerBtn" onclick="toggleDrawer()" aria-label="Open menu"><i data-lucide="menu"></i></button>
-  </div>
+<header class="hdr" id="hdr" style="display:none">
+  <div class="hdr-l"><div class="logo">JC</div><div><h1>My Jobs</h1><div class="who" id="who"></div></div></div>
+  <button class="hbtn" onclick="logout()">Logout</button>
 </header>
 
-<!-- DRAWER -->
-<div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
-<div class="drawer" id="drawer">
-  <div class="drawer-head" style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
-    <div class="hdr-logo" style="width:40px;height:40px;font-size:.75rem">JC</div>
-    <div><div style="font-weight:800;font-size:.95rem">JAYABINA</div><div class="drawer-sub" style="font-size:.68rem;color:var(--text3)">Worker Portal</div></div>
+<div class="wrap" id="wrap" style="display:none">
+  <div class="filters" id="filters">
+    <button class="fpill active" data-f="active" onclick="setFilter('active')">Active</button>
+    <button class="fpill" data-f="today" onclick="setFilter('today')">Today</button>
+    <button class="fpill" data-f="all" onclick="setFilter('all')">All</button>
+    <button class="fpill" data-f="completed" onclick="setFilter('completed')">Done</button>
   </div>
-  <div class="drawer-menu">
-    <button class="drawer-item" onclick="setFilter('active');toggleDrawer()"><span><i data-lucide="briefcase"></i></span> Active Jobs</button>
-    <button class="drawer-item" onclick="setFilter('today');toggleDrawer()"><span><i data-lucide="calendar"></i></span> Today</button>
-    <button class="drawer-item" onclick="setFilter('all');toggleDrawer()"><span><i data-lucide="layout-grid"></i></span> All Jobs</button>
-    <button class="drawer-item" onclick="setFilter('completed');toggleDrawer()"><span><i data-lucide="check-check"></i></span> Completed</button>
-  </div>
-  <div class="drawer-menu" style="border-top:1px solid var(--border);padding-top:8px">
-    <button class="drawer-item" onclick="toggleTheme();toggleDrawer()"><span><i data-lucide="sun-moon"></i></span> Theme</button>
-    <button class="drawer-item" onclick="logout()" style="color:var(--danger)"><span><i data-lucide="log-out"></i></span> Log out</button>
-  </div>
+  <div id="jobs"></div>
 </div>
 
-<!-- MOBILE BOTTOM NAV -->
-<nav class="bnav">
-  <button class="bnav-item active" id="navActive" onclick="setFilter('active')"><span class="bni"><i data-lucide="briefcase"></i></span><span class="bnl">Active</span></button>
-  <button class="bnav-item" id="navToday" onclick="setFilter('today')"><span class="bni"><i data-lucide="calendar"></i></span><span class="bnl">Today</span></button>
-  <button class="bnav-item" id="navDone" onclick="setFilter('completed')"><span class="bni"><i data-lucide="check-check"></i></span><span class="bnl">Done</span></button>
-  <button class="bnav-item" id="navMore" onclick="toggleDrawer()"><span class="bni"><i data-lucide="menu"></i></span><span class="bnl">More</span></button>
-</nav>
+<!-- JOB DETAIL OVERLAY -->
+<div class="ov" id="ov">
+  <div class="ov-hdr"><button onclick="closeJob()"><i data-lucide="arrow-left"></i></button><h2 id="ovTitle">Job</h2></div>
+  <div class="ov-body" id="ovBody"></div>
+</div>
 
-<!-- MODAL -->
-<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="m-sheet"><h3 id="mTitle"></h3><div id="mBody"></div><div class="m-acts" id="mActs"></div></div></div>
-
-<!-- LOGIN -->
-<div class="login" id="loginOverlay"><div class="login-box">
-  <div class="login-avatar">JC</div>
-  <h2>JAYABINA</h2>
-  <p class="sub">Worker Sign In</p>
-  <input type="tel" id="loginPhone" placeholder="Phone number" autocomplete="tel">
-  <input type="password" id="loginPass" placeholder="Password" autocomplete="current-password">
-  <div class="err" id="authErr">Invalid credentials</div>
-  <button onclick="doLogin()">Sign in</button>
-  <p class="login-note">Jaya Bina Services &middot; Staff Portal</p>
-</div></div>
+<div class="toast" id="toast"></div>
 
 <script src="/jc-api.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -328,33 +109,13 @@ function ft(t){return t?t.replace('am',':00 AM').replace('pm',':00 PM').replace(
 function today(){var n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')}
 function waNum(p){p=(p||'').replace(/[^0-9]/g,'');if(p.indexOf('0')===0)p='6'+p.substring(1);return p}
 function mapsUrl(a){return'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a||'')}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2200)}
 function badge(s){var m={assigned:'Assigned',in_progress:'In Progress',awaiting_review:'In Review',completed:'Completed',unassigned:'Unassigned',cancelled:'Cancelled'};return'<span class="badge '+s+'"><span class="bd"></span>'+(m[s]||s)+'</span>'}
 
-// THEME
-var theme=document.documentElement.classList.contains('dark')?'dark':'light';
-function applyTheme(t){
-  var h=document.documentElement;h.classList.remove('light','dark');
-  h.classList.add(t==='dark'?'dark':'light');
-  var d=h.classList.contains('dark');
-  document.querySelector('meta[name=theme-color]').content=d?'#0a0f0a':'#f5f8f6';
-  relucide();
-}
-function toggleTheme(){
-  var h=document.documentElement;
-  theme=h.classList.contains('dark')?'light':'dark';
-  localStorage.setItem('theme',theme);applyTheme(theme);
-}
+async function loadSettings(){try{var {data}=await SB.from('app_settings').select('*');settings={};(data||[]).forEach(function(s){settings[s.key]=s.value})}catch(e){}}
 
-function toggleDrawer(){
-  var d=document.getElementById('drawer'),o=document.getElementById('drawerOverlay'),b=document.getElementById('burgerBtn');
-  var open=!d.classList.contains('open');
-  d.classList.toggle('open',open);o.classList.toggle('open',open);
-  if(b)b.setAttribute('aria-expanded',open?'true':'false');
-}
-
-// LOGIN
 async function doLogin(){
-  var msg=document.getElementById('authErr'),btn=document.querySelector('.login-box button');
+  var msg=document.getElementById('authErr'),btn=document.getElementById('loginBtn');
   var phone=document.getElementById('loginPhone').value.trim();
   var pw=document.getElementById('loginPass').value;
   if(!phone||!pw){msg.style.display='block';msg.textContent='Enter phone and password';return}
@@ -362,11 +123,10 @@ async function doLogin(){
   msg.style.display='none';btn.disabled=true;btn.textContent='Signing in...';
   try{
     var resp=await SB.auth.signInWithPassword({phone:digits,password:pw});
-    if(resp.error||resp.status!=='ok'){msg.style.display='block';msg.textContent=resp.error||'Login failed';btn.disabled=false;btn.textContent='Sign in';return}
+    if(resp.error||resp.status!=='ok'){msg.style.display='block';msg.textContent=resp.error||'Login failed';btn.disabled=false;btn.textContent='Sign In';return}
     await checkAccess();
-  }catch(e){msg.style.display='block';msg.textContent=e.message;btn.disabled=false;btn.textContent='Sign in'}
+  }catch(e){msg.style.display='block';msg.textContent=e.message;btn.disabled=false;btn.textContent='Sign In'}
 }
-
 async function checkAccess(){
   try{
     var p=await SB.auth.getUser();
@@ -374,43 +134,36 @@ async function checkAccess(){
     if(!p.is_active){SB.auth.signOut();showLogin();return}
     if(p.role==='admin'){location.href='/admin/';return}
     profile=p;me={id:p.id};
-    if(p.avatar_url){var lg=document.querySelector('.hdr .hdr-logo');if(lg){lg.style.overflow='hidden';lg.innerHTML='<img src="'+p.avatar_url+'" style="width:100%;height:100%;object-fit:cover">';}}
+    document.getElementById('who').textContent=(p.full_name||'Worker')+(p.service_area?' \u2022 '+p.service_area:'');
+    if(p.avatar_url){var lg=document.querySelector('.hdr .logo');if(lg){lg.style.overflow='hidden';lg.innerHTML='<img src="'+p.avatar_url+'" style="width:100%;height:100%;object-fit:cover">';}}
     await loadSettings();
-    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('loading').style.display='none';
+    document.getElementById('hdr').style.display='flex';
+    document.getElementById('wrap').style.display='block';
     await loadJobs();
   }catch(e){showLogin()}
 }
-
-function showLogin(){document.getElementById('loginOverlay').classList.remove('hidden')}
+function showLogin(){document.getElementById('loading').style.display='flex';document.getElementById('hdr').style.display='none';document.getElementById('wrap').style.display='none';document.getElementById('authErr').style.display='none'}
 async function logout(){SB.auth.signOut();location.reload()}
-async function loadSettings(){try{var {data}=await SB.from('app_settings').select('*');settings={};(data||[]).forEach(function(s){settings[s.key]=s.value})}catch(e){}}
+checkAccess();relucide();
 
 async function loadJobs(){
-  var l=document.getElementById('list');
-  l.innerHTML='<div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div>';
+  var j=document.getElementById('jobs');
+  j.innerHTML='<div class="spin"><div class="sd"></div><div class="sd"></div><div class="sd"></div></div>';
   try{
     var tq=await SB.from('tasks').select('*').eq('assigned_to',me.id);
     var tasks=(tq.data||[]).filter(function(t){return t.status!=='cancelled'});
     var bmap={};
-    tasks.forEach(function(t){bmap[t.booking_id]={id:t.booking_id,customer_name:t.customer_name,customer_phone:t.customer_phone,customer_address:t.customer_address,booking_date:t.booking_date,booking_time:t.booking_time}});
+    (tasks).forEach(function(t){bmap[t.booking_id]={id:t.booking_id,customer_name:t.customer_name,customer_phone:t.customer_phone,customer_address:t.customer_address,booking_date:t.booking_date,booking_time:t.booking_time}});
     jobs=tasks.map(function(t){return{t:t,b:bmap[t.booking_id]||{}}}).filter(function(x){return x.b&&x.b.id});
     var tids=tasks.map(function(t){return t.id});photos={};
     for(var i=0;i<tids.length;i++){try{var pq=await SB.from('task_photos').select('*').eq('task_id',tids[i]);if(pq.data){(photos[tids[i]]=photos[tids[i]]||[]).push.apply(photos[tids[i]],Array.isArray(pq.data)?pq.data:[pq.data])}}catch(e){}}
     renderJobs();
-  }catch(e){l.innerHTML='<div class="empty"><div class="eicon"><i data-lucide="alert-triangle"></i></div><h2>Error</h2><p>'+esc(e.message)+'</p></div>'}
+  }catch(e){j.innerHTML='<div class="empty"><div class="ei"><i data-lucide="alert-triangle"></i></div><p>'+esc(e.message)+'</p></div>'}
 }
 
 function slotOrder(s){var slots=(settings.slots||'9am,11am,2pm,4pm').split(',').map(function(s){return s.trim()});var idx=slots.indexOf(s);return idx>=0?idx:9}
-
-function setFilter(f){
-  filter=f;
-  document.querySelectorAll('.d-nav-item').forEach(function(n){n.classList.toggle('active',n.id==='ds'+f.charAt(0).toUpperCase()+f.slice(1))});
-  document.querySelectorAll('.bnav-item').forEach(function(n){n.classList.remove('active')});
-  var bm={active:'navActive',today:'navToday',completed:'navDone'};if(bm[f])document.getElementById(bm[f]).classList.add('active');
-  document.querySelectorAll('.fpill').forEach(function(p){p.classList.toggle('active',p.getAttribute('data-f')===f)});
-  renderJobs();
-}
-
+function setFilter(f){filter=f;document.querySelectorAll('.fpill').forEach(function(p){p.classList.toggle('active',p.getAttribute('data-f')===f)});renderJobs()}
 function renderJobs(){
   var list=jobs.slice();
   var t=today();
@@ -418,103 +171,55 @@ function renderJobs(){
   else if(filter==='today')list=list.filter(function(x){return x.b.booking_date===t});
   else if(filter==='completed')list=list.filter(function(x){return x.t.status==='completed'});
   list.sort(function(a,b){return(a.b.booking_date+String(slotOrder(a.b.booking_time))).localeCompare(b.b.booking_date+String(slotOrder(b.b.booking_time)))});
-
-  document.getElementById('sActive').textContent=jobs.filter(function(x){return['assigned','in_progress','awaiting_review'].indexOf(x.t.status)>-1}).length;
-  document.getElementById('sToday').textContent=jobs.filter(function(x){return x.b.booking_date===t}).length;
-  document.getElementById('sDone').textContent=jobs.filter(function(x){return x.t.status==='completed'}).length;
-  document.getElementById('secCount').textContent=list.length;
-
-  var fm={active:'Active Jobs',today:"Today's Jobs",all:'All Jobs',completed:'Completed Jobs'};
-  document.getElementById('secTitle').textContent=fm[filter]||'Jobs';
-  document.getElementById('dTitle').textContent=fm[filter]||'My Jobs';
-
-  var el=document.getElementById('list');
-  if(!list.length){el.innerHTML='<div class="empty"><div class="eicon"><i data-lucide="clipboard-list"></i></div><h2>No jobs</h2><p>No jobs match this filter.</p></div>';return}
-
-  var isDesktop=matchMedia('(min-width:1024px)').matches;
-  if(isDesktop){
-    var h='<div class="d-card"><table><thead><tr><th>Customer</th><th>Date &amp; Time</th><th>Status</th><th></th></tr></thead><tbody>';
-    list.forEach(function(x){
-      var b=x.b,t2=x.t;
-      h+='<tr onclick="openJob(\''+t2.id+'\')">';
-      h+='<td><div class="d-name"><strong>'+esc(b.customer_name)+'</strong></div><div class="d-addr">'+esc(b.customer_address)+'</div></td>';
-      h+='<td><span class="d-date">'+fd(b.booking_date)+'</span><span class="d-dot"></span><span class="d-date">'+ft(b.booking_time)+'</span></td>';
-      h+='<td>'+badge(t2.status)+'</td>';
-      h+='<td><div class="d-acts" onclick="event.stopPropagation()">';
-      if(t2.status==='assigned'){
-        h+='<button class="d-btn acc" onclick="acceptJob(\''+t2.id+'\')"><i data-lucide="check"></i> Accept</button>';
-        h+='<button class="d-btn del" onclick="rejectJob(\''+t2.id+'\')"><i data-lucide="x"></i> Reject</button>';
-      }
-      h+='<button class="d-btn" style="color:#25D366;border-color:#25D366" onclick="window.open(\'https://wa.me/'+waNum(b.customer_phone)+'\',\'_blank\')"><i data-lucide="message-circle"></i> WA</button>';
-      h+='<button class="d-btn" style="color:var(--accent2);border-color:var(--accent2)" onclick="window.open(\''+mapsUrl(b.customer_address)+'\',\'_blank\')"><i data-lucide="map-pin"></i> Maps</button>';
-      if(t2.status==='assigned')h+='<button class="d-btn don" onclick="openJob(\''+t2.id+'\')"><i data-lucide="camera"></i> Start</button>';
-      if(t2.status==='in_progress')h+='<button class="d-btn don" onclick="openJob(\''+t2.id+'\')"><i data-lucide="check"></i> Finish</button>';
-      h+='</div></td></tr>';
-    });
-    h+='</tbody></table></div>';el.innerHTML=h;
-  }else{
-    var h='';
-    list.forEach(function(x){
-      var b=x.b,t2=x.t;
-      h+='<div class="card" onclick="openJob(\''+t2.id+'\')">';
-      h+='<div class="card-body"><div class="card-meta"><span class="card-date">'+fd(b.booking_date)+' '+ft(b.booking_time)+'</span>'+badge(t2.status)+'</div>';
-      h+='<div class="card-name">'+esc(b.customer_name)+'</div>';
-      h+='<div class="card-addr">'+esc(b.customer_address)+'</div>';
-      h+='<div class="qact">';
-      if(t2.status==='assigned'){
-        h+='<button class="qact-btn accept" onclick="event.stopPropagation();acceptJob(\''+t2.id+'\')">Accept</button>';
-        h+='<button class="qact-btn decline" onclick="event.stopPropagation();rejectJob(\''+t2.id+'\')">Reject</button>';
-      }
-      h+='<button class="qact-btn" style="color:#25D366;border-color:#25D366" onclick="event.stopPropagation();window.open(\'https://wa.me/'+waNum(b.customer_phone)+'\',\'_blank\')">WA</button>';
-      if(t2.status==='assigned')h+='<button class="qact-btn done" onclick="event.stopPropagation();openJob(\''+t2.id+'\')" style="background:var(--accent-light);color:var(--accent2)">Photo</button>';
-      if(t2.status==='in_progress')h+='<button class="qact-btn done" onclick="event.stopPropagation();openJob(\''+t2.id+'\')">Finish</button>';
-      h+='</div></div></div>';
-    });
-    el.innerHTML=h;
-  }
+  var el=document.getElementById('jobs');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei"><i data-lucide="clipboard-list"></i></div><p>No jobs here.</p></div>';return}
+  var h='',lastDate=null;
+  list.forEach(function(x){
+    if(x.b.booking_date!==lastDate){lastDate=x.b.booking_date;var lbl=x.b.booking_date===t?'TODAY - '+fd(x.b.booking_date):fd(x.b.booking_date);h+='<div class="daygrp">'+lbl+'</div>'}
+    h+='<div class="job" onclick="openJob(\''+x.t.id+'\')"><div class="slot">'+ft(x.b.booking_time)+'</div><div class="jb"><div class="jn">'+esc(x.b.customer_name)+'</div><div class="ja"><i data-lucide="map-pin"></i> '+esc(x.b.customer_address)+'</div></div>'+badge(x.t.status)+'</div>';
+  });
+  el.innerHTML=h;
 }
 
 function photosFor(id,type){return(photos[id]||[]).filter(function(p){return p.type===type})}
-
 function openJob(id){
   openId=id;var x=jobs.find(function(y){return y.t.id===id});if(!x)return;
-  var b=x.b,t2=x.t;
-  document.getElementById('mTitle').innerHTML='<span class="m-dot"></span>'+b.customer_name;
+  var b=x.b,t=x.t;
+  document.getElementById('ovTitle').textContent=b.customer_name;
   var beforeP=photosFor(id,'before'),afterP=photosFor(id,'after');
   function thumbs(arr){if(!arr.length)return'<div style="font-size:.74rem;color:var(--text3)">No photos yet.</div>';var s='<div class="thumbs">';arr.forEach(function(p){s+='<div class="thumb"><img src="'+esc(p.url)+'" loading="lazy"></div>'});return s+'</div>'}
+  var h='<div class="card">'+
+    '<div class="row"><span class="k">Status</span><span class="v">'+badge(t.status)+'</span></div>'+
+    '<div class="row"><span class="k">Date & Time</span><span class="v">'+fd(b.booking_date)+' &middot; '+ft(b.booking_time)+'</span></div>'+
+    '<div class="row"><span class="k">Customer</span><span class="v">'+esc(b.customer_name)+'</span></div>'+
+    '<div class="row"><span class="k">Address</span><span class="v">'+esc(b.customer_address)+'</span></div>'+
+    '</div>';
+  h+='<a class="abtn blue" href="'+mapsUrl(b.customer_address)+'" target="_blank"><i data-lucide="map-pin"></i> Open in Google Maps</a>';
+  h+='<a class="abtn wa" href="https://wa.me/'+waNum(b.customer_phone)+'" target="_blank"><i data-lucide="message-circle"></i> WhatsApp Customer</a>';
 
-  var h='<div class="m-row"><span class="mk">Status</span><span class="mv">'+badge(t2.status)+'</span></div>'+
-    '<div class="m-row"><span class="mk">Date &amp; Time</span><span class="mv">'+fd(b.booking_date)+' &middot; '+ft(b.booking_time)+'</span></div>'+
-    '<div class="m-row"><span class="mk">Customer</span><span class="mv">'+esc(b.customer_name)+'</span></div>'+
-    '<div class="m-row"><span class="mk">Address</span><span class="mv">'+esc(b.customer_address)+'</span></div>'+
-    '<div class="m-row"><span class="mk">Phone</span><span class="mv"><a style="display:inline-flex;align-items:center;gap:4px;color:var(--accent);font-weight:700;text-decoration:none;font-size:.78rem;padding:6px 14px;background:var(--accent-light);border-radius:20px" href="https://wa.me/'+waNum(b.customer_phone)+'" target="_blank"><i data-lucide="message-circle"></i> WhatsApp</a></span></div>';
+  // BEFORE photos
+  h+='<div class="card"><div class="sec-h"><span>Before Photos</span><span style="color:var(--text3);font-weight:600">'+beforeP.length+'</span></div>'+thumbs(beforeP);
+  if(t.status==='assigned')h+='<div class="up" id="upBefore" onclick="pickPhoto(\''+id+'\',\'before\')"><i data-lucide="camera"></i> Tap to add BEFORE photo</div>';
+  h+='</div>';
 
-  if(beforeP.length)h+='<div style="margin-top:16px"><div style="font-weight:700;margin-bottom:8px;font-size:.78rem">Before Photos ('+beforeP.length+')</div>'+thumbs(beforeP)+'</div>';
-  if(t2.status==='assigned')h+='<div class="up" id="upBefore" onclick="pickPhoto(\''+id+'\',\'before\')"><i data-lucide="camera"></i> Tap to add BEFORE photo</div>';
-
-  if(t2.status==='in_progress'||t2.status==='awaiting_review'||t2.status==='completed'){
-    if(afterP.length)h+='<div style="margin-top:16px"><div style="font-weight:700;margin-bottom:8px;font-size:.78rem">After Photos ('+afterP.length+')</div>'+thumbs(afterP)+'</div>';
-    if(t2.status==='in_progress')h+='<div class="up" id="upAfter" onclick="pickPhoto(\''+id+'\',\'after\')"><i data-lucide="camera"></i> Tap to add AFTER photo</div>';
+  // Action / after based on status
+  if(t.status==='assigned'){
+    h+='<button class="abtn primary" id="startBtn" onclick="startJob(\''+id+'\')"'+(beforeP.length?'':' disabled')+'><i data-lucide="play"></i> Start Job'+(beforeP.length?'':' (add before photo)')+'</button>';
+  }else if(t.status==='in_progress'){
+    h+='<div class="card"><div class="sec-h"><span>After Photos</span><span style="color:var(--text3);font-weight:600">'+afterP.length+'</span></div>'+thumbs(afterP);
+    h+='<div class="up" id="upAfter" onclick="pickPhoto(\''+id+'\',\'after\')"><i data-lucide="camera"></i> Tap to add AFTER photo</div></div>';
+    h+='<button class="abtn primary" id="finishBtn" onclick="finishJob(\''+id+'\')"'+(afterP.length?'':' disabled')+'><i data-lucide="check"></i> Finish Job'+(afterP.length?'':' (add after photo)')+'</button>';
+  }else if(t.status==='awaiting_review'){
+    h+='<div class="card"><div class="sec-h"><span>After Photos</span><span style="color:var(--text3);font-weight:600">'+afterP.length+'</span></div>'+thumbs(afterP)+'</div>';
+    h+='<div class="note"><i data-lucide="clock"></i> Waiting for admin review &amp; approval.</div>';
+  }else if(t.status==='completed'){
+    h+='<div class="card"><div class="sec-h"><span>After Photos</span><span style="color:var(--text3);font-weight:600">'+afterP.length+'</span></div>'+thumbs(afterP)+'</div>';
+    h+='<div class="note"><i data-lucide="check"></i> Job completed. Thank you!</div>';
   }
-  if(t2.status==='awaiting_review')h+='<div class="note"><i data-lucide="clock"></i> Waiting for admin review &amp; approval.</div>';
-  if(t2.status==='completed')h+='<div class="note"><i data-lucide="check-check"></i> Job completed. Thank you!</div>';
-
-  document.getElementById('mBody').innerHTML=h;
-  var a='';
-  if(t2.status==='assigned'){
-    a+='<button class="m-btn accept" onclick="acceptJob(\''+id+'\')"><i data-lucide="check"></i> Accept Job</button>';
-    a+='<button class="m-btn" style="background:var(--danger);color:#fff" onclick="rejectJob(\''+id+'\')"><i data-lucide="x"></i> Reject Job</button>';
-    a+='<button class="m-btn done" id="modalStartBtn" onclick="startJob(\''+id+'\')"'+(beforeP.length?'':' disabled')+'><i data-lucide="camera"></i> Start (photo required)</button>';
-  }
-  if(t2.status==='in_progress')a+='<button class="m-btn done" id="modalFinishBtn" onclick="finishJob(\''+id+'\')"'+(afterP.length?'':' disabled')+'><i data-lucide="check"></i> Finish'+(afterP.length?'':' (need photo)')+'</button>';
-  a+='<button class="m-btn wa" onclick="window.open(\'https://wa.me/'+waNum(b.customer_phone)+'\',\'_blank\')"><i data-lucide="message-circle"></i> WhatsApp</button>';
-  a+='<button class="m-btn close" onclick="closeModal()">Close</button>';
-  document.getElementById('mActs').innerHTML=a;
-  openModal();
+  document.getElementById('ovBody').innerHTML=h;
+  document.getElementById('ov').classList.add('show');
 }
-
-function openModal(){var m=document.getElementById('modal');m.classList.add('show');document.body.style.overflow='hidden'}
-function closeModal(){var m=document.getElementById('modal');m.classList.remove('show');document.body.style.overflow='';openId=null;loadJobs();relucide()}
+function closeJob(){document.getElementById('ov').classList.remove('show');openId=null;loadJobs()}
 
 function pickPhoto(id,type){
   var inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.setAttribute('capture','environment');
@@ -522,7 +227,7 @@ function pickPhoto(id,type){
   inp.click();
 }
 async function doUpload(id,type,file){
-  if(!settings.cloud_name||!settings.upload_preset){alert('Cloudinary not configured');return}
+  if(!settings.cloud_name||!settings.upload_preset){toast('Cloudinary not configured');return}
   var box=document.getElementById(type==='before'?'upBefore':'upAfter');if(box){box.classList.add('busy');box.textContent='Uploading...'}
   try{
     var fd2=new FormData();fd2.append('file',file);fd2.append('upload_preset',settings.upload_preset);if(settings.folder)fd2.append('folder',settings.folder);
@@ -532,40 +237,22 @@ async function doUpload(id,type,file){
     var {error}=await SB.from('task_photos').insert({task_id:id,type:type,url:data.secure_url,uploaded_by:me.id});
     if(error)throw error;
     (photos[id]=photos[id]||[]).push({task_id:id,type:type,url:data.secure_url});
-    openJob(id);
-  }catch(e){alert('Error: '+e.message);if(box){box.classList.remove('busy');box.innerHTML='<i data-lucide="camera"></i> Tap to retry'}}
+    toast('Photo uploaded');openJob(id);
+  }catch(e){toast('Error: '+e.message);if(box){box.classList.remove('busy');box.textContent='<i data-lucide="camera"></i> Tap to retry'}}
 }
 async function startJob(id){
-  if(!photosFor(id,'before').length){alert('Add at least 1 before photo');return}
+  if(!photosFor(id,'before').length){toast('Add at least 1 before photo');return}
   try{var {error}=await SB.from('tasks').update({status:'in_progress',started_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;
-    var x=jobs.find(function(y){return y.t.id===id});if(x)x.t.status='in_progress';openJob(id)}catch(e){alert('Error: '+e.message)}
-}
-async function acceptJob(id){
-  try{
-    var token=await SB.auth.getToken();
-    var res=await fetch(API_URL+'/api/tasks/'+id+'/accept',{method:'POST',headers:{'Authorization':'Bearer '+token}});
-    var data=await res.json();
-    if(!res.ok)throw new Error(data.error||'Failed');
-    alert('Job accepted! You can now add photos and start.');
-    closeModal();loadJobs();
-  }catch(e){alert('Error: '+e.message)}
-}
-async function rejectJob(id){
-  if(!confirm('Reject this job? It will be reassigned to another staff.'))return;
-  try{
-    var token=await SB.auth.getToken();
-    var res=await fetch(API_URL+'/api/tasks/'+id+'/reject',{method:'POST',headers:{'Authorization':'Bearer '+token}});
-    var data=await res.json();
-    if(!res.ok)throw new Error(data.error||'Failed');
-    alert('Job rejected and reassigned.');
-    closeModal();loadJobs();
-  }catch(e){alert('Error: '+e.message)}
+    var x=jobs.find(function(y){return y.t.id===id});if(x)x.t.status='in_progress';toast('Job started');openJob(id)}catch(e){toast('Error: '+e.message)}
 }
 async function finishJob(id){
-  if(!photosFor(id,'after').length){alert('Add at least 1 after photo');return}
+  if(!photosFor(id,'after').length){toast('Add at least 1 after photo');return}
   try{var {error}=await SB.from('tasks').update({status:'awaiting_review',finished_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;
-    var x=jobs.find(function(y){return y.t.id===id});if(x)x.t.status='awaiting_review';
-    await loadJobs();openJob(id)}catch(e){alert('Error: '+e.message)}
+    await loadJobs();
+    var x=jobs.find(function(y){return y.t.id===id});
+    var done=x&&x.t.status==='completed';
+    toast(done?'Job auto-completed!':'Sent for admin review');
+    openJob(id)}catch(e){toast('Error: '+e.message)}
 }
 
 checkAccess();relucide();

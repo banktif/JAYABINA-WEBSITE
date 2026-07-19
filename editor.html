@@ -1,244 +1,166 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex,nofollow">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>JAYABINA — Multi-Site Sales Page Editor</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/grapesjs@0.21.13/dist/css/grapes.min.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#07150d">
+  <title>JAYABINA Visual Editor</title>
+  <link rel="icon" href="/admin-favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/grapes.min.css?v=0.23.2">
+  <link rel="stylesheet" href="/vendor/tui-image-editor.min.css">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{height:100%;overflow:auto;font-family:system-ui,-apple-system,sans-serif;background:#1e1e1e}
-    #gjs{height:calc(100% - 44px);width:100%}
-    #gjs ::-webkit-scrollbar{width:10px;height:10px}
-    #gjs ::-webkit-scrollbar-thumb{background:#4a4a4a;border-radius:6px}
-    #gjs ::-webkit-scrollbar-track{background:#1e1e1e}
-    .gjs-cv-canvas{overflow:auto!important;padding-bottom:20px!important;background-color:#f0f0f0!important}
-    .gjs-frame{max-width:none!important}
-    #pwGate{position:fixed;inset:0;z-index:99999;background:#1a1a1a;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
-    #pwGate input{padding:14px 20px;border:2px solid #3a3a3a;border-radius:12px;background:#252525;color:#fff;font-size:1rem;width:280px;text-align:center;font-family:inherit;outline:none}
-    #pwGate input:focus{border-color:#166534}
-    #pwGate button{padding:14px 40px;background:#166534;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit}
-    #pwGate h2{color:#fff;font-size:1.4rem}#pwGate .sub{color:#888;font-size:.8rem}#pwGate .err{color:#e5484d;font-size:.8rem;display:none}
-    #pwGate.hidden{display:none}
-    #siteModal{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center}
-    #siteModal.show{display:flex}
-    #siteModal .box{background:#2d2d2d;border-radius:16px;padding:24px;width:560px;max-width:92vw;max-height:82vh;overflow-y:auto}
-    #siteModal h3{color:#fff;font-size:1.05rem;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
-    #siteModal input,#siteModal select{padding:8px 12px;border-radius:6px;border:1px solid #3a3a3a;background:#252525;color:#e0e0e0;font-size:.78rem;font-family:inherit;width:100%}
-    #siteModal input:focus,#siteModal select:focus{border-color:#166534;outline:none}
-    .sm-row{display:grid;grid-template-columns:1fr 1.2fr .9fr auto;gap:8px;margin-bottom:8px;align-items:center}
-    .sm-btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:.72rem;font-weight:600;font-family:inherit}
-    .sm-btn.green{background:#166534;color:#fff}.sm-btn.gray{background:#555;color:#fff}.sm-btn.red{background:#c62828;color:#fff;padding:6px 10px}
-    .warnbox{background:#3a2a10;border:1px solid #7a5a20;color:#f0c060;font-size:.68rem;padding:8px 10px;border-radius:8px;margin-bottom:12px;line-height:1.5}
-    #topbar{display:none;align-items:center;gap:10px;padding:7px 12px;background:#2d2d2d;border-bottom:1px solid #3a3a3a;position:relative}
-    #topbar .brand{color:#4ade80;font-weight:800;font-size:.85rem}
-    #topbar select,#topbar button{font-family:inherit;padding:6px 12px;border-radius:6px;border:1px solid #3a3a3a;background:#252525;color:#e0e0e0;font-size:.72rem;cursor:pointer;font-weight:600}
-    #topbar button.prim{background:#166534;color:#fff;border:none}#topbar button.prim:hover{background:#14532d}
-    #topbar button.prim:disabled{opacity:.5;cursor:not-allowed}
-    #topbar .sep{width:1px;height:20px;background:#3a3a3a}
-    #topbar .info{font-size:.68rem;color:#888;margin-left:auto}
-    .toast{position:fixed;bottom:24px;right:24px;padding:14px 24px;border-radius:10px;z-index:99999;font-weight:600;font-size:.85rem;opacity:0;transition:opacity .3s;pointer-events:none;max-width:360px}
-    .toast.ok{background:#166534;color:#fff}.toast.err{background:#c62828;color:#fff}.toast.show{opacity:1}
-    .gjs-one-bg{background:#1e1e1e!important}.gjs-two-color{color:#4ade80!important}
-    .gjs-three-bg{background:#2d2d2d!important;color:#e0e0e0!important}
-    .gjs-four-color,.gjs-four-color-h:hover{color:#4ade80!important}
-    .gjs-pn-panels,.gjs-pn-commands,.gjs-pn-options{background:#2d2d2d!important;border-bottom:1px solid #3a3a3a!important}
-    .gjs-pn-panel,.gjs-pn-buttons{background:#1e1e1e!important}
-    .gjs-pn-btn{border:none!important;color:#b0b0b0!important;background:transparent!important;border-radius:4px!important}
-    .gjs-pn-btn:hover{background:#3a3a3a!important;color:#e0e0e0!important}
-    .gjs-pn-btn.gjs-pn-active{background:#166534!important;color:#fff!important}
-    .gjs-blocks-c{background:#1e1e1e!important;padding:10px!important}
-    .gjs-block{background:#2d2d2d!important;border:1px solid #3a3a3a!important;color:#ccc!important;border-radius:6px!important}
-    .gjs-block:hover{background:#3a3a3a!important;border-color:#166534!important}
-    .gjs-sm-sector{background:#1e1e1e!important}.gjs-sm-header,.gjs-sm-sector .gjs-sm-title{background:#2d2d2d!important;color:#ccc!important}
-    .gjs-sm-field input,.gjs-sm-field select{background:#252525!important;border:1px solid #3a3a3a!important;color:#e0e0e0!important}
-    .gjs-layer:hover{background:#2d2d2d!important}.gjs-layer.gjs-selected{background:#3a3a3a!important}
-    .gjs-trt-traits{background:#1e1e1e!important}
+    :root{--bg:#07150d;--surface:#0d1f15;--surface2:#13291c;--surface3:#193624;--line:#284b35;--text:#f2faf4;--muted:#9ab5a2;--accent:#38b86a;--accent2:#9ce7b7;--danger:#ff6b6b;--warning:#f8c15c;--radius:14px;--shadow:0 18px 55px rgba(0,0,0,.34)}
+    *{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--text);font:14px/1.4 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+    .app{height:100dvh;display:grid;grid-template-rows:auto auto minmax(0,1fr);background:var(--bg)}
+    .top-main,.top-tools{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line);background:rgba(7,21,13,.97);z-index:30}.top-main{min-height:58px}.top-tools{min-height:44px;padding-block:6px;background:var(--surface)}
+    .brand{display:flex;align-items:center;gap:10px;min-width:198px}.brand-mark{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#42cf79,#166534);box-shadow:0 8px 22px rgba(56,184,106,.28);font-weight:900}.brand-copy b{display:block;font-size:13px;letter-spacing:.08em}.brand-copy small{display:block;color:var(--muted);font-size:10px;margin-top:1px}
+    .site-picker{display:flex;align-items:center;gap:7px;min-width:0;flex:1}.site-picker select{width:min(380px,100%);height:38px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--text);padding:0 36px 0 12px;outline:none}.site-picker select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(56,184,106,.14)}
+    .btn,.icon-btn{height:38px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--text);display:inline-flex;align-items:center;justify-content:center;gap:7px;font-weight:700;white-space:nowrap}.btn{padding:0 13px}.icon-btn{width:38px;padding:0}.btn:hover,.icon-btn:hover{border-color:#4d7d5e;background:var(--surface3)}.btn.primary{background:var(--accent);border-color:var(--accent);color:#05200e}.btn.primary:hover{background:#54ce81}.btn:disabled,.icon-btn:disabled{opacity:.42;cursor:not-allowed}.btn.danger{color:#ffd6d6}.btn svg,.icon-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .save-state{margin-left:auto;min-width:150px;text-align:right}.save-state b{display:block;font-size:11px}.save-state small{display:block;color:var(--muted);font-size:10px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.save-state.dirty b{color:var(--warning)}.save-state.saved b{color:var(--accent2)}.save-state.error b{color:var(--danger)}
+    .tool-group{display:flex;align-items:center;gap:5px;padding-right:8px;margin-right:3px;border-right:1px solid var(--line)}.tool-group:last-child{border-right:0}.tool-label{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-right:3px}.device-btn.active,.panel-btn.active{background:var(--accent);border-color:var(--accent);color:#06220f}.spacer{flex:1}
+    .workspace{min-height:0;display:grid;grid-template-columns:276px minmax(320px,1fr) 310px;position:relative}.sidebar{min-height:0;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;z-index:20}.sidebar.right{border-right:0;border-left:1px solid var(--line)}.side-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}.side-head b{font-size:12px;text-transform:uppercase;letter-spacing:.08em}.side-close{display:none}.side-scroll{min-height:0;overflow:auto;flex:1}.right-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:7px;border-bottom:1px solid var(--line)}.right-tabs button{border:0;border-radius:8px;background:transparent;color:var(--muted);padding:8px 4px;font-weight:800;font-size:11px}.right-tabs button.active{background:var(--surface3);color:var(--accent2)}.right-pane{display:none;height:100%;overflow:auto}.right-pane.active{display:block}
+    .canvas-wrap{min-width:0;min-height:0;position:relative;background:#d8dfda;overflow:hidden}.canvas-wrap #gjs{height:100%;width:100%}.empty{position:absolute;inset:0;display:grid;place-items:center;padding:24px;z-index:15;background:radial-gradient(circle at 50% 25%,#e9f4ec,#cbd6ce)}.empty-card{max-width:520px;text-align:center;background:#fff;color:#173321;border:1px solid #c4d5c9;border-radius:24px;padding:36px;box-shadow:0 22px 70px rgba(20,55,32,.18)}.empty-icon{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;margin:0 auto 18px;background:#e6f7ec;color:#166534;font-size:28px}.empty h1{font-size:24px;margin:0 0 8px}.empty p{margin:0 auto 20px;color:#597062;max-width:420px}.empty-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+    .status-strip{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:18;background:rgba(7,21,13,.92);border:1px solid var(--line);box-shadow:var(--shadow);padding:7px 12px;border-radius:999px;font-size:11px;color:var(--muted);pointer-events:none}.status-strip b{color:var(--text)}
+    .mobile-dock{display:none}
+    /* GrapesJS integration */
+    .gjs-one-bg{background-color:var(--surface)!important}.gjs-two-color{color:#d7e8dc!important}.gjs-three-bg{background-color:var(--surface2)!important;color:var(--text)!important}.gjs-four-color,.gjs-four-color-h:hover{color:var(--accent)!important}.gjs-cv-canvas{background:#d8dfda!important;top:0!important;width:100%!important;height:100%!important}.gjs-frame-wrapper{border-radius:2px;box-shadow:0 5px 28px rgba(0,0,0,.2)}.gjs-blocks-c{padding:9px!important;gap:7px}.gjs-block{width:calc(50% - 4px)!important;min-height:74px!important;margin:0!important;border:1px solid var(--line)!important;border-radius:10px!important;background:var(--surface2)!important;box-shadow:none!important;color:#d9eadf!important}.gjs-block:hover{border-color:var(--accent)!important;transform:translateY(-1px)}.gjs-block-label{font-size:10px!important;font-weight:700}.gjs-block svg{max-height:28px}.gjs-category-title,.gjs-sm-sector-title{background:var(--surface2)!important;border-bottom:1px solid var(--line)!important;padding:11px 10px!important;font-size:11px!important;font-weight:800!important}.gjs-sm-sector{border-bottom:1px solid var(--line)!important}.gjs-sm-properties{padding:10px!important}.gjs-sm-property{font-size:11px!important}.gjs-field{background:#08170f!important;border:1px solid var(--line)!important;border-radius:7px!important}.gjs-field input,.gjs-field select{color:var(--text)!important}.gjs-trt-traits{padding:8px!important}.gjs-trt-trait{padding:6px 4px!important}.gjs-layer{font-size:11px!important;border-bottom:1px solid rgba(40,75,53,.45)!important}.gjs-layer:hover{background:var(--surface2)!important}.gjs-layer.gjs-selected{background:var(--surface3)!important}.gjs-mdl-dialog{background:var(--surface)!important;border-radius:16px!important;max-width:min(780px,92vw)!important}.gjs-mdl-header{border-bottom:1px solid var(--line)!important}.gjs-am-file-uploader>form{background:var(--surface2)!important;border:2px dashed var(--line)!important}.gjs-am-assets-cont{background:var(--surface)!important}.gjs-am-asset{border-radius:9px!important;overflow:hidden!important}.gjs-rte-toolbar{background:var(--surface)!important;border:1px solid var(--line)!important}.gjs-rte-action{color:var(--text)!important}.gjs-pn-panels{display:none!important}
+    .modal{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;padding:20px}.modal.open{display:flex}.modal-card{width:min(1040px,96vw);max-height:90dvh;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}.modal-card.medium{width:min(760px,96vw)}.modal-head,.modal-foot{display:flex;align-items:center;gap:10px;padding:15px 18px;border-bottom:1px solid var(--line)}.modal-foot{border-bottom:0;border-top:1px solid var(--line);justify-content:flex-end}.modal-head h2{font-size:17px;margin:0}.modal-head p{font-size:11px;color:var(--muted);margin:2px 0 0}.modal-head .icon-btn{margin-left:auto}.modal-body{padding:16px 18px;overflow:auto}.site-counter{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;color:var(--muted);font-size:12px}.site-counter b{color:var(--accent2)}.site-list{display:grid;gap:10px}.site-row{display:grid;grid-template-columns:1.1fr 1.15fr .65fr .9fr 1.2fr .85fr auto;gap:8px;align-items:end;padding:12px;background:var(--surface2);border:1px solid var(--line);border-radius:14px}.field label{display:block;color:var(--muted);font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.06em;margin:0 0 5px}.field input{width:100%;height:36px;border:1px solid var(--line);border-radius:8px;background:#08170f;color:var(--text);padding:0 9px;outline:none}.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(56,184,106,.13)}.row-remove{height:36px;width:36px}.modal-note{margin-top:12px;padding:11px 12px;border:1px solid #765a21;border-radius:10px;background:#2b240f;color:#f5d68b;font-size:11px}.code-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}.code-grid label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:11px;font-weight:700}.code-grid textarea{height:52dvh;resize:none;border:1px solid var(--line);border-radius:10px;background:#06110b;color:#d6f3df;padding:12px;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;outline:none}.auth-gate{position:fixed;inset:0;z-index:2000;background:radial-gradient(circle at 50% 18%,#143c24,#07150d 60%);display:none;place-items:center;padding:20px}.auth-gate.open{display:grid}.auth-card{text-align:center;width:min(420px,92vw);padding:34px;border:1px solid var(--line);border-radius:24px;background:rgba(13,31,21,.95);box-shadow:var(--shadow)}.auth-card .brand-mark{margin:0 auto 15px;width:52px;height:52px}.auth-card h1{margin:0 0 8px;font-size:22px}.auth-card p{margin:0 0 20px;color:var(--muted)}.toast{position:fixed;z-index:3000;right:18px;bottom:18px;max-width:min(420px,90vw);padding:12px 15px;border-radius:12px;border:1px solid var(--line);background:var(--surface3);box-shadow:var(--shadow);font-weight:700;opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:none}.toast.ok{border-color:#2b9253}.toast.error{border-color:#a84444;color:#ffd3d3}
+    @media(max-width:1120px){.workspace{grid-template-columns:240px minmax(300px,1fr) 270px}.brand{min-width:auto}.brand-copy{display:none}.save-state{min-width:92px}.save-state small{display:none}.site-row{grid-template-columns:1fr 1fr 1fr}.site-row .row-remove{align-self:end}.site-picker select{max-width:280px}}
+    @media(max-width:760px){.app{grid-template-rows:auto auto minmax(0,1fr)}.top-main{padding:7px;min-height:52px;gap:6px;flex-wrap:nowrap}.brand-mark{width:36px;height:36px}.site-picker{flex:1}.site-picker select{height:36px;max-width:none;padding-left:9px;font-size:12px}.top-main .btn{width:36px;height:36px;padding:0}.top-main .btn span{display:none}.top-main .manage-btn,.top-main .preview-btn{display:none}.save-state{display:none}.top-tools{padding:5px 7px;overflow-x:auto;scrollbar-width:none}.top-tools::-webkit-scrollbar{display:none}.tool-label{display:none}.tool-group{flex:0 0 auto}.workspace{display:block}.canvas-wrap{height:100%;width:100%}.sidebar{position:absolute;top:0;bottom:0;width:min(86vw,320px);box-shadow:var(--shadow);transition:transform .22s;z-index:50}.sidebar.left{left:0;transform:translateX(-105%)}.sidebar.right{right:0;transform:translateX(105%)}.sidebar.open{transform:none}.side-close{display:grid}.mobile-dock{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));z-index:70;border:1px solid var(--line);border-radius:14px;background:rgba(7,21,13,.96);box-shadow:var(--shadow);padding:5px}.mobile-dock button{height:40px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-weight:800;font-size:10px}.mobile-dock button.active{background:var(--surface3);color:var(--accent2)}.status-strip{bottom:64px;max-width:86%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.empty-card{padding:25px 18px}.empty h1{font-size:20px}.site-row{grid-template-columns:1fr 1fr;padding:11px}.field.live,.field.assets{grid-column:1/-1}.modal{padding:8px}.modal-card{max-height:96dvh;border-radius:15px}.modal-body{padding:12px}.code-grid{grid-template-columns:1fr}.code-grid textarea{height:32dvh}.toast{bottom:70px;right:10px}.gjs-block{min-height:67px!important}}
+    @media(max-width:430px){.site-row{grid-template-columns:1fr}.field.live,.field.assets{grid-column:auto}.modal-head,.modal-foot{padding:12px}.modal-foot{flex-wrap:wrap}.modal-foot .btn{flex:1}.top-tools .desktop-optional{display:none}}
   </style>
 </head>
 <body>
+<main class="app">
+  <header class="top-main">
+    <div class="brand"><span class="brand-mark">J</span><span class="brand-copy"><b>JAYABINA</b><small>Visual Editor · GrapesJS 0.23.2</small></span></div>
+    <div class="site-picker"><select id="siteSelect" aria-label="Website"><option value="">Choose a website…</option></select></div>
+    <button class="btn manage-btn" id="manageBtn" type="button" onclick="openSiteManager()"><svg><use href="#i-settings"/></svg><span>Websites</span></button>
+    <button class="btn primary" id="loadBtn" type="button" onclick="loadSelectedSite()"><svg><use href="#i-download"/></svg><span>Load</span></button>
+    <button class="btn primary" id="saveBtn" type="button" onclick="savePage()" disabled><svg><use href="#i-save"/></svg><span>Save</span></button>
+    <button class="btn preview-btn" id="previewBtn" type="button" onclick="openPreview()" disabled><svg><use href="#i-external"/></svg><span>Live</span></button>
+    <div class="save-state" id="saveState"><b>Ready</b><small>Choose a website to begin</small></div>
+  </header>
 
-<!-- PASSWORD GATE -->
-<div id="pwGate">
-  <h2>&#128274; Sales Page Editor</h2>
-  <p class="sub" id="pwSub">Enter password to continue</p>
-  <input type="password" id="pwInput" placeholder="Password" onkeydown="if(event.key==='Enter')checkPassword()">
-  <div class="err" id="pwErr">Wrong password</div>
-  <button onclick="checkPassword()">Unlock</button>
-</div>
+  <nav class="top-tools" aria-label="Editor tools">
+    <div class="tool-group"><span class="tool-label">History</span><button class="icon-btn" onclick="runCommand('core:undo')" title="Undo"><svg><use href="#i-undo"/></svg></button><button class="icon-btn" onclick="runCommand('core:redo')" title="Redo"><svg><use href="#i-redo"/></svg></button></div>
+    <div class="tool-group"><span class="tool-label">Preview</span><button class="icon-btn device-btn active" data-device="Desktop" onclick="setDevice('Desktop',this)" title="Desktop"><svg><use href="#i-desktop"/></svg></button><button class="icon-btn device-btn" data-device="Tablet" onclick="setDevice('Tablet',this)" title="Tablet"><svg><use href="#i-tablet"/></svg></button><button class="icon-btn device-btn" data-device="Mobile" onclick="setDevice('Mobile',this)" title="Mobile"><svg><use href="#i-mobile"/></svg></button></div>
+    <div class="tool-group desktop-optional"><span class="tool-label">View</span><button class="icon-btn" onclick="togglePreviewMode()" title="Preview mode"><svg><use href="#i-eye"/></svg></button><button class="icon-btn" onclick="toggleOutline()" title="Component outlines"><svg><use href="#i-grid"/></svg></button><button class="icon-btn" onclick="openAssets()" title="Image assets"><svg><use href="#i-image"/></svg></button></div>
+    <div class="tool-group"><span class="tool-label">Panels</span><button class="btn panel-btn" onclick="toggleSide('left',this)"><svg><use href="#i-blocks"/></svg><span>Blocks</span></button><button class="btn panel-btn" onclick="toggleSide('right',this)"><svg><use href="#i-sliders"/></svg><span>Design</span></button></div>
+    <div class="spacer"></div>
+    <div class="tool-group"><button class="btn" onclick="openCode()"><svg><use href="#i-code"/></svg><span>Code</span></button><button class="btn desktop-optional" onclick="runCommand('gjs-export-zip')"><svg><use href="#i-export"/></svg><span>Export</span></button><button class="icon-btn" onclick="exitEditor()" title="Back to Admin"><svg><use href="#i-close"/></svg></button></div>
+  </nav>
 
-<!-- SITE MANAGER -->
-<div id="siteModal" onclick="if(event.target===this)closeSiteModal()">
-  <div class="box">
-    <h3>Manage Sales Pages <button class="sm-btn gray" onclick="closeSiteModal()" style="font-size:.7rem;padding:4px 10px">Close</button></h3>
-    <div class="warnbox">&#128737; Safe editing: only <b>sales pages</b> (HTML) can be added. System/app pages (admin, worker, customer, dashboard, login, sw.js, theme.css) are <b>blocked automatically</b>. In the <b>JAYABINA-WEBSITE</b> repo, only <code>index.html</code> is allowed.</div>
-    <div style="margin-bottom:12px;display:flex;gap:6px">
-      <button class="sm-btn green" onclick="fetchRepos()" id="fetchReposBtn">&#128193; Fetch My GitHub Repos</button>
-      <select id="repoSelect" style="display:none;flex:1;font-size:.75rem" onchange="onRepoSelect()"><option value="">Select a repo to add...</option></select>
+  <section class="workspace">
+    <aside class="sidebar left" id="leftSidebar"><div class="side-head"><b>Content blocks</b><button class="icon-btn side-close" onclick="closeSides()"><svg><use href="#i-close"/></svg></button></div><div class="side-scroll" id="blocksPanel"></div></aside>
+    <div class="canvas-wrap">
+      <div id="gjs"></div>
+      <div class="empty" id="emptyState"><div class="empty-card"><div class="empty-icon">◆</div><h1>Edit every static website in one place</h1><p>Select a configured website, click Load and edit it visually. HTML and GrapesJS project data are saved together to GitHub.</p><div class="empty-actions"><button class="btn primary" onclick="loadSelectedSite()"><svg><use href="#i-download"/></svg> Load selected website</button><button class="btn" onclick="openSiteManager()"><svg><use href="#i-settings"/></svg> Manage websites</button></div></div></div>
+      <div class="status-strip hidden" id="canvasStatus"><b id="canvasSite">No site</b> · <span id="canvasDevice">Desktop</span></div>
     </div>
-    <div id="siteList"></div>
-    <button class="sm-btn green" style="width:100%;margin-top:8px;padding:10px" onclick="addSiteRow()">+ Add Site (manual)</button>
-    <div style="margin-top:14px">
-      <label style="color:#888;font-size:.7rem;display:block;margin-bottom:4px">GitHub Personal Access Token (needs <b>repo</b> scope, stored locally only)</label>
-      <div style="display:flex;gap:6px"><input type="password" id="patInput" placeholder="ghp_..." style="flex:1"><button class="sm-btn green" onclick="savePAT()">Save</button></div>
-    </div>
-  </div>
-</div>
+    <aside class="sidebar right" id="rightSidebar"><div class="side-head"><b>Design inspector</b><button class="icon-btn side-close" onclick="closeSides()"><svg><use href="#i-close"/></svg></button></div><div class="right-tabs"><button class="active" onclick="showRightPane('styles',this)">Styles</button><button onclick="showRightPane('traits',this)">Settings</button><button onclick="showRightPane('layers',this)">Layers</button></div><div class="side-scroll"><div class="right-pane active" id="paneStyles"><div id="selectorsPanel"></div><div id="stylesPanel"></div></div><div class="right-pane" id="paneTraits"><div id="traitsPanel"></div></div><div class="right-pane" id="paneLayers"><div id="layersPanel"></div></div></div></aside>
+  </section>
+</main>
 
-<!-- TOP BAR -->
-<div id="topbar">
-  <span class="brand">JAYABINA</span>
-  <select id="siteSelect" onchange="onSiteChange()"><option value="">-- Select Sales Page --</option></select>
-  <span class="sep"></span>
-  <button onclick="loadSite()" class="prim">Load</button>
-  <button onclick="saveToGitHub()" id="saveBtn" class="prim" disabled>Save</button>
-  <span class="sep"></span>
-  <button onclick="openSiteModal()">&#9881; Sites</button>
-  <button onclick="doLogout()">Logout</button>
-  <span class="info" id="siteInfo"></span>
-</div>
+<nav class="mobile-dock" aria-label="Mobile editor panels"><button onclick="toggleSide('left',this)">Blocks</button><button onclick="toggleSide('right',this);showRightPane('styles')">Style</button><button onclick="toggleSide('right',this);showRightPane('traits')">Settings</button><button onclick="toggleSide('right',this);showRightPane('layers')">Layers</button></nav>
 
-<div id="gjs"></div>
+<div class="modal" id="siteModal" role="dialog" aria-modal="true" aria-labelledby="siteModalTitle"><div class="modal-card"><div class="modal-head"><div><h2 id="siteModalTitle">Website registry</h2><p>Configure up to 10 static HTML files from your banktif GitHub repositories.</p></div><button class="icon-btn" onclick="closeModal('siteModal')"><svg><use href="#i-close"/></svg></button></div><div class="modal-body"><div class="site-counter"><span>GitHub access stays inside the protected Cloudflare Worker.</span><b id="siteCount">0 / 10 websites</b></div><div class="site-list" id="siteList"></div><button class="btn" id="addSiteBtn" style="margin-top:12px" onclick="addSite()"><svg><use href="#i-plus"/></svg> Add website</button><div class="modal-note">Safety guard: admin dashboards, worker/customer apps, login pages, API folders and non-HTML files cannot be loaded or saved with the visual editor.</div></div><div class="modal-foot"><button class="btn" onclick="closeModal('siteModal')">Cancel</button><button class="btn primary" id="saveSitesBtn" onclick="saveSites()"><svg><use href="#i-save"/></svg> Save website registry</button></div></div></div>
+
+<div class="modal" id="codeModal" role="dialog" aria-modal="true"><div class="modal-card"><div class="modal-head"><div><h2>HTML &amp; CSS code</h2><p>Advanced editing for the current canvas. Original metadata and scripts remain protected.</p></div><button class="icon-btn" onclick="closeModal('codeModal')"><svg><use href="#i-close"/></svg></button></div><div class="modal-body"><div class="code-grid"><label>Body HTML<textarea id="codeHtml" spellcheck="false"></textarea></label><label>Page CSS<textarea id="codeCss" spellcheck="false"></textarea></label></div></div><div class="modal-foot"><button class="btn" onclick="closeModal('codeModal')">Cancel</button><button class="btn primary" onclick="applyCode()"><svg><use href="#i-code"/></svg> Apply to canvas</button></div></div></div>
+
+<div class="auth-gate" id="authGate"><div class="auth-card"><span class="brand-mark">J</span><h1>Admin session required</h1><p>Open the JAYABINA Operations Portal and sign in before using the visual editor.</p><button class="btn primary" onclick="location.href='/'">Go to Admin login</button></div></div>
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/grapesjs@0.21.13/dist/grapes.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/grapesjs-preset-webpage@1.0.3/dist/index.min.js"></script>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.1A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.1.4.3.7.6 1 .3.3.7.4 1.1.4h.1v4h-.1c-.4 0-.8.1-1.1.4-.3.3-.5.6-.6 1Z"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14"/></symbol><symbol id="i-save" viewBox="0 0 24 24"><path d="M5 3h12l2 2v16H5V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></symbol><symbol id="i-external" viewBox="0 0 24 24"><path d="M14 5h5v5M10 14l9-9M19 13v6H5V5h6"/></symbol><symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 7 4 12l5 5M5 12h8a6 6 0 0 1 6 6"/></symbol><symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 7 5 5-5 5m4-5h-8a6 6 0 0 0-6 6"/></symbol><symbol id="i-desktop" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></symbol><symbol id="i-tablet" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18h2"/></symbol><symbol id="i-mobile" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></symbol><symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol><symbol id="i-grid" viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></symbol><symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></symbol><symbol id="i-blocks" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><path d="M17 13v8m-4-4h8"/></symbol><symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h8m4 0h4M4 17h4m4 0h8"/><circle cx="14" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol><symbol id="i-code" viewBox="0 0 24 24"><path d="m8 9-4 3 4 3m8-6 4 3-4 3m-3-9-2 12"/></symbol><symbol id="i-export" viewBox="0 0 24 24"><path d="M12 16V3m0 0 5 5m-5-5L7 8M5 14v7h14v-7"/></symbol><symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+</defs></svg>
+
+<script src="/vendor/grapes-editor.bundle.js?v=0.23.2-full-all"></script>
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 <script>
-if(!grapesjs||!grapesjs.plugins){alert('GrapesJS failed to load. Check internet connection.')}
-var sites=[],currentSite=null,editor=null,pat='',currentHTML='',PASSWORD_HASH='';
+'use strict';
+var API_URL='https://api.jayabina.com';
+var MAX_SITES=10;
+var PREVIEW_MODE=/^(localhost|127\.0\.0\.1)$/.test(location.hostname)&&new URLSearchParams(location.search).get('preview')==='1';
+var token=PREVIEW_MODE?'local-preview':(localStorage.getItem('jc_token')||'');
+var sites=[],draftSites=[],currentSite=null,currentEnvelope=null,currentCommit='',editor=null,dirty=false,previewMode=false,outlineMode=false;
+var G=window.JayaGrapesFull||{};
 
-function toast(m,ok){var t=document.getElementById('toast');if(!t){alert(m);return}t.textContent=m;t.className='toast '+(ok?'ok':'err')+' show';setTimeout(function(){if(t)t.className='toast'},3500)}
-function esc(s){return(s||'').toString().replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})}
-function hashPw(s){var t='JBED'+s+'salespage',h='';for(var i=0;i<t.length;i++)h+=((t.charCodeAt(i)*7)%16).toString(16);return h}
+function esc(value){return String(value==null?'':value).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function toast(message,ok){var el=document.getElementById('toast');el.textContent=message;el.className='toast '+(ok?'ok':'error')+' show';clearTimeout(toast.timer);toast.timer=setTimeout(function(){el.className='toast'},4200)}
+function setState(title,detail,type){var el=document.getElementById('saveState');el.className='save-state '+(type||'');el.innerHTML='<b>'+esc(title)+'</b><small>'+esc(detail||'')+'</small>'}
+function setBusy(button,busy,label){if(!button)return;button.disabled=busy;if(label){button.dataset.old=button.innerHTML;button.textContent=label}else if(button.dataset.old){button.innerHTML=button.dataset.old;delete button.dataset.old}}
+async function api(path,options){options=options||{};if(PREVIEW_MODE)return previewApi(path,options);var headers=options.headers||{};headers.Authorization='Bearer '+token;if(options.json!==undefined)headers['Content-Type']='application/json';var response=await fetch(API_URL+path,{method:options.method||'GET',headers:headers,body:options.json===undefined?options.body:JSON.stringify(options.json)});if(response.status===401||response.status===403){document.getElementById('authGate').classList.add('open');throw new Error('Admin session expired')}return response}
+function previewApi(path,options){var demo={id:'preview-site',name:'JAYABINA Demo Website',repo:'banktif/demo-static-site',branch:'main',file:'index.html',live_url:'https://www.jayabina.com/',asset_dir:'assets/editor'};var payload={};if(path.indexOf('/sites')>=0)payload=options.method==='PUT'?{sites:options.json.sites,limit:10}:{sites:[demo],limit:10,connected:true,grapesjs:'0.23.2'};else if(path.indexOf('/page')>=0&&options.method==='PUT')payload={site_id:demo.id,commit_sha:'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',files:['index.html','.grapesjs/preview-site.json']};else if(path.indexOf('/page')>=0)payload={site:demo,html:'<!doctype html><html lang="ms"><head><meta charset="utf-8"><title>JAYABINA Demo</title><style>body{margin:0;font-family:Arial,sans-serif;color:#153721}.hero{padding:100px 24px;text-align:center;background:linear-gradient(135deg,#eaf8ef,#fff)}.hero h1{font-size:clamp(2.5rem,6vw,5rem);line-height:1.05;margin:12px auto;max-width:900px}.hero p{font-size:1.15rem;color:#586b5f;max-width:660px;margin:0 auto 28px}.cta{display:inline-block;background:#166534;color:white;padding:16px 28px;border-radius:999px;text-decoration:none;font-weight:800}.cards{padding:64px 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:1100px;margin:auto}.card{padding:25px;border:1px solid #d8e5dc;border-radius:18px}</style></head><body><section class="hero"><strong>PRIMEX JAYA BINA SOLUTIONS</strong><h1>Professional home services, managed in one place.</h1><p>This local preview proves the full GrapesJS bundle, blocks, design controls and responsive canvas are working.</p><a class="cta" href="#services">View services</a></section><section id="services" class="cards"><article class="card"><h2>Roof Replacement</h2><p>A complete solution for recurring roof leaks.</p></article><article class="card"><h2>Water Tank Cleaning</h2><p>Cleaner stored water for the whole family.</p></article><article class="card"><h2>Painting</h2><p>Professional interior and exterior finishes.</p></article></section><script>window.demoScriptPreserved=true;<\/script></body></html>',commit_sha:'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',project_data:null};else if(path.indexOf('/assets')>=0)payload={assets:[]};return Promise.resolve(new Response(JSON.stringify({status:'ok',data:payload}),{status:200,headers:{'Content-Type':'application/json'}}))}
+async function jsonResponse(response,fallback){var data={};try{data=await response.json()}catch(e){}if(!response.ok)throw new Error(data.error||fallback||('Request failed (HTTP '+response.status+')'));return data.data||data}
+function confirmDiscard(){return !dirty||confirm('Discard unsaved visual editor changes?')}
 
-// ═══════════ SAFETY GUARD — block editing system/app files ═══════════
-function protectReason(repo,file){
-  file=(file||'index.html').toString().trim().replace(/^\/+/,'').toLowerCase();
-  repo=(repo||'').toString().trim().replace(/\.git$/i,'');
-  if(!/\.html?$/.test(file))return 'Only .html pages can be edited (not '+file+').';
-  if(/(^|\/)(admin|worker|customer|dashboard|login|staff|app|api)(\/|$)/.test(file))return 'App/system pages are protected.';
-  var base=file.split('/').pop();
-  if(['admin.html','worker.html','customer.html','login.html','staff.html','dashboard.html','manifest.json','sw.js','theme.css'].indexOf(base)>-1)return 'System file is protected.';
-  if(/JAYABINA-WEBSITE$/i.test(repo)&&!(file==='index.html'||/^home\/[a-z0-9_.-]+\.html?$/.test(file)))return 'In the JAYABINA repo, only the sales page (index.html) or home/*.html variants are editable.';
-  return null;
+async function start(){
+  if(!token){document.getElementById('authGate').classList.add('open');return}
+  if(!G.grapesjs||G.version!=='0.23.2'){document.getElementById('authGate').classList.add('open');document.querySelector('#authGate h1').textContent='Editor bundle unavailable';document.querySelector('#authGate p').textContent='The full GrapesJS bundle did not load. Refresh the page or redeploy the admin portal.';return}
+  try{await loadSites();setState('Ready','Full GrapesJS '+G.version+' · '+sites.length+' website'+(sites.length===1?'':'s'))}catch(e){setState('Unable to load',e.message,'error');toast(e.message,false)}
 }
+async function loadSites(){var data=await jsonResponse(await api('/api/website/editor/sites'),'Unable to load website registry');sites=data.sites||[];renderSiteSelect();var last=localStorage.getItem('gjs_last_site');if(last&&sites.some(function(s){return s.id===last}))document.getElementById('siteSelect').value=last;else if(sites[0])document.getElementById('siteSelect').value=sites[0].id}
+function renderSiteSelect(){var select=document.getElementById('siteSelect');select.innerHTML='<option value="">Choose a website…</option>'+sites.map(function(site){return'<option value="'+esc(site.id)+'">'+esc(site.name)+' · '+esc(site.repo)+'</option>'}).join('')}
 
-function checkPassword(){
-  var v=document.getElementById('pwInput').value;if(!v)return;
-  if(!PASSWORD_HASH){PASSWORD_HASH=hashPw(v);localStorage.setItem('editor_pw_hash',PASSWORD_HASH);unlockEditor();return}
-  if(hashPw(v)===PASSWORD_HASH){unlockEditor()}else{document.getElementById('pwErr').style.display='block'}
-}
-function unlockEditor(){document.getElementById('pwGate').classList.add('hidden');document.getElementById('topbar').style.display='flex';localStorage.setItem('editor_unlock_time',Date.now())}
-function doLogout(){document.getElementById('pwGate').classList.remove('hidden');document.getElementById('topbar').style.display='none';if(editor){editor.destroy();editor=null}document.getElementById('gjs').innerHTML='';document.getElementById('pwInput').value='';document.getElementById('pwErr').style.display='none';localStorage.removeItem('editor_unlock_time')}
-function savePAT(){pat=document.getElementById('patInput').value.trim();localStorage.setItem('gh_pat',pat);toast('Token saved',true)}
-function fillPAT(){document.getElementById('patInput').value=pat}
+function openSiteManager(){draftSites=JSON.parse(JSON.stringify(sites));renderSiteRows();document.getElementById('siteModal').classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function renderSiteRows(){var list=document.getElementById('siteList');document.getElementById('siteCount').textContent=draftSites.length+' / '+MAX_SITES+' websites';document.getElementById('addSiteBtn').disabled=draftSites.length>=MAX_SITES;list.innerHTML=draftSites.map(function(site,index){return'<div class="site-row">'+field(index,'name','Name',site.name,'JAYABINA Main')+field(index,'repo','Repository',site.repo,'banktif/repo')+field(index,'branch','Branch',site.branch,'main')+field(index,'file','HTML file',site.file,'index.html')+field(index,'live_url','Live URL',site.live_url,'https://example.com/','live')+field(index,'asset_dir','Asset folder',site.asset_dir,'assets/editor','assets')+'<button class="icon-btn row-remove danger" onclick="removeSite('+index+')" title="Remove website"><svg><use href="#i-close"/></svg></button></div>'}).join('')}
+function field(index,key,label,value,placeholder,extra){return'<div class="field '+(extra||'')+'"><label>'+label+'</label><input value="'+esc(value)+'" placeholder="'+esc(placeholder)+'" data-index="'+index+'" data-key="'+key+'" oninput="editSiteField(this)"></div>'}
+function editSiteField(input){draftSites[Number(input.dataset.index)][input.dataset.key]=input.value;if(input.dataset.key==='name'){draftSites[Number(input.dataset.index)].id=slugify(input.value).slice(0,40)||('site-'+(Number(input.dataset.index)+1))}}
+function slugify(value){return String(value||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
+function addSite(){if(draftSites.length>=MAX_SITES)return;var num=draftSites.length+1;draftSites.push({id:'website-'+num,name:'Website '+num,repo:'banktif/',branch:'main',file:'index.html',live_url:'https://',asset_dir:'assets/editor'});renderSiteRows()}
+function removeSite(index){if(draftSites.length<=1){toast('At least one website is required',false);return}draftSites.splice(index,1);renderSiteRows()}
+async function saveSites(){var btn=document.getElementById('saveSitesBtn');setBusy(btn,true,'Saving…');try{var data=await jsonResponse(await api('/api/website/editor/sites',{method:'PUT',json:{sites:draftSites}}),'Unable to save website registry');sites=data.sites;renderSiteSelect();closeModal('siteModal');toast('Website registry saved',true);setState('Registry saved',sites.length+' of '+MAX_SITES+' website slots used','saved')}catch(e){toast(e.message,false)}finally{setBusy(btn,false)}}
 
-// ═══════════ SITES (localStorage) ═══════════
-function loadSites(){try{sites=JSON.parse(localStorage.getItem('editor_sites')||'[]')}catch(e){sites=[]}refreshSiteSelect()}
-function saveSites(){localStorage.setItem('editor_sites',JSON.stringify(sites));refreshSiteSelect()}
-function refreshSiteSelect(){
-  var sel=document.getElementById('siteSelect');
-  if(!sites.length){sel.innerHTML='<option value="">-- No sites. Click &#9881; Sites --</option>';document.getElementById('saveBtn').disabled=true;return}
-  sel.innerHTML='<option value="">-- Select Sales Page --</option>';
-  sites.forEach(function(s,i){sel.innerHTML+='<option value="'+i+'">'+esc(s.name)+' ('+esc(s.repo)+'/'+esc(s.file||'index.html')+')</option>'});
-}
-function onSiteChange(){document.getElementById('saveBtn').disabled=true;document.getElementById('siteInfo').textContent=''}
-function openSiteModal(){document.getElementById('siteModal').classList.add('show');renderSiteList();fillPAT()}
-function closeSiteModal(){document.getElementById('siteModal').classList.remove('show')}
-function renderSiteList(){
-  var el=document.getElementById('siteList'),h='';
-  sites.forEach(function(s,i){
-    var bad=protectReason(s.repo,s.file);
-    h+='<div class="sm-row"><input value="'+esc(s.name)+'" placeholder="Name" data-idx="'+i+'" data-field="name" onchange="updateSite(this)"><input value="'+esc(s.repo)+'" placeholder="user/repo" data-idx="'+i+'" data-field="repo" onchange="updateSite(this)"><input value="'+esc(s.file||'index.html')+'" placeholder="file" data-idx="'+i+'" data-field="file" onchange="updateSite(this)"><button class="sm-btn red" onclick="removeSite('+i+')" title="Remove">&times;</button></div>';
-    if(bad)h+='<div style="color:#f0605a;font-size:.64rem;margin:-4px 0 8px 2px">&#9888; '+esc(bad)+'</div>';
-  });
-  el.innerHTML=h||'<p style="color:#888;font-size:.8rem;text-align:center;padding:10px">No sites yet. Fetch repos or Add Site.</p>';
-}
-function addSiteRow(){sites.push({name:'New Site',repo:'user/repo',file:'index.html',branch:'master'});renderSiteList();saveSites()}
-function updateSite(el){var i=parseInt(el.dataset.idx),f=el.dataset.field;sites[i][f]=el.value.trim();saveSites();renderSiteList()}
-function removeSite(i){sites.splice(i,1);renderSiteList();saveSites()}
-function onRepoSelect(){
-  var sel=document.getElementById('repoSelect');var fullName=sel.value;if(!fullName)return;
-  var name=(fullName.split('/')[1]||fullName).replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase()});
-  sites.push({name:name,repo:fullName,file:'index.html',branch:'master'});
-  renderSiteList();saveSites();sel.value='';sel.style.display='none';toast('Added: '+name,true);
-}
-async function fetchRepos(){
-  if(!pat){toast('Set GitHub token first (paste below then Save)',false);return}
-  var btn=document.getElementById('fetchReposBtn');btn.disabled=true;btn.textContent='Loading...';
+async function loadSelectedSite(){
+  var id=document.getElementById('siteSelect').value;if(!id){toast('Choose a website first',false);return}if(!confirmDiscard())return;
+  var btn=document.getElementById('loadBtn');setBusy(btn,true,'Loading…');setState('Loading website','Reading HTML and project data from GitHub');
   try{
-    var repos=[],page=1;
-    while(page<=5){var r=await fetch('https://api.github.com/user/repos?per_page=100&sort=updated&page='+page,{headers:{Authorization:'Bearer '+pat}});if(!r.ok)throw new Error('HTTP '+r.status);var data=await r.json();if(!data.length)break;repos=repos.concat(data);page++;}
-    var sel=document.getElementById('repoSelect');sel.innerHTML='<option value="">Select repo to add...</option>';
-    repos.forEach(function(repo){sel.innerHTML+='<option value="'+repo.full_name+'">'+repo.full_name+'</option>'});
-    sel.style.display='block';toast('Found '+repos.length+' repos. Pick one to add.',true);
-  }catch(e){toast('Failed: '+e.message,false)}
-  btn.disabled=false;btn.textContent='\uD83D\uDCC1 Fetch My GitHub Repos';
+    var data=await jsonResponse(await api('/api/website/editor/page?site='+encodeURIComponent(id)),'Unable to load website');currentSite=data.site;currentCommit=data.commit_sha;currentEnvelope=splitDocument(data.html);localStorage.setItem('gjs_last_site',id);
+    var assets=[];try{var assetData=await jsonResponse(await api('/api/website/editor/assets?site='+encodeURIComponent(id)));assets=assetData.assets||[]}catch(ignore){}
+    buildEditor(data.project_data,assets);dirty=false;document.getElementById('saveBtn').disabled=false;document.getElementById('previewBtn').disabled=false;document.getElementById('emptyState').classList.add('hidden');document.getElementById('canvasStatus').classList.remove('hidden');document.getElementById('canvasSite').textContent=currentSite.name;setState('Loaded',shortTarget(currentSite),'saved');toast(currentSite.name+' loaded',true)
+  }catch(e){setState('Load failed',e.message,'error');toast(e.message,false)}finally{setBusy(btn,false)}
 }
-
-// ═══════════ INIT ═══════════
-function initEditor(){
-  PASSWORD_HASH=localStorage.getItem('editor_pw_hash')||'';pat=localStorage.getItem('gh_pat')||'';loadSites();
-  if(!PASSWORD_HASH){document.getElementById('pwSub').textContent='Set a password to protect this editor'}
-  else{var last=parseInt(localStorage.getItem('editor_unlock_time')||'0');if(Date.now()-last<43200000)unlockEditor()}
-}
-
-// ═══════════ LOAD & EDIT ═══════════
-async function loadSite(){
-  var idx=document.getElementById('siteSelect').value;if(idx==='')return;
-  currentSite=sites[parseInt(idx)];
-  var reason=protectReason(currentSite.repo,currentSite.file);
-  if(reason){toast('Blocked: '+reason,false);document.getElementById('siteInfo').textContent='Protected';return}
-  var info=document.getElementById('siteInfo');info.textContent='Loading...';
-  var url='https://raw.githubusercontent.com/'+currentSite.repo+'/'+(currentSite.branch||'master')+'/'+(currentSite.file||'index.html')+'?t='+Date.now();
-  try{
-    var r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status);
-    currentHTML=await r.text();info.textContent=currentSite.name;document.getElementById('saveBtn').disabled=false;buildEditor(currentHTML);
-  }catch(e){toast('Load failed: '+e.message,false);info.textContent='Error'}
-}
-function buildEditor(html){
+function splitDocument(html){
+  var doc=String(html||'');var doctype=(doc.match(/<!doctype[^>]*>/i)||['<!doctype html>'])[0];var htmlMatch=doc.match(/<html([^>]*)>/i);var headMatch=doc.match(/<head[^>]*>([\s\S]*?)<\/head>/i);var bodyMatch=doc.match(/<body([^>]*)>([\s\S]*?)<\/body>/i);var head=headMatch?headMatch[1]:'';var body=bodyMatch?bodyMatch[2]:doc;var scriptsHead=(head.match(/<script\b[\s\S]*?<\/script>/gi)||[]).join('\n');var scriptsBody=(body.match(/<script\b[\s\S]*?<\/script>/gi)||[]).join('\n');var css=[];head.replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gi,function(_,value){css.push(value);return _});body.replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gi,function(_,value){css.push(value);return _});var staticHead=head.replace(/<script\b[\s\S]*?<\/script>/gi,'').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,'').trim();var cleanBody=body.replace(/<script\b[\s\S]*?<\/script>/gi,'').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,'').trim();var links=[];head.replace(/<link\b[^>]*rel=["']?stylesheet["']?[^>]*>/gi,function(tag){var m=tag.match(/href=["']([^"']+)["']/i);if(m)links.push(m[1]);return tag});return{doctype:doctype,htmlAttrs:htmlMatch?htmlMatch[1]:' lang="ms"',bodyAttrs:bodyMatch?bodyMatch[1]:'',staticHead:staticHead,headScripts:scriptsHead,bodyScripts:scriptsBody,bodyHtml:cleanBody,css:css.join('\n'),stylesheets:links}}
+function buildEditor(projectData,assets){
   if(editor){editor.destroy();document.getElementById('gjs').innerHTML=''}
-  var bodyM=html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);var bodyHTML=bodyM?bodyM[1]:html;
-  var styleM=html.match(/<style[^>]*>([\s\S]*?)<\/style>/i);var styleCSS=styleM?styleM[1]:'';
-  editor=grapesjs.init({container:'#gjs',height:'100%',width:'auto',fromElement:false,storageManager:{type:'local',autosave:false},plugins:['gjs-preset-webpage'],pluginsOpts:{'gjs-preset-webpage':{}},canvas:{styles:['https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap']},deviceManager:{devices:[{name:'Desktop',width:''},{name:'Tablet',width:'768px',widthMedia:'768px'},{name:'Mobile',width:'375px',widthMedia:'375px'}]},showOffsets:true,showStylesOnChange:true,clearOnRender:true});
-  editor.on('load',function(){
-    if(styleCSS)editor.setStyle(styleCSS);editor.addComponents(bodyHTML);
-    var bm=editor.Blocks;
-    bm.add('hero',{label:'\u2605 Hero',category:'Extra',content:'<section style="padding:100px 0;text-align:center;background:#f0fdf4"><div style="max-width:1100px;margin:0 auto;padding:0 20px"><h1 style="font-size:3rem;font-weight:800;margin-bottom:16px">Hero Title</h1><p style="font-size:1.2rem;color:#666;margin-bottom:24px">Hero subtitle</p><a href="#" style="display:inline-block;padding:16px 36px;background:#166534;color:#fff;border-radius:50px;text-decoration:none;font-weight:700">Get Started</a></div></section>'});
-    bm.add('grid3',{label:'\u229F 3 Cols',category:'Extra',content:'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px"><div style="text-align:center;padding:20px"><h3>Feature 1</h3><p>Description</p></div><div style="text-align:center;padding:20px"><h3>Feature 2</h3><p>Description</p></div><div style="text-align:center;padding:20px"><h3>Feature 3</h3><p>Description</p></div></div>'});
-    bm.add('cta',{label:'\uD83D\uDCE2 CTA',category:'Extra',content:'<section style="background:#166534;color:#fff;text-align:center;padding:60px 20px;border-radius:16px"><h2 style="font-size:2rem;margin-bottom:12px">Ready to start?</h2><a href="#" style="display:inline-block;padding:16px 36px;background:#fff;color:#166534;border-radius:50px;text-decoration:none;font-weight:700">Get Started</a></section>'});
-    bm.add('faq',{label:'? FAQ',category:'Extra',content:'<div style="max-width:600px"><div style="border-bottom:1px solid #ddd;padding:16px 0"><div style="font-weight:700">Question 1?</div><p style="margin-top:8px;color:#666">Answer.</p></div></div>'});
-  });
-  window.editor=editor;
-  document.onkeydown=function(e){if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveToGitHub()}}
+  var plugins=[G.presetWebpage,G.blocksBasic,G.pluginForms,G.pluginExport,G.customCode,G.touch,G.tabs,G.tooltip,G.styleBg,G.parserPostcss,G.blocksFlexbox,G.styleFilter,G.styleGradient,G.typed,G.tuiImageEditor,G.codeEditor,G.ckeditor].filter(Boolean);var canvasStyles=(currentEnvelope.stylesheets||[]).map(function(href){try{return new URL(href,currentSite.live_url).href}catch(e){return href}});
+  var config={container:'#gjs',height:'100%',width:'auto',fromElement:false,storageManager:false,panels:{defaults:[]},blockManager:{appendTo:'#blocksPanel'},styleManager:{appendTo:'#stylesPanel',sectors:styleSectors()},traitManager:{appendTo:'#traitsPanel'},layerManager:{appendTo:'#layersPanel'},selectorManager:{appendTo:'#selectorsPanel'},assetManager:{assets:assets,upload:API_URL+'/api/website/editor/assets?site='+encodeURIComponent(currentSite.id),uploadName:'files',multiUpload:true,autoAdd:true,headers:{Authorization:'Bearer '+token}},canvas:{styles:canvasStyles},deviceManager:{devices:[{id:'desktop',name:'Desktop',width:''},{id:'tablet',name:'Tablet',width:'768px',widthMedia:'992px'},{id:'mobile',name:'Mobile',width:'390px',widthMedia:'600px'}]},plugins:plugins,pluginsOpts:{[G.presetWebpage]:{modalImportTitle:'Import HTML',modalImportLabel:'Paste HTML and CSS here',blocksBasicOpts:{flexGrid:true},navbarOpts:{},countdownOpts:{},formsOpts:{}},[G.customCode]:{},[G.touch]:{},[G.tabs]:{},[G.tooltip]:{},[G.styleBg]:{},[G.parserPostcss]:{},[G.blocksFlexbox]:{},[G.styleFilter]:{},[G.styleGradient]:{},[G.typed]:{},[G.tuiImageEditor]:{config:{includeHotkeys:!0,usageStatistics:!1,hideHeader:!0,selectionStyle:{cornerStyle:'circle',cornerSize:16}}},[G.codeEditor]:{},[G.ckeditor]:{options:{language:'en',extraPlugins:'',removePlugins:''}}},showOffsets:true,noticeOnUnload:false,avoidInlineStyle:true};
+  if(projectData&&projectData.pages)config.projectData=projectData;else{config.components=currentEnvelope.bodyHtml;config.style=currentEnvelope.css}
+  editor=G.grapesjs.init(config);window.editor=editor;addMarketingBlocks();
+  editor.on('load',function(){injectCanvasBase();editor.clearDirtyCount();refreshHistoryButtons()});
+  editor.on('update',function(){if(!editor.getDirtyCount())return;dirty=true;document.getElementById('saveBtn').disabled=false;setState('Unsaved changes',shortTarget(currentSite),'dirty');refreshHistoryButtons()});
+  editor.on('component:selected',function(){if(innerWidth<=760){showRightPane('styles');document.getElementById('rightSidebar').classList.add('open')}});
+  editor.on('asset:upload:response',function(response){if(response&&response.commit_sha)currentCommit=response.commit_sha;toast('Image uploaded to GitHub',true)});
+  editor.on('asset:upload:error',function(error){toast('Image upload failed: '+(error&&error.message?error.message:'unknown error'),false)});
 }
+function styleSectors(){return[{name:'Layout',open:true,buildProps:['display','position','top','right','bottom','left','flex-direction','flex-wrap','justify-content','align-items','gap','grid-template-columns']},{name:'Size & spacing',open:true,buildProps:['width','height','max-width','min-height','margin','padding']},{name:'Typography',open:false,buildProps:['font-family','font-size','font-weight','letter-spacing','line-height','color','text-align','text-decoration','text-shadow']},{name:'Background',open:false,buildProps:['background-color','background']},{name:'Border & effects',open:false,buildProps:['border','border-radius','box-shadow','opacity','overflow','transform','transition']}]}
+function injectCanvasBase(){try{var doc=editor.Canvas.getDocument();var old=doc.querySelector('base[data-jayabina]');if(old)old.remove();var base=doc.createElement('base');base.dataset.jayabina='1';base.href=currentSite.live_url;doc.head.prepend(base)}catch(ignore){}}
+function addMarketingBlocks(){var blocks=editor.Blocks;var items=[['jb-hero','Hero section','Sections','<section style="padding:96px 24px;text-align:center;background:linear-gradient(135deg,#ecfdf3,#fff)"><div style="max-width:1080px;margin:auto"><p style="font-weight:800;color:#166534;letter-spacing:.12em">TRUSTED LOCAL SERVICE</p><h1 style="font-size:clamp(2.4rem,6vw,5rem);line-height:1.05;margin:14px 0">A clear headline that earns attention</h1><p style="font-size:1.15rem;color:#52635a;max-width:680px;margin:0 auto 28px">Explain the transformation and why customers should act now.</p><a href="#contact" style="display:inline-block;padding:16px 28px;border-radius:999px;background:#166534;color:white;text-decoration:none;font-weight:800">Get a quotation</a></div></section>'],['jb-proof','Trust statistics','Sections','<section style="padding:56px 24px"><div style="max-width:1080px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:18px"><div style="padding:24px;border:1px solid #d8e4db;border-radius:18px"><strong style="font-size:2rem;color:#166534">10+ years</strong><p>Local experience</p></div><div style="padding:24px;border:1px solid #d8e4db;border-radius:18px"><strong style="font-size:2rem;color:#166534">Fast</strong><p>WhatsApp response</p></div><div style="padding:24px;border:1px solid #d8e4db;border-radius:18px"><strong style="font-size:2rem;color:#166534">Clear</strong><p>Scope before work</p></div></div></section>'],['jb-cards','3 service cards','Sections','<section style="padding:72px 24px;background:#f5f8f6"><div style="max-width:1080px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:22px"><article style="background:white;padding:26px;border-radius:20px"><h3>Service one</h3><p>Describe the problem and outcome.</p></article><article style="background:white;padding:26px;border-radius:20px"><h3>Service two</h3><p>Describe the problem and outcome.</p></article><article style="background:white;padding:26px;border-radius:20px"><h3>Service three</h3><p>Describe the problem and outcome.</p></article></div></section>'],['jb-testimonial','Testimonial','Marketing','<figure style="max-width:760px;margin:48px auto;padding:34px;border-left:5px solid #166534;background:#f0fdf4;border-radius:16px"><blockquote style="font-size:1.35rem;line-height:1.6;margin:0">“Add a specific customer story that reduces doubt and builds trust.”</blockquote><figcaption style="margin-top:18px;font-weight:800">— Customer name, location</figcaption></figure>'],['jb-gallery','Image gallery','Media','<section style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;padding:20px"><img src="https://placehold.co/900x600/e8f5ec/166534?text=Main+photo" style="width:100%;height:100%;object-fit:cover;border-radius:18px"><img src="https://placehold.co/500x600/e8f5ec/166534?text=Photo+2" style="width:100%;height:100%;object-fit:cover;border-radius:18px"><img src="https://placehold.co/500x600/e8f5ec/166534?text=Photo+3" style="width:100%;height:100%;object-fit:cover;border-radius:18px"></section>'],['jb-faq','FAQ item','Marketing','<details style="max-width:760px;margin:12px auto;padding:18px 20px;border:1px solid #d6e2d9;border-radius:14px"><summary style="font-weight:800;cursor:pointer">Common customer question?</summary><p style="margin:12px 0 0;color:#58685e">Give a direct, reassuring answer.</p></details>'],['jb-cta','Call to action','Marketing','<section id="contact" style="margin:40px auto;padding:64px 24px;max-width:1080px;text-align:center;background:#14532d;color:white;border-radius:26px"><h2 style="font-size:2.4rem;margin:0 0 12px">Ready to solve the problem?</h2><p style="margin:0 0 24px;color:#d8f3e1">Invite the visitor to take one clear next step.</p><a href="https://wa.me/60139373275" style="display:inline-block;padding:15px 26px;background:white;color:#14532d;border-radius:999px;text-decoration:none;font-weight:900">WhatsApp us</a></section>']];items.forEach(function(item){if(!blocks.get(item[0]))blocks.add(item[0],{label:item[1],category:item[2],content:item[3]})})}
 
-// ═══════════ SAVE (guarded) ═══════════
-async function saveToGitHub(){
-  if(!currentSite||!editor){toast('Load a page first',false);return}
-  if(!pat){toast('Set GitHub token first (\u2699 Sites)',false);openSiteModal();return}
-  var reason=protectReason(currentSite.repo,currentSite.file);
-  if(reason){toast('Blocked: '+reason,false);return}
-  var html=editor.getHtml(),css=editor.getCss();
-  var headM=currentHTML.match(/<head[^>]*>([\s\S]*?)<\/head>/i);var headContent=headM?headM[1]:'';
-  var scripts=(currentHTML.match(/<script[\s\S]*?<\/script>/gi)||[]).join('\n');
-  headContent=headContent.replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<script[\s\S]*?<\/script>/gi,'');
-  var htmlAM=currentHTML.match(/<html([^>]*)>/i);var htmlAttrs=htmlAM?htmlAM[1]:' lang="ms"';
-  var fullHTML='<!DOCTYPE html>\n<html'+htmlAttrs+'>\n<head>\n'+headContent.trim()+'\n  <style>\n'+css+'\n  </style>\n</head>\n<body>\n'+html+'\n'+scripts+'\n</body>\n</html>';
-  var apiUrl='https://api.github.com/repos/'+currentSite.repo+'/contents/'+(currentSite.file||'index.html');
-  try{
-    var getRes=await fetch(apiUrl,{headers:{Authorization:'Bearer '+pat}});var getData=await getRes.json();
-    if(!getData.sha)throw new Error(getData.message||'Cannot read file');
-    var content=btoa(unescape(encodeURIComponent(fullHTML)));
-    var putRes=await fetch(apiUrl,{method:'PUT',headers:{Authorization:'Bearer '+pat,'Content-Type':'application/json'},body:JSON.stringify({message:'Update sales page via GrapesJS',content:content,sha:getData.sha,branch:currentSite.branch||'master'})});
-    if(!putRes.ok){var err=await putRes.json();throw new Error(err.message||'HTTP '+putRes.status)}
-    currentHTML=fullHTML;toast('Saved! '+currentSite.repo+' deploying...',true);
-  }catch(e){toast('Save failed: '+e.message,false)}
-}
-
-initEditor();
+function reconstructDocument(){var html=editor.getHtml(),css=editor.getCss();return[currentEnvelope.doctype,'<html'+currentEnvelope.htmlAttrs+'>','<head>',currentEnvelope.staticHead,'<style data-grapesjs="jayabina">',css,'</style>',currentEnvelope.headScripts,'</head>','<body'+currentEnvelope.bodyAttrs+'>',html,currentEnvelope.bodyScripts,'</body>','</html>'].filter(function(part){return part!==''}).join('\n')}
+async function savePage(){if(!currentSite||!editor){toast('Load a website first',false);return}var btn=document.getElementById('saveBtn');setBusy(btn,true,'Saving…');setState('Saving','Creating one atomic GitHub commit');try{var data=await jsonResponse(await api('/api/website/editor/page',{method:'PUT',json:{site_id:currentSite.id,base_commit:currentCommit,html:reconstructDocument(),project_data:editor.getProjectData()}}),'Unable to save website');currentCommit=data.commit_sha;dirty=false;editor.clearDirtyCount();setState('Saved to GitHub',String(data.commit_sha||'').slice(0,7)+' · deployment requested','saved');toast('Saved. Cloudflare deployment can now build the update.',true)}catch(e){setState('Save failed',e.message,'error');toast(e.message,false)}finally{setBusy(btn,false);document.getElementById('saveBtn').disabled=!currentSite}}
+function shortTarget(site){return site.repo+' · '+site.branch+' · '+site.file}
+function runCommand(command){if(!editor)return toast('Load a website first',false);try{editor.runCommand(command)}catch(e){toast(e.message,false)}}
+function refreshHistoryButtons(){}
+function setDevice(name,button){if(!editor)return;editor.setDevice(name);document.querySelectorAll('.device-btn').forEach(function(el){el.classList.toggle('active',el===button)});document.getElementById('canvasDevice').textContent=name}
+function togglePreviewMode(){if(!editor)return;previewMode=!previewMode;if(previewMode)editor.runCommand('preview');else editor.stopCommand('preview');toast(previewMode?'Preview mode on':'Preview mode off',true)}
+function toggleOutline(){if(!editor)return;outlineMode=!outlineMode;if(outlineMode)editor.runCommand('sw-visibility');else editor.stopCommand('sw-visibility')}
+function openAssets(){if(!editor)return toast('Load a website first',false);editor.AssetManager.open()}
+function openPreview(){if(currentSite)window.open(currentSite.live_url,'_blank','noopener')}
+function openCode(){if(!editor)return toast('Load a website first',false);document.getElementById('codeHtml').value=editor.getHtml();document.getElementById('codeCss').value=editor.getCss();document.getElementById('codeModal').classList.add('open')}
+function applyCode(){if(!editor)return;editor.setComponents(document.getElementById('codeHtml').value);editor.setStyle(document.getElementById('codeCss').value);dirty=true;closeModal('codeModal');setState('Unsaved code changes',shortTarget(currentSite),'dirty');toast('Code applied to the canvas',true)}
+function showRightPane(name,button){document.querySelectorAll('.right-pane').forEach(function(el){el.classList.toggle('active',el.id==='pane'+name.charAt(0).toUpperCase()+name.slice(1))});var buttons=document.querySelectorAll('.right-tabs button');buttons.forEach(function(el){el.classList.remove('active')});if(button)button.classList.add('active');else{var map={styles:0,traits:1,layers:2};if(buttons[map[name]])buttons[map[name]].classList.add('active')}}
+function toggleSide(side,button){var target=document.getElementById(side==='left'?'leftSidebar':'rightSidebar');var was=target.classList.contains('open');closeSides();if(!was){target.classList.add('open');if(button)button.classList.add('active')}}
+function closeSides(){document.querySelectorAll('.sidebar').forEach(function(el){el.classList.remove('open')});document.querySelectorAll('.panel-btn,.mobile-dock button').forEach(function(el){el.classList.remove('active')})}
+function exitEditor(){if(confirmDiscard())location.href='/#website'}
+window.addEventListener('beforeunload',function(event){if(dirty){event.preventDefault();event.returnValue=''}});
+document.addEventListener('keydown',function(event){if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();savePage()}if(event.key==='Escape'){closeSides();document.querySelectorAll('.modal.open').forEach(function(el){el.classList.remove('open')})}});
+start();
 </script>
 </body>
 </html>

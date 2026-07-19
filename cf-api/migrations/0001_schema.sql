@@ -1,4 +1,4 @@
--- JAYABINA D1 Schema (migrated from Supabase PostgreSQL)
+-- JAYACLEAN D1 Schema (migrated from Supabase PostgreSQL)
 -- SQLite dialect. Triggers/RLS/Functions replaced with application logic in Workers.
 
 PRAGMA foreign_keys = ON;
@@ -61,8 +61,8 @@ INSERT OR IGNORE INTO app_settings (key, value) VALUES
   ('service_areas', ''),
   ('wa_api_enabled', 'false'),
   ('cloud_name', 'dkibczut'),
-  ('upload_preset', 'jayabina_tasks'),
-  ('folder', 'jayabina/tasks'),
+  ('upload_preset', 'jayaclean_tasks'),
+  ('folder', 'jayaclean/tasks'),
   ('active_homepage', 'v1');
 
 -- ============================================================

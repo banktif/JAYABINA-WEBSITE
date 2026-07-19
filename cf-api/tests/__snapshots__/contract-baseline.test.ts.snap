@@ -333,7 +333,7 @@ exports[`legacy Worker behavior snapshot > freezes every route group before Hono
       "body": {
         "data": {
           "database": "ok",
-          "service": "jayabina-api",
+          "service": "jayaclean-api",
         },
         "status": "ok",
       },
@@ -637,7 +637,7 @@ exports[`legacy Worker behavior snapshot > freezes every route group before Hono
           {
             "key": "folder",
             "updated_at": "<db-timestamp>",
-            "value": "jayabina/tasks",
+            "value": "jayaclean/tasks",
           },
           {
             "key": "max_slots_per_day",
@@ -677,7 +677,7 @@ exports[`legacy Worker behavior snapshot > freezes every route group before Hono
           {
             "key": "upload_preset",
             "updated_at": "<db-timestamp>",
-            "value": "jayabina_tasks",
+            "value": "jayaclean_tasks",
           },
           {
             "key": "wa_api_enabled",

@@ -1,4 +1,4 @@
-# JAYABINA — AGENTS.md
+# JAYACLEAN — AGENTS.md
 # Project rules & memory anchor. READ THIS FIRST every new session.
 # Last updated: 2026-07-11
 
@@ -12,7 +12,7 @@
 ---
 
 ## 1. WHAT THIS IS
-JAYABINA — a water-tank cleaning service business (company: **Jaya Bina Services**).
+JAYACLEAN — a water-tank cleaning service business (company: **Jaya Bina Services**).
 - Public sales page + online booking + Bayarcash deposit payment
 - Admin dashboard to manage bookings
 - (Building) Staff task manager: 50 staff accounts, task assignment, before/after photos, schedule/calendar, WhatsApp notifications
@@ -32,17 +32,17 @@ Owner: Abdul Latif / banktifweb@gmail.com
 | Editor | GrapesJS (sales page editor) |
 
 Supabase project ref: `thbscwlcyhcnqsppoyfn` — https://thbscwlcyhcnqsppoyfn.supabase.co
-GitHub repo: `banktif/jayabina-salespage` (branch `master`)
+GitHub repo: `banktif/jayaclean-salespage` (branch `master`)
 Domain: `cuci.jayabina.com` (GitHub Pages; CNAME file present)
 
 ---
 
 ## 3. LOCKED DECISIONS (do not change without explicit owner approval)
-- **Brand name:** JAYABINA (renamed from JAYACUCI). Company name **Jaya Bina Services** stays. Domain `cuci.jayabina.com` stays. Logo initials `JC` stay.
+- **Brand name:** JAYACLEAN (renamed from JAYACUCI). Company name **Jaya Bina Services** stays. Domain `cuci.jayabina.com` stays. Logo initials `JC` stay.
 - **Language:** All admin/staff system UI + docs + code = **English**. WhatsApp message templates = **Bahasa Melayu**. Customer-facing pages (`index.html`, `success.html`, `test-pay.html`) stay **Bahasa Melayu**.
 - **WhatsApp:** Semi-auto `wa.me` (free). No paid gateway. Messages pre-filled, sent with one tap.
 - **Auth:** Supabase Auth. Admin + 50 staff have real accounts. Staff login via phone → synthetic email (`<digits>@staff.jayabina.local`) + password set by admin.
-- **Photo storage:** Cloudinary unsigned upload preset. Folder `jayabina/tasks`.
+- **Photo storage:** Cloudinary unsigned upload preset. Folder `jayaclean/tasks`.
 - **Auto-assign:** Toggle in Settings > Automation. Can be On (auto) or Off (manual). Default: Off.
 - **Config:** Non-secret config in `app_settings` table (Settings UI). Secrets in Supabase Edge secrets. Staff credentials in Supabase Auth (never plaintext).
 - **Payment amount:** Always computed server-side from DB (`bookings.deposit_amount`), never trusted from client.

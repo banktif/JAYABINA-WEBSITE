@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
-  "name": "jayabina-api",
+  "name": "jayaclean-api",
   "account_id": "9b9af0328258f9bd59c1c3b955ddb616",
   "main": "src/index.ts",
   "workers_dev": true,
@@ -11,20 +11,19 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "jayabina-db",
-      "database_id": "5dffa038-ee6a-4876-aa78-8ca1baaafd39"
+      "database_name": "jayaclean-db",
+      "database_id": "3ceabfef-4c60-47cb-b853-3658d3fa69a7"
     }
   ],
   "r2_buckets": [
     {
       "binding": "BACKUP_R2",
-      "bucket_name": "jayabina-backups"
+      "bucket_name": "jayaclean-backups"
     }
   ],
   "vars": {
     "BAYARCASH_PAYMENT_CHANNEL": "5",
-    "SITE_URL": "https://www.jayabina.com",
-    "CF_ZONE_ID": "916289c458db6233106080096fe910ed"
+    "SITE_URL": "https://www.jayabina.com"
   },
   "routes": [
     {

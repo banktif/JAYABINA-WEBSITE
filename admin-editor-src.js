@@ -11,6 +11,13 @@ import tabs from 'grapesjs-tabs';
 import tooltip from 'grapesjs-tooltip';
 import styleBg from 'grapesjs-style-bg';
 import parserPostcss from 'grapesjs-parser-postcss';
+import blocksFlexbox from 'grapesjs-blocks-flexbox';
+import styleFilter from 'grapesjs-style-filter';
+import styleGradient from 'grapesjs-style-gradient';
+import typed from 'grapesjs-typed';
+import tuiImageEditor from 'grapesjs-tui-image-editor';
+import codeEditor from 'grapesjs-component-code-editor';
+import ckeditor from 'grapesjs-plugin-ckeditor';
 
 export {
   grapesjs,
@@ -25,8 +32,15 @@ export {
   tabs,
   tooltip,
   styleBg,
-  parserPostcss
+  parserPostcss,
+  blocksFlexbox,
+  styleFilter,
+  styleGradient,
+  typed,
+  tuiImageEditor,
+  codeEditor,
+  ckeditor
 };
 
 export const version = '0.23.2';
-export const build = 'full-oss-20260717';
+export const build = 'full-oss-20260719-all';

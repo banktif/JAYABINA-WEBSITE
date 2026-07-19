@@ -1,4 +1,4 @@
-# JAYABINA — BUILD-PLAN.md
+# JAYACLEAN — BUILD-PLAN.md
 # Phased build runbook. Update checkboxes as you go. Verify each phase before moving on.
 # Last updated: 2026-07-11
 
@@ -33,7 +33,7 @@ Goal: real Supabase Auth for admin + staff; staff account management; settings b
 - [x] `login.html`: Supabase Auth sign-in (email or phone), role redirect
 - [x] `admin.html`: Supabase Auth guard (role=admin) + Staff Management + Settings sections + English UI
 - [x] `staff.html`: auth-guarded stub (full build Phase 3)
-- [x] Rename JAYACUCI -> JAYABINA (admin.html, manifest.json)
+- [x] Rename JAYACUCI -> JAYACLEAN (admin.html, manifest.json)
 
 Deploy + Verify:
 - [x] Migration applied via Management API; tables + policies + seed confirmed
@@ -69,7 +69,7 @@ Goal: staff see their schedule, start/finish jobs with photos.
 - [x] Photos saved to `task_photos`
 
 Verify: staff RLS end-to-end tested (read own task, read booking, update status, insert photo) - all OK. Syntax checked.
-- [ ] Owner action: create Cloudinary unsigned preset `jayabina_tasks` (folder `jayabina/tasks`) so real uploads work
+- [ ] Owner action: create Cloudinary unsigned preset `jayaclean_tasks` (folder `jayaclean/tasks`) so real uploads work
 
 ---
 
@@ -98,4 +98,4 @@ Verify: new confirmed booking auto-assigned (round-robin) OK; distribute RPC ass
 - [ ] Admin email confirmed: `banktifweb1@gmail.com` (set password on first login / via dashboard)
 - [ ] 50 staff list (name + phone) for bulk import
 - [ ] Bank details + QR image (upload to Cloudinary)
-- [ ] Cloudinary: create unsigned upload preset (folder `jayabina/tasks`) + rotate exposed api_secret
+- [ ] Cloudinary: create unsigned upload preset (folder `jayaclean/tasks`) + rotate exposed api_secret

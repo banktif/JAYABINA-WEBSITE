@@ -6,9 +6,9 @@ site-public/
 site/resources/
 site/.hugo_build.lock
 assets/*.png
-!assets/jayabina-apple-touch-icon.png
-!assets/jayabina-favicon-64.png
-assets/jayabina-wudhu-tank-emotional.webp
+!assets/jayaclean-apple-touch-icon.png
+!assets/jayaclean-favicon-64.png
+assets/jayaclean-wudhu-tank-emotional.webp
 .env
 *.log
 connect_test.js

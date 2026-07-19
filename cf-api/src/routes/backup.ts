@@ -45,7 +45,7 @@ export async function handleBackup(req: Request, env: Env, path: string): Promis
         dump[table] = rows;
       }
 
-      const json = JSON.stringify({ _meta: { project: 'jayabina', timestamp: now }, ...dump });
+      const json = JSON.stringify({ _meta: { project: 'jayaclean', timestamp: now }, ...dump });
       const compressed = await gzip(json);
       const filename = `db-backup-${now.replace(/[:.]/g, '-')}.json.gz`;
 
@@ -196,7 +196,7 @@ export async function handleBackup(req: Request, env: Env, path: string): Promis
     try {
       await checkBackupAuth(req, env);
       if (!env.GH_PAT) return err('GitHub token is not configured in Cloudflare Worker secrets', 503);
-      const response = await fetch('https://api.github.com/repos/banktif/JAYABINA-WEBSITE/actions/workflows/mirror-to-gitlab.yml/dispatches', {
+      const response = await fetch('https://api.github.com/repos/banktif/jayaclean-salespage/actions/workflows/mirror-to-gitlab.yml/dispatches', {
         method: 'POST',
         headers: githubHeaders(env.GH_PAT),
         body: JSON.stringify({ ref: 'master' })
@@ -362,7 +362,7 @@ function githubHeaders(token: string): Record<string, string> {
     'Authorization': `Bearer ${token}`,
     'Accept': 'application/vnd.github+json',
     'Content-Type': 'application/json',
-    'User-Agent': 'jayabina-cloudflare-worker',
+    'User-Agent': 'jayaclean-cloudflare-worker',
     'X-GitHub-Api-Version': '2022-11-28'
   };
 }

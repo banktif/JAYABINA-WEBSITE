@@ -1,4 +1,4 @@
-# JAYABINA Sales Page Design Spec (LOCKED)
+# JAYACLEAN Sales Page Design Spec (LOCKED)
 # Reference: https://www.jayabina.com/servis/cuci-tangki-air/
 # Last updated: 2026-07-17
 

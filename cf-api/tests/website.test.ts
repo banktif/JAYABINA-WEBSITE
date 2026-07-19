@@ -61,7 +61,7 @@ describe('Hugo website management', () => {
     expect((await call('/api/website/files', staffToken)).status).toBe(403);
     const admin = await call('/api/website/files', adminToken);
     expect(admin.status).toBe(200);
-    expect(admin.body.data.repo).toBe('banktif/JAYABINA-WEBSITE');
+    expect(admin.body.data.repo).toBe('banktif/jayaclean-salespage');
     expect(admin.body.data.files).toHaveLength(WEBSITE_FILES.length);
   });
 
@@ -69,7 +69,7 @@ describe('Hugo website management', () => {
     const missing = await call('/api/website/file?path=site%2Fcontent%2F_index.md', adminToken);
     expect(missing.status).toBe(503);
     expect((await call('/api/website/settings', adminToken)).status).toBe(503);
-    expect((await call('/api/website/editor/page?site=jayabina-sales', adminToken)).status).toBe(503);
+    expect((await call('/api/website/editor/page?site=jayaclean-sales', adminToken)).status).toBe(503);
     const traversal = await call('/api/website/file', adminToken, 'PUT', { path: '../theme.css', content: 'x' });
     expect(traversal.status).toBe(400);
   });
@@ -101,7 +101,7 @@ describe('Hugo website management', () => {
     expect(editorProtectReason('banktif/site', 'admin/index.html')).toContain('protected');
     expect(editorProtectReason('banktif/site', '../index.html')).toContain('invalid');
     expect(editorProtectReason('banktif/site', 'theme.css')).toContain('standalone HTML');
-    expect(editorProtectReason('banktif/JAYABINA-WEBSITE', 'site/layouts/index.html')).toContain('Only the public sales page');
+    expect(editorProtectReason('banktif/jayaclean-salespage', 'site/layouts/index.html')).toContain('Only the public sales page');
     expect(validateEditorSites([{ ...DEFAULT_EDITOR_SITES[0], repo: 'another-owner/site' }])).toContain('banktif');
     expect(validateEditorSites(Array.from({ length: 11 }, (_, index) => ({ ...DEFAULT_EDITOR_SITES[0], id: `site-${index}`, name: `Site ${index}`, repo: `banktif/site-${index}` })))).toContain('between 1 and 10');
   });

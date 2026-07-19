@@ -1,5 +1,5 @@
 {
-  "name": "jayabina-api",
+  "name": "jayaclean-api",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -9,9 +9,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "db:schema:sql": "drizzle-kit export --config=drizzle.config.ts",
-    "db:migrate": "wrangler d1 execute jayabina-db --file=./migrations/0001_schema.sql",
-    "db:migrate:local": "wrangler d1 execute jayabina-db --local --file=./migrations/0001_schema.sql",
-    "db:migrate:prod": "wrangler d1 execute jayabina-db --remote --file=./migrations/0001_schema.sql"
+    "db:migrate": "wrangler d1 execute jayaclean-db --file=./migrations/0001_schema.sql",
+    "db:migrate:local": "wrangler d1 execute jayaclean-db --local --file=./migrations/0001_schema.sql",
+    "db:migrate:prod": "wrangler d1 execute jayaclean-db --remote --file=./migrations/0001_schema.sql"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.18.5",

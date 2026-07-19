@@ -61,6 +61,6 @@ Walaupun cucian sendiri boleh dilakukan, ada situasi di mana anda memerlukan khi
 - Anda tidak mempunyai peralatan yang sesuai
 - Ingin jaminan cucian yang menyeluruh
 
-Di **JAYABINA**, kami menawarkan perkhidmatan cuci tangki air profesional dengan harga **RM300** sahaja (deposit RM150). Pasukan kami dilatih untuk membersihkan semua jenis tangki air kediaman di Lembah Klang.
+Di **JAYACLEAN**, kami menawarkan perkhidmatan cuci tangki air profesional dengan harga **RM300** sahaja (deposit RM150). Pasukan kami dilatih untuk membersihkan semua jenis tangki air kediaman di Lembah Klang.
 
 [Tempah servis anda hari ini!](https://cuci.jayabina.com/#tempah)

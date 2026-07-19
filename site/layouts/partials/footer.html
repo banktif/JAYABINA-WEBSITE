@@ -1,41 +1,14 @@
 {{ $b := hugo.Data.business }}
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-col1">
-        <img src="/logo.png" width="768" height="123" alt="JAYABINA" style="height:30px;width:auto;margin-bottom:12px;display:block">
-        <p>Servis tukar atap, cuci tangki air &amp; mengecat rumah dan ofis. Kuala Lumpur &amp; Selangor.</p>
-        <div class="footer-info">
-          <span>{{ $b.legal_name }}</span>
-          <span>{{ $b.company_number }}</span>
-        </div>
-      </div>
-      <details class="f-acc">
-        <summary>Servis</summary>
-        <div class="f-links">
-          <a href="/servis-tukar-atap/">Tukar Atap Baharu</a>
-          <a href="/servis-cuci-tangki-air/">Cuci Tangki Air</a>
-          <a href="/servis-mengecat/">Mengecat Rumah &amp; Ofis</a>
-        </div>
-      </details>
-      <details class="f-acc">
-        <summary>Tentang</summary>
-        <div class="f-links">
-          <a href="/">Utama</a>
-          <a href="/tentang-kami/">Tentang Kami</a>
-          <a href="/hubungi-kami/">Hubungi Kami</a>
-        </div>
-      </details>
-      <details class="f-acc">
-        <summary>Informasi</summary>
-        <div class="f-links">
-          <a href="/terma-perkhidmatan/">Terma Perkhidmatan</a>
-          <a href="/dasar-privasi/">Dasar Privasi</a>
-          <a href="/blog/">Blog</a>
-        </div>
-      </details>
+<footer class="site-footer" data-footer>
+  <div class="container footer-grid">
+    <div class="footer-identity">
+      <a class="brand brand-footer" href="/"><img src="/favicon.png" width="38" height="38" alt=""><span>JAYABINA</span></a>
+      <p>Laman rasmi {{ $b.legal_name }}.</p>
+      <p class="company-number">No. Syarikat: {{ $b.company_number }}</p>
     </div>
-    <div class="footer-bottom"><span>&copy; {{ now.Year }} {{ $b.legal_name }}.</span></div>
+    <div><h2>Servis</h2><a href="/servis-tukar-atap/">Tukar Atap Baharu</a><a href="/servis-cuci-tangki-air/">Cuci Tangki Air</a><a href="/servis-mengecat/">Mengecat Rumah & Ofis</a><a href="/servis/">Semua Servis</a></div>
+    <div><h2>Syarikat</h2><a href="/tentang-kami/">Tentang Kami</a><a href="/hubungi-kami/">Hubungi Kami</a><a href="/blog/">Blog & Panduan</a><a href="tel:{{ $b.phone_tel }}">{{ $b.phone_display }}</a></div>
+    <div><h2>Maklumat</h2><a href="/dasar-privasi/">Dasar Privasi</a><a href="/terma-perkhidmatan/">Terma Perkhidmatan</a><a href="/sitemap.xml">Sitemap</a></div>
   </div>
-  <script>function footerAcc(){var d=window.matchMedia('(min-width:768px)').matches;document.querySelectorAll('.f-acc').forEach(function(a){a.open=d;a.classList.toggle('static',d)})}footerAcc();window.addEventListener('resize',footerAcc);</script>
+  <div class="container footer-bottom"><span>© {{ now.Year }} {{ $b.legal_name }}. Hak cipta terpelihara.</span><span>{{ $b.domain }}</span></div>
 </footer>

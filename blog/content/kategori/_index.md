@@ -1,5 +1,5 @@
 ---
 title: "Kategori"
 url: "/blog/kategori/"
-description: "Semua kategori artikel di Blog JAYABINA"
+description: "Semua kategori artikel di Blog JAYACLEAN"
 ---

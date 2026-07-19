@@ -14,21 +14,29 @@
   "type": "commonjs",
   "dependencies": {
     "@supabase/supabase-js": "^2.110.2",
+    "ckeditor4": "^4.25.2",
     "cloudinary": "^2.10.0",
     "grapesjs": "^0.23.2",
     "grapesjs-blocks-basic": "^1.0.2",
+    "grapesjs-blocks-flexbox": "^1.0.1",
+    "grapesjs-component-code-editor": "^1.0.20",
     "grapesjs-component-countdown": "^1.0.2",
     "grapesjs-custom-code": "^1.0.2",
     "grapesjs-navbar": "^1.0.2",
     "grapesjs-parser-postcss": "^1.0.3",
+    "grapesjs-plugin-ckeditor": "^1.0.1",
     "grapesjs-plugin-export": "^1.0.12",
     "grapesjs-plugin-forms": "^2.0.6",
     "grapesjs-preset-webpage": "^1.0.3",
     "grapesjs-style-bg": "^2.0.2",
+    "grapesjs-style-filter": "^1.0.2",
     "grapesjs-tabs": "^1.0.6",
     "grapesjs-tooltip": "^0.1.8",
     "grapesjs-touch": "^0.1.1",
-    "pg": "^8.22.0"
+    "grapesjs-tui-image-editor": "^1.0.2",
+    "grapesjs-typed": "^2.0.1",
+    "pg": "^8.22.0",
+    "tui-image-editor": "^3.15.3"
   },
   "devDependencies": {
     "esbuild": "^0.28.1"

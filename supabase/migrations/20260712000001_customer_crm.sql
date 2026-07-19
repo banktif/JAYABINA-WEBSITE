@@ -1,5 +1,5 @@
 -- =============================================
--- JAYABINA - Customer CRM (Phase 7)
+-- JAYACLEAN - Customer CRM (Phase 7)
 -- customers table (dedup by phone), scales to 100k+
 -- (ASCII only)
 -- =============================================

@@ -1,5 +1,5 @@
 -- =============================================
--- JAYABINA - Staff profile fields (Phase 6)
+-- JAYACLEAN - Staff profile fields (Phase 6)
 -- Add email, address, avatar_url to profiles
 -- (ASCII only)
 -- =============================================

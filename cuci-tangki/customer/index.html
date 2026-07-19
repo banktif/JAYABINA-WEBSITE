@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#166534">
-  <title>JAYABINA — My Bookings</title>
+  <title>JAYACLEAN — My Bookings</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/theme.css">
   <style>
@@ -55,7 +55,7 @@
   <!-- LOGIN SCREEN -->
   <div id="loginScreen">
     <div class="logo">JC</div>
-    <h1>JAYABINA</h1>
+    <h1>JAYACLEAN</h1>
     <p class="sub">Customer Portal — View your bookings</p>
     <input type="tel" id="phoneInput" placeholder="Phone number (e.g. 0123456789)" maxlength="13">
     <div class="err" id="errPhone">Please enter a valid phone number</div>
@@ -166,7 +166,7 @@ async function openDetail(id){
 
   // ACTIONS
   h+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">';
-  h+='<button class="btn" style="flex:1;min-width:140px;background:#25D366" onclick="window.open(\'https://wa.me/'+waNum(myPhone)+'?text=Salam JAYABINA, booking ref '+b.id.substring(0,8)+'\',\'_blank\')">WhatsApp Support</button>';
+  h+='<button class="btn" style="flex:1;min-width:140px;background:#25D366" onclick="window.open(\'https://wa.me/'+waNum(myPhone)+'?text=Salam JAYACLEAN, booking ref '+b.id.substring(0,8)+'\',\'_blank\')">WhatsApp Support</button>';
 
   // Pay balance button
   if(b.status==='completed'&&b.payment_status==='paid'){

@@ -1,18 +1,18 @@
 const PUBLIC_ORIGIN = 'https://akaun.jayabina.com';
-const PAGES_ORIGIN = 'https://jayabina-pages.pages.dev';
+const PAGES_ORIGIN = 'https://jayaclean-29f.pages.dev';
 const APP_PATH = '/customer/';
 
 function rewritePublicUrl(value) {
   return value
     .replaceAll(PAGES_ORIGIN, PUBLIC_ORIGIN)
-    .replaceAll('https:\\/\\/jayabina-pages.pages.dev', 'https:\\/\\/akaun.jayabina.com');
+    .replaceAll('https:\\/\\/jayaclean-29f.pages.dev', 'https:\\/\\/akaun.jayabina.com');
 }
 
 export default {
   async fetch(request) {
     const upstreamUrl = new URL(request.url);
     upstreamUrl.protocol = 'https:';
-    upstreamUrl.hostname = 'jayabina-pages.pages.dev';
+    upstreamUrl.hostname = 'jayaclean-29f.pages.dev';
     upstreamUrl.port = '';
     if (upstreamUrl.pathname === '/' || upstreamUrl.pathname === '/index.html') {
       upstreamUrl.pathname = APP_PATH;

@@ -1,10 +1,9 @@
 import { and, asc, count, desc, eq, min, max, sql, sum, type SQL } from 'drizzle-orm';
 import type { Env } from '../types';
-import { err, ok, uuid, nowISO, normPhone } from '../utils/helpers';
+import { err, ok, uuid, nowISO } from '../utils/helpers';
 import { requireAuth } from '../utils/middleware';
 import { createDb, type AppDb } from '../db/client';
-import { appSettings, bookings, customers, notifications, profiles, slots, taskPhotos, tasks } from '../db/schema';
-import { autoAssignTask } from './bookings';
+import { appSettings, bookings, customers, profiles, slots, taskPhotos, tasks } from '../db/schema';
 
 const taskFields = {
   id: tasks.id,
@@ -30,27 +29,6 @@ const photoFields = {
 export async function handleTasks(req: Request, env: Env, path: string): Promise<Response> {
   const url = new URL(req.url);
   const db = createDb(env);
-
-  // GET /api/notifications — admin live feed
-  if (path === '/api/notifications' && req.method === 'GET') {
-    try {
-      const payload = await requireAuth(req, env);
-      if (payload.role !== 'admin') return err('Admin only', 403);
-      const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
-      const rows = await db.select({
-        id: notifications.id,
-        type: notifications.type,
-        message: notifications.message,
-        task_id: notifications.taskId,
-        booking_id: notifications.bookingId,
-        staff_id: notifications.staffId,
-        created_at: notifications.createdAt
-      }).from(notifications).orderBy(desc(notifications.createdAt)).limit(limit);
-      return ok(rows);
-    } catch (e: any) {
-      return err(e.msg || 'Error', e.status || 400);
-    }
-  }
 
   // GET /api/tasks
   if (path === '/api/tasks' && req.method === 'GET') {
@@ -152,27 +130,9 @@ export async function handleTasks(req: Request, env: Env, path: string): Promise
         switch (body.status) {
           case 'in_progress':
             updates.startedAt = body.started_at || now;
-            // Notify admin
-            (async () => {
-              const b = await db.select({
-                customer_name: bookings.customerName, booking_date: bookings.bookingDate, booking_time: bookings.bookingTime
-              }).from(bookings).where(eq(bookings.id, task.booking_id)).get();
-              const s = await db.select({ full_name: profiles.fullName }).from(profiles).where(eq(profiles.id, task.assigned_to || '')).get();
-              await notifyAdmin(env, db, `🚀 ${s?.full_name || 'Staff'} STARTED job\n${b?.customer_name || 'Customer'} — ${b?.booking_date} ${b?.booking_time}`);
-              await log(db, 'info', `${s?.full_name || 'Staff'} started: ${b?.customer_name || 'Customer'}`, { taskId, bookingId: task.booking_id, staffId: task.assigned_to || '' });
-            })();
             break;
           case 'awaiting_review':
             updates.finishedAt = body.finished_at || now;
-            // Notify admin
-            (async () => {
-              const b = await db.select({
-                customer_name: bookings.customerName, booking_date: bookings.bookingDate, booking_time: bookings.bookingTime
-              }).from(bookings).where(eq(bookings.id, task.booking_id)).get();
-              const s = await db.select({ full_name: profiles.fullName }).from(profiles).where(eq(profiles.id, task.assigned_to || '')).get();
-              await notifyAdmin(env, db, `📸 ${s?.full_name || 'Staff'} FINISHED job (awaiting review)\n${b?.customer_name || 'Customer'} — ${b?.booking_date} ${b?.booking_time}`);
-              await log(db, 'info', `${s?.full_name || 'Staff'} finished (review): ${b?.customer_name || 'Customer'}`, { taskId, bookingId: task.booking_id, staffId: task.assigned_to || '' });
-            })();
             // Auto-complete check
             const autoComplete = await db.select({ value: appSettings.value }).from(appSettings)
               .where(eq(appSettings.key, 'auto_complete_task')).get();
@@ -194,14 +154,6 @@ export async function handleTasks(req: Request, env: Env, path: string): Promise
             const completedBooking = await db.select({ customer_id: bookings.customerId }).from(bookings)
               .where(eq(bookings.id, task.booking_id)).get();
             if (completedBooking?.customer_id) await refreshCustomerStats(db, completedBooking.customer_id);
-            // Notify admin
-            (async () => {
-              const b = await db.select({
-                customer_name: bookings.customerName, booking_date: bookings.bookingDate, booking_time: bookings.bookingTime
-              }).from(bookings).where(eq(bookings.id, task.booking_id)).get();
-              await notifyAdmin(env, db, `✅ Job COMPLETED\n${b?.customer_name || 'Customer'} — ${b?.booking_date} ${b?.booking_time}`);
-              await log(db, 'success', `Job completed: ${b?.customer_name || 'Customer'}`, { taskId, bookingId: task.booking_id });
-            })();
             break;
           case 'cancelled':
             if (payload.role !== 'admin') return err('Admin only', 403);
@@ -223,141 +175,7 @@ export async function handleTasks(req: Request, env: Env, path: string): Promise
     }
   }
 
-  // POST /api/tasks/:id/accept — staff accepts assigned job
-  const acceptMatch = path.match(/^\/api\/tasks\/([a-f0-9-]+)\/accept$/);
-  if (acceptMatch && req.method === 'POST') {
-    try {
-      const payload = await requireAuth(req, env);
-      const taskId = acceptMatch[1];
-      const task = await db.select({
-        id: tasks.id, assigned_to: tasks.assignedTo, status: tasks.status,
-        booking_id: tasks.bookingId
-      }).from(tasks).where(eq(tasks.id, taskId)).get();
-      if (!task) return err('Task not found', 404);
-      if (task.assigned_to !== payload.sub) return err('This job is not assigned to you', 403);
-      if (task.status !== 'assigned') return err('Only assigned jobs can be accepted', 409);
-
-      const booking = await db.select({
-        customer_name: bookings.customerName, customer_address: bookings.customerAddress,
-        booking_date: bookings.bookingDate, booking_time: bookings.bookingTime
-      }).from(bookings).where(eq(bookings.id, task.booking_id)).get();
-      const staff = await db.select({ full_name: profiles.fullName, phone: profiles.phone })
-        .from(profiles).where(eq(profiles.id, payload.sub)).get();
-
-      await notifyAdmin(env, db,
-        `✅ ${staff?.full_name || 'Staff'} ACCEPTED job\n`
-        + `${booking?.customer_name || 'Customer'} — ${booking?.booking_date} ${booking?.booking_time}\n`
-        + `${booking?.customer_address || ''}`
-      );
-      await log(db, 'success',
-        `${staff?.full_name || 'Staff'} accepted job: ${booking?.customer_name || 'Customer'}`,
-        { taskId, bookingId: task.booking_id, staffId: payload.sub }
-      );
-
-      return ok({ task_id: taskId, status: 'assigned', accepted: true });
-    } catch (e: any) {
-      return err(e.msg || 'Error', e.status || 400);
-    }
-  }
-
-  // POST /api/tasks/:id/reject — staff rejects, auto-reassign
-  const rejectMatch = path.match(/^\/api\/tasks\/([a-f0-9-]+)\/reject$/);
-  if (rejectMatch && req.method === 'POST') {
-    try {
-      const payload = await requireAuth(req, env);
-      const taskId = rejectMatch[1];
-      const task = await db.select({
-        id: tasks.id, assigned_to: tasks.assignedTo, status: tasks.status,
-        booking_id: tasks.bookingId
-      }).from(tasks).where(eq(tasks.id, taskId)).get();
-      if (!task) return err('Task not found', 404);
-      if (task.assigned_to !== payload.sub) return err('This job is not assigned to you', 403);
-      if (task.status !== 'assigned') return err('Only assigned jobs can be rejected', 409);
-
-      const booking = await db.select({
-        customer_name: bookings.customerName, customer_address: bookings.customerAddress,
-        booking_date: bookings.bookingDate, booking_time: bookings.bookingTime
-      }).from(bookings).where(eq(bookings.id, task.booking_id)).get();
-      const staff = await db.select({ full_name: profiles.fullName })
-        .from(profiles).where(eq(profiles.id, payload.sub)).get();
-
-      await db.update(tasks).set({ assignedTo: null, status: 'unassigned', updatedAt: nowISO() })
-        .where(eq(tasks.id, taskId));
-
-      const result = await autoAssignTask(db, taskId, payload.sub);
-      let msg = `❌ ${staff?.full_name || 'Staff'} REJECTED job\n`
-        + `${booking?.customer_name || 'Customer'} — ${booking?.booking_date} ${booking?.booking_time}\n`
-        + `${booking?.customer_address || ''}\n`;
-
-      if (result.assigned && result.staffId) {
-        const newStaff = await db.select({ full_name: profiles.fullName, phone: profiles.phone })
-          .from(profiles).where(eq(profiles.id, result.staffId)).get();
-        msg += `🔄 Reassigned to: ${newStaff?.full_name || result.staffId}`;
-        await sendWaToStaff(env, db, result.staffId,
-          `🔔 NEW JOB ASSIGNED\n`
-          + `${booking?.customer_name || 'Customer'} — ${booking?.booking_date} ${booking?.booking_time}\n`
-          + `${booking?.customer_address || ''}\n`
-          + `Previous staff rejected. Please check your dashboard.`
-        );
-      } else {
-        msg += `⚠️ No other staff available — job is unassigned.`;
-      }
-
-      await notifyAdmin(env, db, msg);
-      await log(db, 'warning',
-        msg.replace(/\n/g, ' — ').substring(0, 200),
-        { taskId, bookingId: task.booking_id, staffId: result.staffId || null }
-      );
-      return ok({ task_id: taskId, reassigned: result.assigned, new_staff_id: result.staffId || null });
-    } catch (e: any) {
-      return err(e.msg || 'Error', e.status || 400);
-    }
-  }
-
   return err('Not found', 404);
-}
-
-// --- WhatsApp notification helpers ---
-
-async function notifyAdmin(env: Env, db: AppDb, message: string): Promise<void> {
-  try {
-    const admins = await db.select({ phone: profiles.phone }).from(profiles)
-      .where(eq(profiles.role, 'admin'));
-    for (const admin of admins) {
-      if (admin.phone) await sendWa(env, admin.phone, message);
-    }
-  } catch {}
-}
-
-async function sendWaToStaff(env: Env, db: AppDb, staffId: string, message: string): Promise<void> {
-  try {
-    const staff = await db.select({ phone: profiles.phone }).from(profiles)
-      .where(eq(profiles.id, staffId)).get();
-    if (staff?.phone) await sendWa(env, staff.phone, message);
-  } catch {}
-}
-
-async function sendWa(env: Env, phone: string, message: string): Promise<void> {
-  let digits = String(phone).replace(/\D/g, '');
-  if (digits.startsWith('0')) digits = '6' + digits;
-  if (!digits.startsWith('60')) digits = '60' + digits;
-
-  if (env.WA_PHONE_NUMBER_ID && env.WA_ACCESS_TOKEN) {
-    await fetch(`https://graph.facebook.com/v22.0/${env.WA_PHONE_NUMBER_ID}/messages`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${env.WA_ACCESS_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messaging_product: 'whatsapp', to: digits, type: 'text', text: { body: message } })
-    });
-  }
-}
-
-async function log(db: AppDb, type: string, message: string, meta?: { taskId?: string; bookingId?: string; staffId?: string }): Promise<void> {
-  try {
-    await db.insert(notifications).values({
-      id: uuid(), type, message,
-      taskId: meta?.taskId || null, bookingId: meta?.bookingId || null, staffId: meta?.staffId || null
-    });
-  } catch {}
 }
 
 export async function handleTaskPhotos(req: Request, env: Env, path: string): Promise<Response> {

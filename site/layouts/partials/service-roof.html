@@ -99,15 +99,27 @@
 
     .site-nav{position:fixed;inset:0 0 auto;z-index:100;height:72px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--grey-200);box-shadow:var(--shadow-sm)}
     .nav-inner{height:100%;display:flex;align-items:center;justify-content:space-between;gap:24px}
-    .brand{display:flex;align-items:center;gap:11px}
-    .brand-mark{height:24px;width:auto;display:block}
+    .brand{display:flex;align-items:center;gap:11px;font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;color:var(--green-950);letter-spacing:-.02em}
+    .brand-mark{width:38px;height:38px;display:block;border-radius:11px;box-shadow:0 5px 14px rgba(13,59,46,.16)}
     .nav-links{display:flex;align-items:center;gap:28px;list-style:none;margin:0;padding:0}
     .nav-links a{color:var(--grey-700);font-size:.94rem;font-weight:600}
     .nav-links a:hover,.nav-links a.active{color:var(--green-700)}
     .nav-actions{display:flex;align-items:center;gap:12px}
     .nav-actions .btn{min-height:44px;padding:10px 18px;font-size:.93rem}
     .nav-right{display:flex;align-items:center;gap:10px}
-    {{ partial "burger-menu.css" . | safeCSS }}
+    .menu-toggle{display:block;width:46px;height:46px;padding:0;border:1px solid var(--grey-200);border-radius:12px;background:var(--white);cursor:pointer}
+    .menu-toggle span{display:block;width:21px;height:2px;margin:4px auto;background:var(--green-950);border-radius:99px;transition:transform .2s ease,opacity .2s ease}
+    .menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+    .menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+    .menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+    .mobile-menu{display:none;position:fixed;z-index:99;top:72px;right:max(16px,calc((100vw - var(--container)) / 2));width:min(340px,calc(100vw - 32px));max-height:calc(100dvh - 92px);overflow-y:auto;padding:16px 18px 20px;background:var(--white);border:1px solid var(--grey-200);border-radius:18px;box-shadow:var(--shadow)}
+    .mobile-menu.open{display:grid;gap:6px}
+    .mobile-menu a{min-height:44px;display:flex;align-items:center;padding:6px 8px;border-radius:10px;color:var(--grey-700);font-weight:600}
+    .mobile-menu a:hover{background:var(--green-50);color:var(--green-800)}
+    .mobile-menu .btn{margin-top:10px;color:var(--white);padding-inline:18px}
+    .mm-label{font-size:.68rem;font-weight:800;letter-spacing:.08em;color:var(--grey-500);text-transform:uppercase;margin:10px 8px 2px}
+    .mm-sections{display:grid;gap:6px}
+    @media(min-width:1024px){.mobile-menu{top:80px}.mm-sections{display:none}}
 
     .hero{min-height:760px;padding:144px 0 78px;background:linear-gradient(135deg,var(--green-950) 0%,var(--green-900) 58%,#126044 100%);color:var(--white);position:relative;overflow:hidden}
     .hero::before{content:'';position:absolute;width:620px;height:620px;border:1px solid rgba(255,255,255,.08);border-radius:50%;right:-190px;top:-250px;box-shadow:0 0 0 90px rgba(255,255,255,.025),0 0 0 180px rgba(255,255,255,.018)}
@@ -246,21 +258,30 @@
     .final-cta p{margin-bottom:0;color:#d7e8e1}
     .final-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}
 
-    .site-footer{padding:42px 0 30px;background:linear-gradient(135deg,#f1fbf5 0%,#e8f5ee 50%,#f4faf6 100%);color:var(--grey-700);font-size:.98rem}
+    .site-footer{padding:42px 0 30px;background:var(--green-950);color:#c7d8d1;font-size:.9rem}
     .footer-grid{display:grid;gap:18px}
     @media(min-width:768px){.footer-grid{grid-template-columns:1.25fr 1fr 1fr 1fr;gap:26px;align-items:start}}
-    .footer-col1 strong{display:block;color:var(--green-950);font-family:'Bricolage Grotesque',sans-serif;font-size:1.3rem;margin-bottom:8px}
-    .footer-col1 p{margin:0;color:var(--grey-600);font-size:.95rem;line-height:1.6;max-width:32ch}
-    .footer-info{display:grid;gap:3px;margin-top:12px}
-    .footer-info span{display:block;color:var(--grey-600);font-size:.9rem}
+    .footer-col1 strong{display:block;color:var(--white);font-family:'Bricolage Grotesque',sans-serif;font-size:1.15rem;margin-bottom:8px}
+    .footer-col1 p{margin:0;color:#c7d8d1;font-size:.88rem;line-height:1.6;max-width:32ch}
+    .f-wa{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:9px 15px;border:1px solid rgba(255,255,255,.25);border-radius:999px;color:var(--white);font-size:.85rem;font-weight:700;transition:background .2s ease}
+    .f-wa:hover{background:rgba(255,255,255,.08)}
+    .f-acc{border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.04)}
+    .f-acc summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;color:var(--white);font-weight:700;font-size:.95rem}
+    .f-acc summary::-webkit-details-marker{display:none}
+    .f-acc summary::after{content:'+';font-size:1.15rem;color:#9de3ba;transition:transform .2s ease}
+    .f-acc[open] summary::after{transform:rotate(45deg)}
     .f-links{display:grid;gap:2px;padding:0 16px 12px}
-    .f-links a{padding:8px 0;color:var(--grey-600);font-size:.94rem}
-    .f-links a:hover{color:var(--green-800)}
+    .f-links a{padding:8px 0;color:#c7d8d1;font-size:.9rem}
+    .f-links a:hover{color:var(--white)}
     .f-acc.static{border:0;background:transparent}
-    .f-acc.static summary{pointer-events:none;cursor:default;padding:0 0 8px;color:var(--green-800);font-size:.82rem;letter-spacing:.06em;text-transform:uppercase}
+    .f-acc.static summary{pointer-events:none;cursor:default;padding:0 0 10px;color:#9de3ba;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase}
     .f-acc.static summary::after{display:none}
     .f-acc.static .f-links{padding:0}
-    .footer-bottom{margin-top:22px;padding-top:18px;border-top:1px solid var(--grey-200);display:flex;justify-content:center;text-align:center;gap:16px;flex-wrap:wrap;font-size:.82rem;color:var(--grey-500)}
+    .footer-bottom{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:center;text-align:center;gap:16px;flex-wrap:wrap;font-size:.82rem;color:#9fb8ae}
+
+    .desktop-wa{position:fixed;right:22px;bottom:22px;z-index:50;min-height:50px;padding:13px 18px;border-radius:999px;background:var(--wa);color:var(--white);box-shadow:0 14px 32px rgba(0,0,0,.2);font-size:.92rem;font-weight:700;transition:opacity .2s ease,transform .2s ease}
+    .desktop-wa.is-hidden{opacity:0;transform:translateY(14px);pointer-events:none}
+    .mobile-sticky{display:none}
 
     .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
     .js .reveal.visible,.js.js-fallback .reveal{opacity:1;transform:none}
@@ -270,15 +291,9 @@
       .site-nav{height:64px}
       .nav-links,.nav-actions{display:none}
       .hero{min-height:auto;padding:116px 0 72px}
-      .hero-grid{grid-template-columns:1fr;gap:0}
-      .hero-copy{display:contents}
-      .hero-badge{order:1;justify-self:start}
-      .hero h1{order:2;text-align:center;margin-left:auto;margin-right:auto}
-      .hero-copy .lead{order:3;margin-bottom:26px;text-align:center;margin-left:auto;margin-right:auto}
-      .hero-badge{margin-left:auto;margin-right:auto;width:fit-content}
-      .hero-visual{order:4;margin:0 0 28px;max-width:680px}
-      .hero-actions{order:5}
-      .hero-note{order:6}
+      .hero-grid{grid-template-columns:1fr;gap:44px}
+      .hero-copy{max-width:760px}
+      .hero-visual{max-width:680px}
       .signs-layout,.proof-layout,.price-layout,.booking-layout,.faq-layout,.emotion-grid{grid-template-columns:1fr;gap:44px}
       .sign-intro,.booking-copy{position:static}
       .proof-frame{max-width:760px}
@@ -290,6 +305,11 @@
       .booking-card{max-width:760px}
       .final-inner{align-items:flex-start;flex-direction:column;gap:28px}
       .final-actions{justify-content:flex-start}
+      .desktop-wa{display:none}
+      body{padding-bottom:78px}
+      .mobile-sticky{position:fixed;left:0;right:0;bottom:0;z-index:90;display:block;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);border-top:1px solid var(--grey-200);box-shadow:0 -8px 24px rgba(17,24,39,.08)}
+      .mobile-sticky .btn{width:100%;min-height:52px}
+      .mobile-sticky.is-hidden{display:none}
     }
 
     @media(max-width:767px){
@@ -302,6 +322,7 @@
       .btn{width:100%;min-height:52px;padding-inline:18px}
       .hero{padding:102px 0 58px}
       .hero::before{width:430px;height:430px;right:-240px;top:-180px}
+      .hero-grid{gap:34px}
       .hero-badge{font-size:.82rem}
       .hero-actions{display:grid}
       .hero-note{align-items:flex-start;font-size:.87rem}
@@ -349,11 +370,13 @@
 <body>
   <nav class="site-nav" aria-label="Navigasi utama">
     <div class="container nav-inner">
-      <a class="brand" href="/" aria-label="JAYABINA - halaman utama"><img class="brand-mark" src="/logo.png" width="768" height="123" alt="JAYABINA"></a>
+      <a class="brand" href="#hero" aria-label="JAYABINA - kembali ke atas"><img class="brand-mark" src="/favicon.png" width="38" height="38" alt=""><span>JAYABINA</span></a>
       <ul class="nav-links">
-        <li><a href="/servis/">Servis</a></li>
-        <li><a href="/tentang-kami/">Tentang Kami</a></li>
-        <li><a href="/blog/">Blog</a></li>
+        <li><a href="#tanda">Tanda</a></li>
+        <li><a href="#bukti">Bukti</a></li>
+        <li><a href="#proses">Proses</a></li>
+        <li><a href="#harga">Harga</a></li>
+        <li><a href="#faq">FAQ</a></li>
       </ul>
       <div class="nav-right">
         <div class="nav-actions"><a class="btn btn-primary" href="#hubungi">Semakan Percuma</a></div>
@@ -361,7 +384,26 @@
       </div>
     </div>
   </nav>
-  {{ partial "burger-menu.html" . }}
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <div class="mm-sections">
+      <div class="mm-label">Seksyen page ini</div>
+      <a href="#tanda">Tanda dah sampai masa tukar</a>
+      <a href="#bukti">Bukti &amp; rekod kerja</a>
+      <a href="#proses">Cara kami bekerja</a>
+      <a href="#harga">Harga &amp; skop</a>
+      <a href="#faq">Soalan lazim</a>
+    </div>
+    <div class="mm-label">Halaman utama</div>
+    <a href="/">Utama</a>
+    <a href="/servis/">Semua Servis</a>
+    <a href="/tentang-kami/">Tentang Kami</a>
+    <a href="/blog/">Blog</a>
+    <a href="/hubungi-kami/">Hubungi</a>
+    <div class="mm-label">Portal</div>
+    <a href="https://akaun.jayabina.com/">Akaun Pelanggan</a>
+    <a href="https://staff.jayabina.com/">Portal Staff</a>
+    <a class="btn btn-primary" href="#hubungi">Semakan Percuma di WhatsApp</a>
+  </div>
 
   <main>
     <section class="hero" id="hero">
@@ -374,6 +416,7 @@
             <a class="btn btn-light js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya mahu dapatkan sebutan harga untuk tukar atap. Poskod saya: ____. Jenis rumah: ____. Masalah utama: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">Dapatkan Sebutan Harga</a>
             <a class="btn btn-hero-ghost" href="#kisah">Info Lanjut</a>
           </div>
+          <p class="hero-note">Semakan awal melalui WhatsApp adalah percuma — hantar gambar siling &amp; poskod sekarang.</p>
         </div>
         <figure class="hero-visual reveal" aria-label="Gambaran masalah atap bocor">
           <img src="/images/roof/roof-hero-1200.webp" width="1200" height="800" loading="eager" decoding="async" alt="Pemilik rumah tertekan memandang kesan kebocoran berulang pada siling rumah">
@@ -456,8 +499,8 @@
           <article class="process-card"><div class="process-photo"><div class="photo-placeholder">[Gambar sebut harga<br>akan datang]</div><span>Placeholder</span></div><div class="process-number">02</div><h3>Sebut Harga &amp; Skop</h3><p>Kami bentangkan harga dan skop kerja. Anda setuju — baru kami terus.</p></article>
           <article class="process-card"><div class="process-photo"><img src="/images/roof/roof-installation-1200.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Kerja pemasangan atap baharu sedang dijalankan"><span>Ilustrasi proses</span></div><div class="process-number">03</div><h3>Pasang &amp; Catat</h3><p>Kerja tukar atap dijalankan dengan rekod foto setiap peringkat penting.</p></article>
           <article class="process-card"><div class="process-photo"><img src="/images/roof/roof-handover-1200.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Semakan akhir dan serahan atap baharu kepada pemilik rumah"><span>Ilustrasi proses</span></div><div class="process-number">04</div><h3>Semak &amp; Serah</h3><p>Anda lihat hasil akhir, kami serahkan foto penuh — barulah kerja dikira selesai.</p></article>
-          </div>
         </div>
+        <p class="proof-caption">Visual proses ialah ilustrasi AI untuk menerangkan aliran kerja umum, bukan foto pelanggan.</p>
       </div>
     </section>
 
@@ -551,9 +594,46 @@
     </section>
   </main>
 
-  {{ partial "footer.html" . }}
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col1">
+          <strong>JAYABINA</strong>
+          <p>Servis tukar atap, cuci tangki air &amp; mengecat rumah dan ofis. Kuala Lumpur &amp; Selangor.</p>
+          <a class="f-wa js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya mahu dapatkan sebutan harga untuk tukar atap. Poskod saya: ____. Jenis rumah: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">WhatsApp Kami</a>
+        </div>
+        <details class="f-acc">
+          <summary>Servis</summary>
+          <div class="f-links">
+            <a href="/servis-tukar-atap/">Tukar Atap Baharu</a>
+            <a href="/servis-cuci-tangki-air/">Cuci Tangki Air</a>
+            <a href="/servis-mengecat/">Mengecat Rumah &amp; Ofis</a>
+          </div>
+        </details>
+        <details class="f-acc">
+          <summary>Tentang</summary>
+          <div class="f-links">
+            <a href="/">Utama</a>
+            <a href="/tentang-kami/">Tentang Kami</a>
+            <a href="/hubungi-kami/">Hubungi Kami</a>
+          </div>
+        </details>
+        <details class="f-acc">
+          <summary>Informasi</summary>
+          <div class="f-links">
+            <a href="/terma-perkhidmatan/">Terma Perkhidmatan</a>
+            <a href="/dasar-privasi/">Dasar Privasi</a>
+            <a href="/blog/">Blog</a>
+          </div>
+        </details>
+      </div>
+      <div class="footer-bottom"><span>© 2026 Primex Jaya Bina Solutions. Hak cipta terpelihara.</span><span>www.jayabina.com</span></div>
+    </div>
+  </footer>
 
-    
+  <a class="desktop-wa js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya mahu semakan percuma untuk tukar atap. Poskod saya: ____. Jenis rumah: ____. Masalah utama: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">Semakan Percuma di WhatsApp</a>
+  <div class="mobile-sticky" id="mobileSticky"><a class="btn btn-wa js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya mahu semakan percuma untuk tukar atap. Poskod saya: ____. Jenis rumah: ____. Masalah utama: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener">Semakan Percuma di WhatsApp</a></div>
+
   <script>
     window.addEventListener('DOMContentLoaded',function(){
       var WHATSAPP_NUMBER='60139373275';
@@ -567,9 +647,8 @@
       function closeMenu(returnFocus){menuToggle.setAttribute('aria-expanded','false');menuToggle.setAttribute('aria-label','Buka menu');mobileMenu.classList.remove('open');mobileMenu.setAttribute('aria-hidden','true');document.body.classList.remove('menu-open');if(returnFocus)menuToggle.focus()}
       function openMenu(){menuToggle.setAttribute('aria-expanded','true');menuToggle.setAttribute('aria-label','Tutup menu');mobileMenu.classList.add('open');mobileMenu.setAttribute('aria-hidden','false');document.body.classList.add('menu-open');var first=mobileMenu.querySelector('a');if(first)first.focus()}
       menuToggle.addEventListener('click',function(){this.getAttribute('aria-expanded')==='true'?closeMenu(false):openMenu()});
-      mobileMenu.querySelectorAll('[data-mm-toggle]').forEach(function(btn){btn.addEventListener('click',function(){var section=this.closest('.mm-section');if(section){var open=section.classList.toggle('open');this.setAttribute('aria-expanded',String(open))}})});
-      mobileMenu.querySelectorAll('a').forEach(function(link){link.addEventListener('click',function(){var toggle=link.closest('.mm-section');if(!toggle){closeMenu(false)}})});
-      document.addEventListener('keydown',function(event){if(event.key==='Escape'&&mobileMenu.classList.contains('open'))closeMenu(true);if(event.key==='Tab'&&mobileMenu.classList.contains('open')){var focusable=Array.from(mobileMenu.querySelectorAll('a[href], button[data-mm-toggle], .btn'));if(!focusable.length)return;var first=focusable[0],last=focusable[focusable.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}}});
+      mobileMenu.querySelectorAll('a').forEach(function(link){link.addEventListener('click',function(){closeMenu(false)})});
+      document.addEventListener('keydown',function(event){if(event.key==='Escape'&&mobileMenu.classList.contains('open'))closeMenu(true);if(event.key==='Tab'&&mobileMenu.classList.contains('open')){var focusable=Array.from(mobileMenu.querySelectorAll('a[href]'));if(!focusable.length)return;var first=focusable[0],last=focusable[focusable.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}}});
       document.addEventListener('click',function(event){if(!mobileMenu.contains(event.target)&&!menuToggle.contains(event.target)&&mobileMenu.classList.contains('open'))closeMenu()});
 
       document.querySelectorAll('a[href^="#"]').forEach(function(link){link.addEventListener('click',function(event){var target=document.querySelector(this.getAttribute('href'));if(target){event.preventDefault();var distance=Math.abs(target.getBoundingClientRect().top);var instant=window.matchMedia('(prefers-reduced-motion: reduce)').matches||distance>2200;if(instant){var oldBehavior=document.documentElement.style.scrollBehavior;document.documentElement.style.scrollBehavior='auto';target.scrollIntoView({behavior:'auto',block:'start'});window.setTimeout(function(){document.documentElement.style.scrollBehavior=oldBehavior},0)}else{target.scrollIntoView({behavior:'smooth',block:'start'})}}})});
@@ -584,12 +663,27 @@
         document.querySelectorAll('.reveal').forEach(function(element){revealObserver.observe(element)});
       }else{document.querySelectorAll('.reveal').forEach(function(element){element.classList.add('visible')})}
 
+      var sticky=document.getElementById('mobileSticky');
+      var desktopWhatsApp=document.querySelector('.desktop-wa');
+      var contactSection=document.getElementById('hubungi');
+      var heroSection=document.getElementById('hero');
+      if(sticky&&contactSection&&heroSection&&'IntersectionObserver' in window){
+        var heroVisible=true;
+        var contactVisible=false;
+        function updateSticky(){sticky.classList.toggle('is-hidden',heroVisible||contactVisible);if(desktopWhatsApp)desktopWhatsApp.classList.toggle('is-hidden',contactVisible)}
+        new IntersectionObserver(function(entries){entries.forEach(function(entry){heroVisible=entry.isIntersecting;updateSticky()})},{threshold:.05}).observe(heroSection);
+        new IntersectionObserver(function(entries){entries.forEach(function(entry){contactVisible=entry.isIntersecting;updateSticky()})},{threshold:.01}).observe(contactSection);
+        updateSticky();
+      }
+
       document.querySelectorAll('.faq-question').forEach(function(button){button.addEventListener('click',function(){
         var open=this.getAttribute('aria-expanded')==='true';
         document.querySelectorAll('.faq-question').forEach(function(other){other.setAttribute('aria-expanded','false');document.getElementById(other.getAttribute('aria-controls')).hidden=true});
         if(!open){this.setAttribute('aria-expanded','true');document.getElementById(this.getAttribute('aria-controls')).hidden=false}
       })});
 
+      function footerAcc(){var isDesktop=window.matchMedia('(min-width:768px)').matches;document.querySelectorAll('.f-acc').forEach(function(acc){acc.open=isDesktop;acc.classList.toggle('static',isDesktop)})}
+      footerAcc();window.addEventListener('resize',footerAcc);
     });
   </script>
 </body>

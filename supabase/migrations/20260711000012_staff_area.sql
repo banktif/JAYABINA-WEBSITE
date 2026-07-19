@@ -1,5 +1,5 @@
 -- =============================================
--- JAYABINA - Staff Area Assignment
+-- JAYACLEAN - Staff Area Assignment
 -- Each staff has a fixed service_area.
 -- Area-based auto-assign matches staff.service_area to booking area.
 -- =============================================

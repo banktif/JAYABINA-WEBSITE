@@ -1,5 +1,5 @@
-// JAYABINA — Service Worker (network-first so updates show immediately; cache = offline fallback)
-var CACHE='jayabina-v1';
+// JAYACLEAN — Service Worker (network-first so updates show immediately; cache = offline fallback)
+var CACHE='jayaclean-v3';
 var FILES=[
   '/','/index.html','/success.html','/test-pay.html',
   '/admin/','/worker/','/customer/','/login/',

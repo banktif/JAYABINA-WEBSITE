@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: banktif/JAYABINA-WEBSITE
+  repo: banktif/jayaclean-salespage
   branch: master
   base_url: https://decapcms-oauth-gateway.netlify.com
 

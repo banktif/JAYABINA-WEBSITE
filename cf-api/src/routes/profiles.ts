@@ -104,9 +104,6 @@ export async function handleProfiles(req: Request, env: Env, path: string): Prom
         if (body.is_active !== undefined) updates.isActive = body.is_active ? 1 : 0;
         if (body.service_area !== undefined) updates.serviceArea = body.service_area;
         if (body.role !== undefined && payload.sub !== profileId) updates.role = body.role;
-        if (body.password && String(body.password).length >= 8) {
-          updates.password = await hashPassword(String(body.password));
-        }
       }
 
       // Fields anyone can update on their own profile
@@ -121,23 +118,6 @@ export async function handleProfiles(req: Request, env: Env, path: string): Prom
       const updated = await db.select(profileFields).from(profilesTable)
         .where(eq(profilesTable.id, profileId)).get();
       return ok(updated);
-    } catch (e: any) {
-      return err(e.msg || 'Error', e.status || 400);
-    }
-  }
-
-  // DELETE /api/profiles/:id (admin only, cannot delete self)
-  if (patchMatch && req.method === 'DELETE') {
-    try {
-      const payload = await requireAuth(req, env);
-      requireAdmin(payload);
-      const profileId = patchMatch[1];
-      if (payload.sub === profileId) return err('Cannot delete your own account', 400);
-      const existing = await db.select({ id: profilesTable.id }).from(profilesTable)
-        .where(eq(profilesTable.id, profileId)).get();
-      if (!existing) return err('Profile not found', 404);
-      await db.delete(profilesTable).where(eq(profilesTable.id, profileId));
-      return ok({ deleted: profileId });
     } catch (e: any) {
       return err(e.msg || 'Error', e.status || 400);
     }

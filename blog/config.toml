@@ -1,6 +1,6 @@
 baseURL = "https://cuci.jayabina.com/"
 languageCode = "ms"
-title = "Blog JAYABINA"
+title = "Blog JAYACLEAN"
 disableKinds = ["home"]
 
 [taxonomies]
@@ -24,7 +24,7 @@ disableKinds = ["home"]
 [params]
   description = "Panduan cuci tangki air, penyelenggaraan rumah, kesihatan air & tips penjagaan tangki untuk rumah anda."
   businessName = "Jaya Bina Services"
-  brandName = "JAYABINA"
-  siteTitle = "Blog JAYABINA"
+  brandName = "JAYACLEAN"
+  siteTitle = "Blog JAYACLEAN"
   accent = "#166534"
   font = "Poppins"

@@ -26,7 +26,7 @@ app.onError((error) => {
 app.all('/api/health', async (c) => {
   if (c.req.raw.method !== 'GET') return err('Not found', 404);
   await createDb(c.env).get(sql`SELECT 1`);
-  return ok({ service: 'jayabina-api', database: 'ok' });
+  return ok({ service: 'jayaclean-api', database: 'ok' });
 });
 
 const handleSettingsRoute = (req: Request, env: Env) => {
@@ -85,12 +85,6 @@ const handleTaskPhotosRoute = (req: Request, env: Env) => {
 app.all('/api/task-photos', (c) => handleTaskPhotosRoute(c.req.raw, c.env));
 app.all('/api/task-photos/*', (c) => handleTaskPhotosRoute(c.req.raw, c.env));
 
-const handleNotificationsRoute = (req: Request, env: Env) => {
-  const path = new URL(req.url).pathname.replace(/\/+$/, '') || '/';
-  return handleTasks(req, env, path);
-};
-app.all('/api/notifications', (c) => handleNotificationsRoute(c.req.raw, c.env));
-
 const handleBookingsRoute = (req: Request, env: Env) => {
   const path = new URL(req.url).pathname.replace(/\/+$/, '') || '/';
   return handleBookings(req, env, path);
@@ -114,29 +108,6 @@ const handleWebsiteRoute = (req: Request, env: Env) => {
 };
 app.all('/api/website', (c) => handleWebsiteRoute(c.req.raw, c.env));
 app.all('/api/website/*', (c) => handleWebsiteRoute(c.req.raw, c.env));
-
-app.all('/api/admin/purge-cache', async (c) => {
-  if (c.req.raw.method !== 'POST') return err('Method not allowed', 405);
-  try {
-    const payload = await requireAuth(c.req.raw, c.env);
-    requireAdmin(payload);
-    const token = c.env.CF_PURGE_TOKEN;
-    const zoneId = c.env.CF_ZONE_ID;
-    if (!token || !zoneId) return err('Cloudflare API credentials not configured', 503);
-    const body = await c.req.raw.json().catch(() => ({}));
-    const cfBody = body.everything ? { purge_everything: true } : (body.files ? { files: body.files } : { purge_everything: true });
-    const cfResp = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(cfBody)
-    });
-    const cfData = await cfResp.json() as any;
-    if (!cfData.success) return err(cfData.errors?.[0]?.message || 'Cloudflare purge failed', 502);
-    return ok({ purged: true, result: cfData.result });
-  } catch (e: any) {
-    return err(e && e.msg ? e.msg : (e && e.message ? e.message : 'Purge failed'), (e && e.status) ? e.status : 502);
-  }
-});
 
 app.notFound(() => err('Not found', 404));
 

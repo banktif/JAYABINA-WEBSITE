@@ -42,4 +42,4 @@ jobs:
       - name: Deploy booking site (cuci.jayabina.com)
         run: |
           bash build.sh
-          wrangler pages deploy public --project-name jayabina-pages --branch master
+          wrangler pages deploy public --project-name jayaclean --branch master
