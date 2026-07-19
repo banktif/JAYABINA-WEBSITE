@@ -104,6 +104,7 @@ async function login(){
   if(!raw||!/^0[0-9]{8,10}$/.test(raw)){document.getElementById('errPhone').style.display='block';return}
   document.getElementById('errPhone').style.display='none';
   myPhone=raw;
+  localStorage.setItem('jc_login_phone',myPhone);
   document.getElementById('phoneDisplay').textContent=raw;
   await loadMyBookings();
   show('listScreen');
@@ -195,8 +196,20 @@ async function payBalance(bid){
 }
 
 function backToList(){show('listScreen');renderList();relucide()}
-function logout(){myPhone='';myBookings=[];myTasks={};selId=null;show('loginScreen');document.getElementById('phoneInput').value='';relucide()}
-relucide();
+function logout(){myPhone='';myBookings=[];myTasks={};selId=null;localStorage.removeItem('jc_login_phone');show('loginScreen');document.getElementById('phoneInput').value='';relucide()}
+
+async function autoLogin(){
+  var savedPhone=localStorage.getItem('jc_login_phone');
+  if(!savedPhone){show('loginScreen');return}
+  myPhone=savedPhone;
+  document.getElementById('phoneInput').value=savedPhone;
+  document.getElementById('phoneDisplay').textContent=savedPhone;
+  await loadMyBookings();
+  show('listScreen');
+  renderList();
+}
+
+autoLogin();relucide();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){})}
 </script>
 </body>
