@@ -37,8 +37,7 @@
   <header class="top-main">
     <div class="brand"><span class="brand-mark">J</span><span class="brand-copy"><b>JAYABINA</b><small>Visual Editor · GrapesJS 0.23.2</small></span></div>
     <div class="file-drop-area">
-      <button class="btn primary" onclick="document.getElementById('fileInput').click()" type="button"><svg><use href="#i-upload"/></svg><span>Open HTML</span></button>
-      <input type="file" id="fileInput" accept=".html,.htm" onchange="if(this.files&&this.files[0])handleFileOpen(this.files[0]);this.value=''" style="position:absolute;opacity:0;width:0;height:0;overflow:hidden">
+      <label class="btn primary" style="cursor:pointer"><svg><use href="#i-upload"/></svg><span>Open HTML</span><input type="file" id="fileInput" accept=".html,.htm" onchange="if(this.files&&this.files[0])handleFileOpen(this.files[0]);this.value=''" hidden></label>
     </div>
     <button class="btn primary" id="downloadBtn" onclick="handleDownload()" disabled><svg><use href="#i-download"/></svg><span>Download</span></button>
     <div class="file-info" id="fileInfo"><b>No file loaded</b><small>Open an HTML file to edit</small></div>
