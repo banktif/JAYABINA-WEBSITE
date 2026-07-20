@@ -7,80 +7,211 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#166534">
-  <title>JAYABINA — Worker</title>
+  <title>JAYABINA — Staff</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/theme.css">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    html{overflow-x:hidden;scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar{display:none}
-    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;padding-bottom:40px;scrollbar-width:none;-ms-overflow-style:none}body::-webkit-scrollbar{display:none}
-    .hdr{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
-    .hdr-l{display:flex;align-items:center;gap:10px}
-    .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#16a34a);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem}
-    .hdr h1{font-size:.95rem;font-weight:700;line-height:1.1}.hdr .who{font-size:.62rem;color:var(--text3);font-weight:600}
-    .hbtn{padding:8px 14px;border-radius:10px;border:1px solid var(--border-strong);background:var(--elevated);color:var(--danger);font-family:var(--font);font-weight:700;font-size:.7rem;cursor:pointer}
-    .wrap{width:100%;padding:16px}
-    .filters{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}
-    .fpill{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid transparent;background:var(--accent-light);color:var(--text2);font-size:.74rem;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap}
+    html{overflow-x:hidden}body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;-webkit-font-smoothing:antialiased}
+    /* Login overlay */
+    .login-overlay{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:24px}
+    .login-box{background:var(--login-card);border:1px solid var(--login-card-border);border-radius:var(--card-radius);padding:32px 28px;width:100%;max-width:340px;box-shadow:var(--card-shadow);text-align:center}
+    .login-box .logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--accent),#16a34a);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;margin:0 auto 12px}
+    .login-box h2{font-size:1.1rem;font-weight:800;margin-bottom:4px}
+    .login-box p{font-size:.74rem;color:var(--text3);margin-bottom:18px}
+    .login-box input{width:100%;padding:12px 14px;border:2px solid var(--border-strong);border-radius:12px;font-family:var(--font);font-size:.85rem;background:var(--elevated);color:var(--text);margin-bottom:10px;outline:none;transition:border-color .15s}
+    .login-box input:focus{border-color:var(--accent)!important}
+    .login-box button{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:var(--font);transition:opacity .15s}
+    .login-box button:disabled{opacity:.6}
+    .login-box .err{color:var(--danger);font-size:.72rem;text-align:center;display:none;margin-bottom:8px}
+    /* Sidebar */
+    .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:90;opacity:0;pointer-events:none;transition:opacity .2s}
+    .sidebar-overlay.open{opacity:1;pointer-events:auto}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:280px;background:var(--surface);z-index:95;box-shadow:var(--shadow-lg);transform:translateX(-100%);transition:transform .25s cubic-bezier(.22,1,.36,1);overflow-y:auto;display:flex;flex-direction:column}
+    .sidebar.open{transform:translateX(0)}
+    .sidebar-hdr{padding:20px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+    .sidebar-hdr .av{width:44px;height:44px;border-radius:14px;background:var(--accent-light);overflow:hidden;flex-shrink:0}
+    .sidebar-hdr .av img{width:100%;height:100%;object-fit:cover}
+    .sidebar-hdr .av i{width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:1.2rem}
+    .sidebar-hdr .si h3{font-size:.88rem;font-weight:700}
+    .sidebar-hdr .si span{font-size:.68rem;color:var(--text3)}
+    .sidebar-nav{padding:12px 10px;flex:1}
+    .sidebar-nav button{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:none;border-radius:12px;background:transparent;color:var(--text2);font-family:var(--font);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .12s;text-align:left}
+    .sidebar-nav button:hover{background:var(--surface-hover);color:var(--text)}
+    .sidebar-nav button.active{background:var(--accent-light);color:var(--accent)}
+    .sidebar-nav button i{font-size:1.1rem}
+    .sidebar-foot{padding:12px 10px 18px;border-top:1px solid var(--border)}
+    .sidebar-foot button{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:none;border-radius:12px;background:transparent;color:var(--danger);font-family:var(--font);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .12s}
+    .sidebar-foot button:hover{background:var(--danger-light)}
+    /* Top bar */
+    .topbar{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:12px;min-height:56px}
+    .topbar .ham{background:none;border:none;color:var(--text);font-size:1.4rem;cursor:pointer;display:flex;padding:4px}
+    .topbar .tt{flex:1;min-width:0}
+    .topbar .tt h1{font-size:.95rem;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .topbar .tt span{font-size:.62rem;color:var(--text3);font-weight:600}
+    /* Content */
+    .page{padding:16px;padding-bottom:80px}
+    .page.hide{display:none}
+    /* Home stats */
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+    .stat{background:var(--elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow)}
+    .stat .sn{font-size:1.5rem;font-weight:800;color:var(--accent);line-height:1}
+    .stat .sl{font-size:.68rem;color:var(--text3);font-weight:600;margin-top:4px}
+    .stat.today .sn{color:var(--accent2)}
+    .stat.done .sn{color:var(--accent)}
+    /* Filters */
+    .filters{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none}
+    .filters::-webkit-scrollbar{display:none}
+    .fpill{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid var(--border-strong);background:var(--elevated);color:var(--text2);font-size:.74rem;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .12s}
     .fpill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .fpill:active{transform:scale(.96)}
+    /* Day group */
     .daygrp{font-size:.66rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:16px 2px 8px}
-    .job{background:var(--elevated);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:all .15s;box-shadow:var(--shadow)}
-    .job:active{transform:scale(.99);border-color:var(--accent)}
-    .job .slot{font-size:.72rem;font-weight:700;color:var(--text2);background:var(--bg);padding:6px 10px;border-radius:12px;white-space:nowrap;text-align:center;min-width:62px}
-    .job .jb{flex:1;min-width:0}
-    .job .jn{font-weight:700;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .job .ja{font-size:.72rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-    .badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:.6rem;font-weight:600;text-transform:none;white-space:nowrap}
+    /* Job card */
+    .jc{background:var(--elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:10px;box-shadow:var(--shadow);transition:all .12s}
+    .jc:active{border-color:var(--accent)}
+    .jc-top{display:flex;align-items:center;gap:12px;cursor:pointer}
+    .jc .slot{font-size:.72rem;font-weight:700;color:var(--text2);background:var(--bg);padding:6px 10px;border-radius:12px;white-space:nowrap;text-align:center;min-width:58px}
+    .jc .jb{flex:1;min-width:0}
+    .jc .jn{font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .jc .ja{font-size:.7rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+    .jc-acts{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+    .jc-acts button{flex:1;padding:10px;border:none;border-radius:10px;font-family:var(--font);font-weight:700;font-size:.78rem;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center;gap:6px}
+    .jc-acts button:active{transform:scale(.97)}
+    .jc-acts .acc{background:var(--accent);color:#fff}
+    .jc-acts .rej{background:var(--danger-light);color:var(--danger)}
+    .jc-acts .start{background:var(--accent2);color:#fff}
+    .jc-acts .finish{background:var(--accent);color:#fff}
+    .jc-acts .done{background:var(--accent-light);color:var(--accent);cursor:default;opacity:.8}
+    .jc-acts .wait{background:var(--warning-light);color:var(--warning);cursor:default;opacity:.8}
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:.6rem;font-weight:600;white-space:nowrap}
     .badge .bd{width:6px;height:6px;border-radius:50%;background:currentColor}
     .badge.assigned{background:var(--accent2-light);color:var(--accent2)}
     .badge.in_progress{background:var(--warning-light);color:var(--warning)}
     .badge.awaiting_review{background:var(--warning-light);color:var(--warning)}
     .badge.completed{background:var(--accent-light);color:var(--accent)}
-    .empty{text-align:center;padding:60px 20px;color:var(--text3)}.empty .ei{font-size:2.6rem;margin-bottom:10px}
-    .spin{display:flex;justify-content:center;padding:48px;gap:6px}.sd{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:sp 1.4s infinite}.sd:nth-child(2){animation-delay:.2s}.sd:nth-child(3){animation-delay:.4s}@keyframes sp{0%,80%,100%{opacity:.2}40%{opacity:1}}
+    .badge.unassigned{background:var(--border);color:var(--text3)}
+    /* Empty state */
+    .empty{text-align:center;padding:60px 20px;color:var(--text3)}
+    .empty .ei{font-size:2.6rem;margin-bottom:10px;color:var(--text3)}
+    .empty p{font-size:.85rem}
+    /* Spinner */
+    .spin{display:flex;justify-content:center;padding:48px;gap:6px}
+    .sd{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:sp 1.4s infinite}
+    .sd:nth-child(2){animation-delay:.2s}
+    .sd:nth-child(3){animation-delay:.4s}
+    @keyframes sp{0%,80%,100%{opacity:.2}40%{opacity:1}}
     /* Detail overlay */
     .ov{position:fixed;inset:0;background:var(--bg);z-index:60;overflow-y:auto;display:none}
     .ov.show{display:block}
     .ov-hdr{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:5}
-    .ov-hdr button{background:none;border:none;font-size:1.3rem;color:var(--text);cursor:pointer}
-    .ov-hdr h2{font-size:.95rem;font-weight:700}
-    .ov-body{width:100%;padding:16px}
-    .card{background:var(--elevated);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
-    .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:.82rem}.row:last-child{border:none}.row .k{color:var(--text3)}.row .v{font-weight:600;text-align:right;max-width:62%}
-    .abtn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-family:var(--font);font-weight:700;font-size:.9rem;cursor:pointer;margin-top:10px;text-align:center}
+    .ov-hdr button{background:none;border:none;font-size:1.3rem;color:var(--text);cursor:pointer;display:flex;padding:4px}
+    .ov-hdr h2{font-size:.95rem;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .ov-body{padding:16px;padding-bottom:100px}
+    .card{background:var(--elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+    .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:.82rem}
+    .row:last-child{border:none}
+    .row .k{color:var(--text3)}
+    .row .v{font-weight:600;text-align:right;max-width:62%}
+    .abtn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-family:var(--font);font-weight:700;font-size:.9rem;cursor:pointer;margin-top:10px;text-align:center;transition:all .12s}
+    .abtn:active{transform:scale(.98)}
     .abtn.primary{background:var(--accent);color:#fff}.abtn.primary:disabled{opacity:.5}
-    .abtn.blue{background:var(--accent2);color:#fff}.abtn.wa{background:#25D366;color:#fff}
+    .abtn.blue{background:var(--accent2);color:#fff}
+    .abtn.wa{background:#25D366;color:#fff}
     .abtn.ghost{background:var(--elevated);border:1px solid var(--border-strong);color:var(--text2)}
+    .abtn.danger{background:var(--danger);color:#fff}
     .sec-h{font-size:.78rem;font-weight:700;margin:6px 0 10px;display:flex;align-items:center;justify-content:space-between}
     .thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
     .thumb{aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--bg);border:1px solid var(--border)}
     .thumb img{width:100%;height:100%;object-fit:cover}
-    .up{border:2px dashed var(--border-strong);border-radius:12px;padding:18px;text-align:center;color:var(--text3);font-size:.8rem;cursor:pointer}
+    .up{border:2px dashed var(--border-strong);border-radius:12px;padding:18px;text-align:center;color:var(--text3);font-size:.8rem;cursor:pointer;transition:all .12s}
+    .up:active{transform:scale(.98)}
     .up.busy{opacity:.6;pointer-events:none}
     .note{font-size:.78rem;color:var(--text3);text-align:center;padding:14px;background:var(--accent-light);color:var(--accent);border-radius:12px;font-weight:600}
-    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:12px 20px;border-radius:30px;font-size:.8rem;font-weight:600;z-index:100;opacity:0;transition:opacity .2s;pointer-events:none}
+    .note.warn{background:var(--warning-light);color:var(--warning)}
+    .note.err{background:var(--danger-light);color:var(--danger)}
+    /* Profile page */
+    .pf-av{width:72px;height:72px;border-radius:20px;overflow:hidden;background:var(--accent-light);margin:0 auto 12px;display:flex;align-items:center;justify-content:center}
+    .pf-av img{width:100%;height:100%;object-fit:cover}
+    .pf-av i{font-size:2rem;color:var(--accent)}
+    .pf-card{background:var(--elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow);text-align:center;margin-bottom:12px}
+    .pf-card .nm{font-size:1.05rem;font-weight:700}
+    .pf-card .ar{font-size:.72rem;color:var(--text3);margin-top:3px}
+    .pf-card .email{font-size:.72rem;color:var(--text2);margin-top:2px}
+    .pf-form label{display:block;font-size:.7rem;font-weight:600;color:var(--text3);margin-bottom:4px;text-align:left}
+    .pf-form input,.pf-form textarea{width:100%;padding:11px 13px;border:2px solid var(--border-strong);border-radius:12px;font-family:var(--font);font-size:.82rem;background:var(--elevated);color:var(--text);margin-bottom:12px;outline:none;transition:border-color .15s}
+    .pf-form input:focus,.pf-form textarea:focus{border-color:var(--accent)!important}
+    .pf-form textarea{resize:none;min-height:60px}
+    /* Footer navigation */
+    .footer-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--nav-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--border);display:flex;align-items:stretch;padding:4px 0;padding-bottom:max(4px,env(safe-area-inset-bottom))}
+    .footer-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border:none;background:transparent;color:var(--text3);font-family:var(--font);font-size:.6rem;font-weight:600;cursor:pointer;transition:color .12s}
+    .footer-nav button i{font-size:1.25rem;transition:color .12s}
+    .footer-nav button.active{color:var(--accent)}
+    .footer-nav button.active i{color:var(--accent)}
+    /* Toast */
+    .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:12px 22px;border-radius:30px;font-size:.8rem;font-weight:600;z-index:100;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
     .toast.show{opacity:1}
-    .login{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px}
-    .pf-input:focus{border-color:var(--accent)!important}
   </style>
 </head>
 <body>
-<div class="login" id="loading" style="display:none"><div class="logo">JB</div><h2 style="font-size:1rem;font-weight:700;margin-top:8px">JAYABINA</h2><p class="sub" style="font-size:.74rem;color:var(--text3);margin-top:4px">Worker Sign In</p>
-  <input type="text" id="loginPhone" placeholder="Phone number" autocomplete="tel" style="padding:12px;border:2px solid var(--border-strong);border-radius:12px;font-family:var(--font);font-size:.85rem;width:260px;text-align:center;background:var(--elevated);color:var(--text)">
-  <input type="password" id="loginPass" placeholder="Password" autocomplete="current-password" style="padding:12px;border:2px solid var(--border-strong);border-radius:12px;font-family:var(--font);font-size:.85rem;width:260px;text-align:center;background:var(--elevated);color:var(--text)">
-  <div id="authErr" style="color:var(--danger);font-size:.72rem;text-align:center;display:none;max-width:260px"></div>
-  <button id="loginBtn" onclick="doLogin()" style="padding:12px 40px;background:var(--accent);color:#fff;border:none;border-radius:14px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:var(--font)">Sign In</button>
+
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay" id="loading">
+  <div class="login-box">
+    <div class="logo">JB</div>
+    <h2>JAYABINA</h2>
+    <p>Worker sign in</p>
+    <div class="err" id="authErr"></div>
+    <input type="text" id="loginPhone" placeholder="Phone number" autocomplete="tel">
+    <input type="password" id="loginPass" placeholder="Password" autocomplete="current-password">
+    <button id="loginBtn" onclick="doLogin()">Sign In</button>
+  </div>
 </div>
 
-<header class="hdr" id="hdr" style="display:none">
-  <div class="hdr-l"><div class="logo">JB</div><div><h1>My Jobs</h1><div class="who" id="who"></div></div></div>
-  <div style="display:flex;gap:6px">
-    <button class="hbtn" onclick="pfToggle()" style="color:var(--text2);border-color:var(--border-strong)"><i data-lucide="user-cog"></i></button>
-    <button class="hbtn" onclick="logout()">Logout</button>
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-hdr">
+    <div class="av" id="sideAv"><i data-lucide="user"></i></div>
+    <div class="si">
+      <h3 id="sideName">Worker</h3>
+      <span id="sideArea"></span>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <button class="active" onclick="switchView('home');closeSidebar()"><i data-lucide="layout-dashboard"></i> Home</button>
+    <button onclick="switchView('jobs');closeSidebar()"><i data-lucide="clipboard-list"></i> My Jobs</button>
+    <button onclick="switchView('profile');closeSidebar()"><i data-lucide="user-cog"></i> Profile</button>
+  </div>
+  <div class="sidebar-foot">
+    <button onclick="logout()"><i data-lucide="log-out"></i> Sign Out</button>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<header class="topbar" id="topbar" style="display:none">
+  <button class="ham" onclick="toggleSidebar()"><i data-lucide="menu"></i></button>
+  <div class="tt">
+    <h1 id="pageTitle">Home</h1>
+    <span id="who"></span>
   </div>
 </header>
 
-<div class="wrap" id="wrap" style="display:none">
+<!-- HOME PAGE -->
+<div class="page" id="pageHome">
+  <div class="stats">
+    <div class="stat today"><div class="sn" id="statToday">0</div><div class="sl">Today's Jobs</div></div>
+    <div class="stat"><div class="sn" id="statActive">0</div><div class="sl">Active Jobs</div></div>
+    <div class="stat done"><div class="sn" id="statDone">0</div><div class="sl">Completed</div></div>
+    <div class="stat"><div class="sn" id="statPending">0</div><div class="sl">Pending Review</div></div>
+  </div>
+  <div id="homeJobs"></div>
+</div>
+
+<!-- JOBS PAGE -->
+<div class="page hide" id="pageJobs">
   <div class="filters" id="filters">
     <button class="fpill active" data-f="active" onclick="setFilter('active')">Active</button>
     <button class="fpill" data-f="today" onclick="setFilter('today')">Today</button>
@@ -88,31 +219,72 @@
     <button class="fpill" data-f="completed" onclick="setFilter('completed')">Done</button>
   </div>
   <div id="jobs"></div>
-  <div class="card" id="profileCard" style="display:none;margin-top:10px">
-    <div style="font-size:.82rem;font-weight:700;margin-bottom:12px"><i data-lucide="user-cog"></i> Edit Profile</div>
-    <label style="display:block;font-size:.7rem;font-weight:600;color:var(--text3);margin-bottom:4px">Full Name</label>
-    <input type="text" id="pfName" style="padding:10px;border:2px solid var(--border-strong);border-radius:12px;font-family:var(--font);font-size:.82rem;width:100%;background:var(--elevated);color:var(--text);margin-bottom:10px;outline:none">
-    <label style="display:block;font-size:.7rem;font-weight:600;color:var(--text3);margin-bottom:4px">Phone</label>
-    <input type="text" id="pfPhone" style="padding:10px;border:2px solid var(--border-strong);border-radius:12px;font-family:var(--font);font-size:.82rem;width:100%;background:var(--elevated);color:var(--text);margin-bottom:10px;outline:none">
-    <label style="display:block;font-size:.7rem;font-weight:600;color:var(--text3);margin-bottom:4px">Email</label>
-    <input type="email" id="pfEmail" style="padding:10px;border:2px solid var(--border-strong);border-radius:12px;font-family:var(--font);font-size:.82rem;width:100%;background:var(--elevated);color:var(--text);margin-bottom:10px;outline:none">
-    <label style="display:block;font-size:.7rem;font-weight:600;color:var(--text3);margin-bottom:4px">Address</label>
-    <input type="text" id="pfAddr" style="padding:10px;border:2px solid var(--border-strong);border-radius:12px;font-family:var(--font);font-size:.82rem;width:100%;background:var(--elevated);color:var(--text);margin-bottom:14px;outline:none">
+</div>
+
+<!-- PROFILE PAGE -->
+<div class="page hide" id="pageProfile">
+  <div class="pf-card">
+    <div class="pf-av" id="pfAv"><i data-lucide="user"></i></div>
+    <div class="nm" id="pfNameDisplay">-</div>
+    <div class="ar" id="pfAreaDisplay"></div>
+    <div class="email" id="pfEmailDisplay"></div>
+  </div>
+  <div class="card pf-form">
+    <div style="font-size:.82rem;font-weight:700;margin-bottom:14px"><i data-lucide="edit"></i> Edit Profile</div>
+    <label>Full Name</label>
+    <input type="text" id="pfName">
+    <label>Phone</label>
+    <input type="text" id="pfPhone">
+    <label>Email</label>
+    <input type="email" id="pfEmail">
+    <label>Address</label>
+    <textarea id="pfAddr"></textarea>
     <div style="display:flex;gap:8px">
       <button class="abtn primary" onclick="pfSave()" id="pfSaveBtn" style="flex:1;margin:0">Save Profile</button>
-      <button class="abtn ghost" onclick="pfToggle()" style="flex:1;margin:0">Cancel</button>
     </div>
     <div style="color:var(--danger);font-size:.72rem;text-align:center;margin-top:8px;display:none" id="pfErr"></div>
+  </div>
+  <div class="card" style="text-align:center">
+    <div style="font-size:.72rem;color:var(--text3);margin-bottom:8px">Need to change your password?</div>
+    <button class="abtn ghost" onclick="changePassword()" style="margin:0"><i data-lucide="key"></i> Change Password</button>
   </div>
 </div>
 
 <!-- JOB DETAIL OVERLAY -->
 <div class="ov" id="ov">
-  <div class="ov-hdr"><button onclick="closeJob()"><i data-lucide="arrow-left"></i></button><h2 id="ovTitle">Job</h2></div>
+  <div class="ov-hdr">
+    <button onclick="closeJob()"><i data-lucide="arrow-left"></i></button>
+    <h2 id="ovTitle">Job</h2>
+  </div>
   <div class="ov-body" id="ovBody"></div>
 </div>
 
+<!-- CHANGE PASSWORD OVERLAY -->
+<div class="ov" id="ovPw">
+  <div class="ov-hdr">
+    <button onclick="closePw()"><i data-lucide="arrow-left"></i></button>
+    <h2>Change Password</h2>
+  </div>
+  <div class="ov-body" style="padding:20px">
+    <div class="card pf-form">
+      <label>Current Password</label>
+      <input type="password" id="pwCurrent" placeholder="Enter current password">
+      <label>New Password</label>
+      <input type="password" id="pwNew" placeholder="Min 8 characters">
+      <button class="abtn primary" onclick="doChangePassword()" id="pwBtn">Update Password</button>
+      <div style="color:var(--danger);font-size:.72rem;text-align:center;margin-top:8px;display:none" id="pwErr"></div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
+
+<!-- FOOTER NAVIGATION -->
+<nav class="footer-nav" id="footerNav" style="display:none">
+  <button class="active" onclick="switchView('home')"><i data-lucide="layout-dashboard"></i> Home</button>
+  <button onclick="switchView('jobs')"><i data-lucide="clipboard-list"></i> Jobs</button>
+  <button onclick="switchView('profile')"><i data-lucide="user"></i> Profile</button>
+</nav>
 
 <script src="/jc-api.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -121,7 +293,7 @@ var API_URL=localStorage.getItem('jc_api_url')||'https://api.jayabina.com';
 var SB=JCApi.create(API_URL);
 var _lt;function relucide(){clearTimeout(_lt);_lt=setTimeout(function(){try{if(window.lucide)lucide.createIcons()}catch(e){}},30);}
 var _mo=new MutationObserver(relucide);_mo.observe(document.body,{childList:true,subtree:true});
-var me=null,profile=null,settings={},jobs=[],photos={},filter='active',openId=null;
+var me=null,profile=null,settings={},jobs=[],photos={},filter='active',openId=null,currentView='home';
 
 function esc(s){return(s||'').toString().replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})}
 function fd(d){if(!d)return'-';var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
@@ -131,9 +303,27 @@ function waNum(p){p=(p||'').replace(/[^0-9]/g,'');if(p.indexOf('0')===0)p='6'+p.
 function mapsUrl(a){return'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a||'')}
 function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2200)}
 function badge(s){var m={assigned:'Assigned',in_progress:'In Progress',awaiting_review:'In Review',completed:'Completed',unassigned:'Unassigned',cancelled:'Cancelled'};return'<span class="badge '+s+'"><span class="bd"></span>'+(m[s]||s)+'</span>'}
-
 async function loadSettings(){try{var {data}=await SB.from('app_settings').select('*');settings={};(data||[]).forEach(function(s){settings[s.key]=s.value})}catch(e){}}
 
+/** SIDEBAR **/
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('open')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open')}
+
+/** VIEW SWITCHING **/
+function switchView(v){
+  currentView=v;
+  var names={home:'Home',jobs:'My Jobs',profile:'Profile'};
+  document.getElementById('pageTitle').textContent=names[v]||'Home';
+  ['pageHome','pageJobs','pageProfile'].forEach(function(id){document.getElementById(id).classList.toggle('hide',id!=='page'+v.charAt(0).toUpperCase()+v.slice(1))});
+  document.querySelectorAll('.sidebar-nav button').forEach(function(b){b.classList.toggle('active',b.textContent.trim().toLowerCase().indexOf(v)>-1)});
+  document.querySelectorAll('.footer-nav button').forEach(function(b){b.classList.toggle('active',b.textContent.trim().toLowerCase().indexOf(v)>-1)});
+  if(v==='home')renderHome();
+  else if(v==='jobs')renderJobs();
+  else if(v==='profile')pfLoad();
+  relucide();
+}
+
+/** LOGIN / AUTH **/
 async function doLogin(){
   var msg=document.getElementById('authErr'),btn=document.getElementById('loginBtn');
   var phone=document.getElementById('loginPhone').value.trim();
@@ -154,18 +344,43 @@ async function checkAccess(){
     if(!p.is_active){SB.auth.signOut();showLogin();return}
     if(p.role==='admin'){location.href='/admin/';return}
     profile=p;me={id:p.id};
-    document.getElementById('who').textContent=(p.full_name||'Worker')+(p.service_area?' \u2022 '+p.service_area:'');
-    if(p.avatar_url){var lg=document.querySelector('.hdr .logo');if(lg){lg.style.overflow='hidden';lg.innerHTML='<img src="'+p.avatar_url+'" style="width:100%;height:100%;object-fit:cover">';}}
+    var name=(p.full_name||'Worker');
+    document.getElementById('who').textContent=name+(p.service_area?' \u2022 '+p.service_area:'');
+    document.getElementById('sideName').textContent=name;
+    document.getElementById('sideArea').textContent=p.service_area||'No area assigned';
+    if(p.avatar_url){
+      var sa=document.getElementById('sideAv');sa.innerHTML='<img src="'+esc(p.avatar_url)+'">';
+      var pa=document.getElementById('pfAv');pa.innerHTML='<img src="'+esc(p.avatar_url)+'">';
+    }
     await loadSettings();
     document.getElementById('loading').style.display='none';
-    document.getElementById('hdr').style.display='flex';
-    document.getElementById('wrap').style.display='block';
+    document.getElementById('topbar').style.display='flex';
+    document.getElementById('footerNav').style.display='flex';
+    switchView('home');
     await loadJobs();
   }catch(e){showLogin()}
 }
-function showLogin(){document.getElementById('loading').style.display='flex';document.getElementById('hdr').style.display='none';document.getElementById('wrap').style.display='none';document.getElementById('authErr').style.display='none'}
-function pfToggle(){var c=document.getElementById('profileCard');c.style.display=c.style.display==='none'?'block':'none';if(c.style.display==='block')pfLoad();relucide()}
-function pfLoad(){if(!me)return;document.getElementById('pfName').value=profile.full_name||'';document.getElementById('pfPhone').value=profile.phone||'';document.getElementById('pfEmail').value=profile.email||'';document.getElementById('pfAddr').value=profile.address||''}
+function showLogin(){
+  document.getElementById('loading').style.display='flex';
+  document.getElementById('topbar').style.display='none';
+  document.getElementById('footerNav').style.display='none';
+  document.getElementById('authErr').style.display='none';
+}
+
+/** LOGOUT **/
+async function logout(){SB.auth.signOut();location.reload()}
+
+/** PROFILE **/
+function pfLoad(){
+  if(!me)return;
+  document.getElementById('pfNameDisplay').textContent=profile.full_name||'Worker';
+  document.getElementById('pfAreaDisplay').textContent=profile.service_area?'Area: '+profile.service_area:'';
+  document.getElementById('pfEmailDisplay').textContent=profile.email||'';
+  document.getElementById('pfName').value=profile.full_name||'';
+  document.getElementById('pfPhone').value=profile.phone||'';
+  document.getElementById('pfEmail').value=profile.email||'';
+  document.getElementById('pfAddr').value=profile.address||'';
+}
 async function pfSave(){
   var btn=document.getElementById('pfSaveBtn'),e=document.getElementById('pfErr');
   btn.disabled=true;btn.textContent='Saving...';e.style.display='none';
@@ -175,30 +390,82 @@ async function pfSave(){
     var d=await res.json();
     if(!res.ok)throw new Error(d.error||'Failed');
     profile=d.data||d;
-    document.getElementById('who').textContent=(profile.full_name||'Worker')+(profile.service_area?' \u2022 '+profile.service_area:'');
-    pfToggle();toast('Profile saved');relucide();
+    var name=(profile.full_name||'Worker');
+    document.getElementById('who').textContent=name+(profile.service_area?' \u2022 '+profile.service_area:'');
+    document.getElementById('sideName').textContent=name;
+    document.getElementById('pfNameDisplay').textContent=name;
+    toast('Profile saved');
+    btn.disabled=false;btn.textContent='Save Profile';
   }catch(ex){e.style.display='block';e.textContent=ex.message;btn.disabled=false;btn.textContent='Save Profile'}
 }
-async function logout(){SB.auth.signOut();location.reload()}
-checkAccess();relucide();
+function changePassword(){document.getElementById('ovPw').classList.add('show')}
+function closePw(){document.getElementById('ovPw').classList.remove('show')}
+async function doChangePassword(){
+  var btn=document.getElementById('pwBtn'),e=document.getElementById('pwErr');
+  var cur=document.getElementById('pwCurrent').value,pw=document.getElementById('pwNew').value;
+  if(!cur||pw.length<8){e.style.display='block';e.textContent='Enter current password and new password (min 8 chars)';return}
+  e.style.display='none';btn.disabled=true;btn.textContent='Updating...';
+  try{
+    var res=await fetch(API_URL+'/api/auth/change-password',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB.auth.getToken()},body:JSON.stringify({current_password:cur,new_password:pw})});
+    var d=await res.json();
+    if(!res.ok)throw new Error(d.error||'Failed');
+    toast('Password updated');closePw();
+  }catch(ex){e.style.display='block';e.textContent=ex.message;btn.disabled=false;btn.textContent='Update Password'}
+}
 
+/** JOBS LOADING **/
 async function loadJobs(){
-  var j=document.getElementById('jobs');
-  j.innerHTML='<div class="spin"><div class="sd"></div><div class="sd"></div><div class="sd"></div></div>';
   try{
     var tq=await SB.from('tasks').select('*').eq('assigned_to',me.id);
     var tasks=(tq.data||[]).filter(function(t){return t.status!=='cancelled'});
-    var bmap={};
-    (tasks).forEach(function(t){bmap[t.booking_id]={id:t.booking_id,customer_name:t.customer_name,customer_phone:t.customer_phone,customer_address:t.customer_address,booking_date:t.booking_date,booking_time:t.booking_time}});
-    jobs=tasks.map(function(t){return{t:t,b:bmap[t.booking_id]||{}}}).filter(function(x){return x.b&&x.b.id});
+    jobs=tasks.map(function(t){return{t:t,b:{id:t.booking_id,customer_name:t.customer_name,customer_phone:t.customer_phone,customer_address:t.customer_address,booking_date:t.booking_date,booking_time:t.booking_time}}});
     var tids=tasks.map(function(t){return t.id});photos={};
     for(var i=0;i<tids.length;i++){try{var pq=await SB.from('task_photos').select('*').eq('task_id',tids[i]);if(pq.data){(photos[tids[i]]=photos[tids[i]]||[]).push.apply(photos[tids[i]],Array.isArray(pq.data)?pq.data:[pq.data])}}catch(e){}}
+    renderHome();
     renderJobs();
-  }catch(e){j.innerHTML='<div class="empty"><div class="ei"><i data-lucide="alert-triangle"></i></div><p>'+esc(e.message)+'</p></div>'}
+  }catch(e){document.getElementById('jobs').innerHTML='<div class="empty"><div class="ei"><i data-lucide="alert-triangle"></i></div><p>'+esc(e.message)+'</p></div>'}
 }
-
 function slotOrder(s){var slots=(settings.slots||'9am,11am,2pm,4pm').split(',').map(function(s){return s.trim()});var idx=slots.indexOf(s);return idx>=0?idx:9}
 function setFilter(f){filter=f;document.querySelectorAll('.fpill').forEach(function(p){p.classList.toggle('active',p.getAttribute('data-f')===f)});renderJobs()}
+
+/** HOME VIEW **/
+function renderHome(){
+  var t=today();
+  var todayJobs=jobs.filter(function(x){return x.b.booking_date===t});
+  var active=jobs.filter(function(x){return['assigned','in_progress','awaiting_review'].indexOf(x.t.status)>-1});
+  var completed=jobs.filter(function(x){return x.t.status==='completed'});
+  var pending=jobs.filter(function(x){return x.t.status==='awaiting_review'});
+  document.getElementById('statToday').textContent=todayJobs.length;
+  document.getElementById('statActive').textContent=active.length;
+  document.getElementById('statDone').textContent=completed.length;
+  document.getElementById('statPending').textContent=pending.length;
+
+  var el=document.getElementById('homeJobs');
+  if(!todayJobs.length){el.innerHTML='<div class="empty"><div class="ei"><i data-lucide="calendar-check"></i></div><p>No jobs scheduled for today.</p></div>';return}
+  var h='<div class="daygrp">TODAY \u2014 '+fd(t)+'</div>';
+  todayJobs.sort(function(a,b){return slotOrder(a.b.booking_time)-slotOrder(b.b.booking_time)});
+  todayJobs.forEach(function(x){h+=renderJobCard(x)});
+  el.innerHTML=h;
+}
+
+/** JOB CARD **/
+function renderJobCard(x){
+  var t=x.t,s=x.b;
+  var acts='';
+  if(t.status==='assigned'){
+    acts='<div class="jc-acts"><button class="acc" onclick="event.stopPropagation();acceptJob(\''+t.id+'\')"><i data-lucide="check"></i> Accept</button><button class="rej" onclick="event.stopPropagation();rejectJob(\''+t.id+'\',\''+esc(s.customer_name)+'\')"><i data-lucide="x"></i> Reject</button></div>';
+  }else if(t.status==='in_progress'){
+    var af=(photos[t.id]||[]).filter(function(p){return p.type==='after'});
+    acts='<div class="jc-acts"><button class="start" onclick="event.stopPropagation();openJob(\''+t.id+'\')"><i data-lucide="camera"></i> Photos</button>'+(af.length?'<button class="finish" onclick="event.stopPropagation();finishJob(\''+t.id+'\')"><i data-lucide="check"></i> Finish</button>':'<button class="start" onclick="event.stopPropagation();openJob(\''+t.id+'\')"><i data-lucide="upload"></i> Add Photos</button>')+'</div>';
+  }else if(t.status==='awaiting_review'){
+    acts='<div class="jc-acts"><button class="wait"><i data-lucide="clock"></i> Pending Review</button></div>';
+  }else if(t.status==='completed'){
+    acts='<div class="jc-acts"><button class="done" onclick="event.stopPropagation();openJob(\''+t.id+'\')"><i data-lucide="check-circle"></i> View Completed</button></div>';
+  }
+  return '<div class="jc"><div class="jc-top" onclick="openJob(\''+t.id+'\')"><div class="slot">'+ft(s.booking_time)+'</div><div class="jb"><div class="jn">'+esc(s.customer_name)+'</div><div class="ja"><i data-lucide="map-pin"></i> '+esc(s.customer_address)+'</div></div>'+badge(t.status)+'</div>'+acts+'</div>';
+}
+
+/** JOBS LIST VIEW **/
 function renderJobs(){
   var list=jobs.slice();
   var t=today();
@@ -210,13 +477,40 @@ function renderJobs(){
   if(!list.length){el.innerHTML='<div class="empty"><div class="ei"><i data-lucide="clipboard-list"></i></div><p>No jobs here.</p></div>';return}
   var h='',lastDate=null;
   list.forEach(function(x){
-    if(x.b.booking_date!==lastDate){lastDate=x.b.booking_date;var lbl=x.b.booking_date===t?'TODAY - '+fd(x.b.booking_date):fd(x.b.booking_date);h+='<div class="daygrp">'+lbl+'</div>'}
-    h+='<div class="job" onclick="openJob(\''+x.t.id+'\')"><div class="slot">'+ft(x.b.booking_time)+'</div><div class="jb"><div class="jn">'+esc(x.b.customer_name)+'</div><div class="ja"><i data-lucide="map-pin"></i> '+esc(x.b.customer_address)+'</div></div>'+badge(x.t.status)+'</div>';
+    if(x.b.booking_date!==lastDate){lastDate=x.b.booking_date;var lbl=x.b.booking_date===t?'TODAY \u2014 '+fd(x.b.booking_date):fd(x.b.booking_date);h+='<div class="daygrp">'+lbl+'</div>'}
+    h+=renderJobCard(x);
   });
   el.innerHTML=h;
 }
 
+/** ACCEPT / REJECT **/
+async function acceptJob(id){
+  var token=SB.auth.getToken();
+  try{
+    var res=await fetch(API_URL+'/api/tasks/'+id+'/accept',{method:'POST',headers:{'Authorization':'Bearer '+token}});
+    var d=await res.json();
+    if(!res.ok)throw new Error(d.error||'Failed to accept');
+    toast('Job accepted! You can now start working.');
+    var x=jobs.find(function(y){return y.t.id===id});if(x){x.t.status='in_progress'}
+    renderHome();renderJobs();
+  }catch(e){toast('Error: '+e.message)}
+}
+async function rejectJob(id,name){
+  if(!confirm('Reject job for "'+name+'"? It will be reassigned to another staff.'))return;
+  var token=SB.auth.getToken();
+  try{
+    var res=await fetch(API_URL+'/api/tasks/'+id+'/reject',{method:'POST',headers:{'Authorization':'Bearer '+token}});
+    var d=await res.json();
+    if(!res.ok)throw new Error(d.error||'Failed to reject');
+    toast(d.data&&d.data.message||'Job rejected and reassigned.');
+    await loadJobs();
+  }catch(e){toast('Error: '+e.message)}
+}
+
+/** PHOTOS **/
 function photosFor(id,type){return(photos[id]||[]).filter(function(p){return p.type===type})}
+
+/** JOB DETAIL **/
 function openJob(id){
   openId=id;var x=jobs.find(function(y){return y.t.id===id});if(!x)return;
   var b=x.b,t=x.t;
@@ -225,37 +519,42 @@ function openJob(id){
   function thumbs(arr){if(!arr.length)return'<div style="font-size:.74rem;color:var(--text3)">No photos yet.</div>';var s='<div class="thumbs">';arr.forEach(function(p){s+='<div class="thumb"><img src="'+esc(p.url)+'" loading="lazy"></div>'});return s+'</div>'}
   var h='<div class="card">'+
     '<div class="row"><span class="k">Status</span><span class="v">'+badge(t.status)+'</span></div>'+
-    '<div class="row"><span class="k">Date & Time</span><span class="v">'+fd(b.booking_date)+' &middot; '+ft(b.booking_time)+'</span></div>'+
+    '<div class="row"><span class="k">Date & Time</span><span class="v">'+fd(b.booking_date)+' \u00b7 '+ft(b.booking_time)+'</span></div>'+
     '<div class="row"><span class="k">Customer</span><span class="v">'+esc(b.customer_name)+'</span></div>'+
+    '<div class="row"><span class="k">Phone</span><span class="v">'+esc(b.customer_phone)+'</span></div>'+
     '<div class="row"><span class="k">Address</span><span class="v">'+esc(b.customer_address)+'</span></div>'+
     '</div>';
   h+='<a class="abtn blue" href="'+mapsUrl(b.customer_address)+'" target="_blank"><i data-lucide="map-pin"></i> Open in Google Maps</a>';
-  h+='<a class="abtn wa" href="https://wa.me/'+waNum(b.customer_phone)+'" target="_blank"><i data-lucide="message-circle"></i> WhatsApp Customer</a>';
+  if(b.customer_phone)h+='<a class="abtn wa" href="https://wa.me/'+waNum(b.customer_phone)+'" target="_blank"><i data-lucide="message-circle"></i> WhatsApp Customer</a>';
 
   // BEFORE photos
   h+='<div class="card"><div class="sec-h"><span>Before Photos</span><span style="color:var(--text3);font-weight:600">'+beforeP.length+'</span></div>'+thumbs(beforeP);
-  if(t.status==='assigned')h+='<div class="up" id="upBefore" onclick="pickPhoto(\''+id+'\',\'before\')"><i data-lucide="camera"></i> Tap to add BEFORE photo</div>';
+  if(t.status==='assigned'||t.status==='in_progress')h+='<div class="up" id="upBefore" onclick="pickPhoto(\''+id+'\',\'before\')"><i data-lucide="camera"></i> Add BEFORE photo</div>';
   h+='</div>';
 
-  // Action / after based on status
-  if(t.status==='assigned'){
-    h+='<button class="abtn primary" id="startBtn" onclick="startJob(\''+id+'\')"'+(beforeP.length?'':' disabled')+'><i data-lucide="play"></i> Start Job'+(beforeP.length?'':' (add before photo)')+'</button>';
-  }else if(t.status==='in_progress'){
+  // AFTER photos
+  if(t.status==='in_progress'||t.status==='awaiting_review'||t.status==='completed'){
     h+='<div class="card"><div class="sec-h"><span>After Photos</span><span style="color:var(--text3);font-weight:600">'+afterP.length+'</span></div>'+thumbs(afterP);
-    h+='<div class="up" id="upAfter" onclick="pickPhoto(\''+id+'\',\'after\')"><i data-lucide="camera"></i> Tap to add AFTER photo</div></div>';
+    if(t.status==='in_progress')h+='<div class="up" id="upAfter" onclick="pickPhoto(\''+id+'\',\'after\')"><i data-lucide="camera"></i> Add AFTER photo</div>';
+    h+='</div>';
+  }
+
+  // Action buttons
+  if(t.status==='assigned'){
+    h+='<div style="display:flex;gap:8px"><button class="abtn primary" onclick="closeJob();acceptJob(\''+id+'\')" style="flex:1;margin:10px 0 0"><i data-lucide="check"></i> Accept Job</button><button class="abtn danger" onclick="closeJob();rejectJob(\''+id+'\',\''+esc(b.customer_name)+'\')" style="flex:1;margin:10px 0 0"><i data-lucide="x"></i> Reject</button></div>';
+  }else if(t.status==='in_progress'){
     h+='<button class="abtn primary" id="finishBtn" onclick="finishJob(\''+id+'\')"'+(afterP.length?'':' disabled')+'><i data-lucide="check"></i> Finish Job'+(afterP.length?'':' (add after photo)')+'</button>';
   }else if(t.status==='awaiting_review'){
-    h+='<div class="card"><div class="sec-h"><span>After Photos</span><span style="color:var(--text3);font-weight:600">'+afterP.length+'</span></div>'+thumbs(afterP)+'</div>';
-    h+='<div class="note"><i data-lucide="clock"></i> Waiting for admin review &amp; approval.</div>';
+    h+='<div class="note warn"><i data-lucide="clock"></i> Waiting for admin review</div>';
   }else if(t.status==='completed'){
-    h+='<div class="card"><div class="sec-h"><span>After Photos</span><span style="color:var(--text3);font-weight:600">'+afterP.length+'</span></div>'+thumbs(afterP)+'</div>';
-    h+='<div class="note"><i data-lucide="check"></i> Job completed. Thank you!</div>';
+    h+='<div class="note"><i data-lucide="check-circle"></i> Job completed. Thank you!</div>';
   }
   document.getElementById('ovBody').innerHTML=h;
   document.getElementById('ov').classList.add('show');
 }
 function closeJob(){document.getElementById('ov').classList.remove('show');openId=null;loadJobs()}
 
+/** PHOTO UPLOAD **/
 function pickPhoto(id,type){
   var inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.setAttribute('capture','environment');
   inp.onchange=function(){if(inp.files&&inp.files[0])doUpload(id,type,inp.files[0])};
@@ -273,21 +572,23 @@ async function doUpload(id,type,file){
     if(error)throw error;
     (photos[id]=photos[id]||[]).push({task_id:id,type:type,url:data.secure_url});
     toast('Photo uploaded');openJob(id);
-  }catch(e){toast('Error: '+e.message);if(box){box.classList.remove('busy');box.textContent='<i data-lucide="camera"></i> Tap to retry'}}
+  }catch(e){toast('Error: '+e.message);if(box){box.classList.remove('busy');box.innerHTML='<i data-lucide="camera"></i> Tap to retry'}}
 }
-async function startJob(id){
-  if(!photosFor(id,'before').length){toast('Add at least 1 before photo');return}
-  try{var {error}=await SB.from('tasks').update({status:'in_progress',started_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;
-    var x=jobs.find(function(y){return y.t.id===id});if(x)x.t.status='in_progress';toast('Job started');openJob(id)}catch(e){toast('Error: '+e.message)}
-}
+
+/** FINISH JOB **/
 async function finishJob(id){
   if(!photosFor(id,'after').length){toast('Add at least 1 after photo');return}
-  try{var {error}=await SB.from('tasks').update({status:'awaiting_review',finished_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error;
+  try{
+    var token=SB.auth.getToken();
+    var res=await fetch(API_URL+'/api/tasks/'+id,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({status:'awaiting_review',finished_at:new Date().toISOString(),updated_at:new Date().toISOString()})});
+    var d=await res.json();
+    if(!res.ok)throw new Error(d.error||'Failed to finish');
     await loadJobs();
     var x=jobs.find(function(y){return y.t.id===id});
     var done=x&&x.t.status==='completed';
     toast(done?'Job auto-completed!':'Sent for admin review');
-    openJob(id)}catch(e){toast('Error: '+e.message)}
+    openJob(id);
+  }catch(e){toast('Error: '+e.message)}
 }
 
 checkAccess();relucide();
