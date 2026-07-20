@@ -26,7 +26,7 @@ done
 
 # 3. Copy app folders
 echo "-> Copying app folders..."
-for dir in admin worker customer assets home; do
+for dir in admin worker customer assets home grapejs; do
   if [ -d "$dir" ]; then
     cp -r "$dir" "$OUT_DIR/"
     echo "   $dir/ -> $OUT_DIR/$dir/"
