@@ -1,86 +1,300 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="ms" class="light">
 <head>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="robots" content="noindex,nofollow">
-  <meta name="theme-color" content="#166534">
-  <title>JAYABINA — My Bookings</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#f5f7f5">
+  <script>
+    (function(){
+      var saved=localStorage.getItem('theme');
+      var mode=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+      document.documentElement.className=mode;
+      document.querySelector('meta[name=theme-color]').content=mode==='dark'?'#0a0f0a':'#f5f7f5';
+    })();
+  </script>
+  <title>JAYABINA &mdash; My Bookings</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/theme.css">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent}
-    .wrap{width:100%;padding:20px 16px 60px}
-    .logo{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#16a34a);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.3rem;margin:0 auto 12px;box-shadow:0 6px 20px var(--accent-glow)}
-    h1{text-align:center;font-size:1.2rem;font-weight:800;letter-spacing:-.3px;margin-bottom:4px}
-    .sub{text-align:center;font-size:.78rem;color:var(--text3);margin-bottom:24px}
-    input{padding:14px 16px;border:2px solid var(--border-strong);border-radius:14px;font-family:var(--font);font-size:.9rem;width:100%;background:var(--elevated);color:var(--text);outline:none;transition:border .2s;margin-bottom:10px}
-    input:focus{border-color:var(--accent)}
-    .btn{display:block;width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:14px;font-weight:700;font-size:.9rem;cursor:pointer;font-family:var(--font);box-shadow:0 4px 12px var(--accent-glow);transition:all .2s}
-    .btn:active{transform:scale(.97)}.btn:disabled{opacity:.5}
-    .btn.out{background:var(--elevated);color:var(--text);border:1px solid var(--border-strong);box-shadow:none}
-    .card{background:var(--elevated);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:var(--shadow);cursor:pointer;transition:all .15s}
-    .card:active{border-color:var(--accent)}
-    .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .cname{font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .cdate{font-size:.7rem;color:var(--text2);background:var(--bg);padding:3px 10px;border-radius:20px;white-space:nowrap;font-weight:600}
-    .caddr{font-size:.72rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
-    .badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:.62rem;font-weight:600;white-space:nowrap}
+    html,body{overflow-x:hidden;scrollbar-width:none;-ms-overflow-style:none}
+    html::-webkit-scrollbar,body::-webkit-scrollbar{display:none}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+    ::selection{background:var(--accent);color:#fff}
+
+    @media(max-width:1023px){
+      body{padding:60px 0 80px 0;overflow-x:hidden}
+      .hdr{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--overlay);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-bottom:1px solid var(--border);height:56px;padding:0 16px;display:flex!important;align-items:center;justify-content:space-between;width:100%}
+      .hdr-l{display:flex;align-items:center;gap:8px;width:auto}
+      .bnav{display:flex}.d-hdr,.d-sidebar,.d-only,.mnav{display:none}
+    }
+    .hdr{display:none}
+    .hdr-l{display:flex;align-items:center;gap:10px;flex:1}
+    .hdr-logo{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#16a34a);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;letter-spacing:-.3px;box-shadow:0 4px 12px var(--accent-glow);flex-shrink:0}
+    .hdr-title h1{font-size:1.35rem;font-weight:800;letter-spacing:-.6px;line-height:36px;text-align:left}
+    .hdr-title span{font-size:.6rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.8px}
+    .hdr-r{display:flex;gap:6px;flex-shrink:0}
+    .hdr-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--border-strong);background:var(--elevated);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all .2s;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+    .hdr-btn:active{transform:scale(.93);background:var(--border)}
+
+    @media(min-width:1024px){
+      body{display:flex;min-height:100vh;padding:0}
+      .d-sidebar{display:flex;flex-direction:column;width:260px;min-width:260px;background:var(--elevated);border-right:1px solid var(--border);padding:24px 16px;position:fixed;top:0;left:0;bottom:0;z-index:60;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
+      .d-sidebar::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}
+      .hdr,.bnav,.drawer,.drawer-overlay,.mnav{display:none!important}
+      .d-brand{display:flex;align-items:center;gap:12px;padding:0 8px 24px;border-bottom:1px solid var(--border);margin-bottom:20px}
+      .d-brand .hdr-logo{width:44px;height:44px;border-radius:16px;font-size:.95rem}
+      .d-brand-text h1{font-size:1.05rem;font-weight:700;letter-spacing:-.3px;line-height:1.2}
+      .d-brand-text span{font-size:.64rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.8px}
+      .d-nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--text2);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:var(--font);margin-bottom:2px}
+      .d-nav-item:hover{background:var(--bg);color:var(--text)}
+      .d-nav-item.active{background:var(--accent-light);color:var(--accent)}
+      .d-nav-item .dni{font-size:1.1rem;width:24px;text-align:center}
+      .d-sidebar-footer{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px}
+      .d-sidebar-footer button{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;color:var(--text3);font-size:.75rem;font-weight:500;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:var(--font);transition:all .15s}
+      .d-sidebar-footer button:hover{color:var(--text);background:var(--bg)}
+      .d-main{flex:1;margin-left:260px;padding:32px 40px;max-width:900px}
+      .d-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+      .d-hdr h1{font-size:1.6rem;font-weight:800;letter-spacing:-.5px}
+      .d-hdr p{font-size:.8rem;color:var(--text3);margin-top:4px}
+      .hdr{display:none}.bnav{display:none}.modal{left:260px}
+    }
+
+    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:20px}
+    @media(min-width:1024px){.stats-grid{padding:0;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}}
+    .stat{background:var(--elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 16px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:all .25s;cursor:pointer}
+    .stat:active{transform:scale(.97)}
+    .stat:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px)}
+    @media(min-width:1024px){.stat{padding:28px 24px;border-radius:18px}}
+    .stat-icon{font-size:1.4rem;margin-bottom:8px;opacity:.8}@media(min-width:1024px){.stat-icon{font-size:1.8rem;margin-bottom:12px}}
+    .stat-val{font-size:2rem;font-weight:800;letter-spacing:-1.5px;line-height:1}@media(min-width:1024px){.stat-val{font-size:2.6rem}}
+    .stat-lbl{font-size:.64rem;color:var(--text3);margin-top:6px;font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+    .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+    .stat.all .stat-val{color:var(--accent)}.stat.all::before{background:var(--accent)}
+    .stat.active .stat-val{color:var(--accent2)}.stat.active::before{background:var(--accent2)}
+    .stat.done .stat-val{color:var(--accent2)}.stat.done::before{background:var(--accent2)}
+
+    .sec{padding:0 20px 12px;display:flex;align-items:center;justify-content:space-between}
+    @media(min-width:1024px){.sec{padding:0 0 16px;margin-bottom:0}}
+    .sec-title{font-size:.68rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.2px}
+    .sec-count{font-size:.62rem;color:var(--text3);background:var(--border-strong);padding:2px 8px;border-radius:20px;font-weight:600}
+
+    @media(max-width:1023px){
+      .list{padding:0 16px;display:flex;flex-direction:column;gap:10px}
+      .card{background:var(--elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:center;cursor:pointer;transition:all .2s}
+      .card:active{transform:scale(.985);border-color:var(--accent)}
+      .card-body{flex:1;min-width:0}
+      .card-meta{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+      .card-date{font-size:.72rem;font-weight:600;color:var(--text2);background:var(--bg);padding:3px 10px;border-radius:20px;white-space:nowrap}
+      .card-name{font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:1px;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .card-addr{font-size:.7rem;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+    }
+
+    @media(min-width:1024px){
+      .list{padding:0;display:flex;flex-direction:column;gap:0}
+      table{width:100%;border-collapse:collapse}
+      thead th{padding:12px 16px;text-align:left;font-size:.66rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border);background:var(--bg)}
+      thead th:first-child{border-radius:12px 0 0 0}thead th:last-child{border-radius:0 12px 0 0}
+      tbody td{padding:14px 16px;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+      tbody tr{background:var(--elevated);transition:background .12s;cursor:pointer}
+      tbody tr:hover{background:var(--border)}
+      .d-card{background:var(--elevated);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+      .d-name strong{font-weight:700;letter-spacing:-.2px}
+      .d-addr{color:var(--text3);font-size:.74rem;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .d-date{padding:4px 10px;background:var(--bg);border-radius:20px;font-size:.7rem;font-weight:600;color:var(--text2);white-space:nowrap;display:inline-block}
+      .d-dot{display:inline-block;margin:0 6px;color:var(--text3)}
+      .d-acts{display:flex;gap:6px}
+      .d-btn{padding:8px 15px;border:1px solid var(--border-strong);border-radius:10px;font-size:.72rem;font-weight:700;cursor:pointer;background:transparent;color:var(--text2);transition:all .12s;font-family:var(--font);white-space:nowrap}
+      .d-btn:hover{border-color:var(--accent);color:var(--accent)}
+    }
+
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:.64rem;font-weight:600;text-transform:none;letter-spacing:.1px;white-space:nowrap}
     .badge .bd{width:6px;height:6px;border-radius:50%;background:currentColor}
-    .badge.pending{background:var(--warning-light);color:var(--warning)}
+    .badge.pending_payment{background:var(--warning-light);color:var(--warning)}
     .badge.confirmed{background:var(--accent-light);color:var(--accent)}
     .badge.completed{background:var(--accent2-light);color:var(--accent2)}
     .badge.cancelled{background:var(--danger-light);color:var(--danger)}
-    .detail{background:var(--elevated);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:var(--shadow)}
-    .dr{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:.8rem}.dr:last-child{border:none}
-    .dr .k{color:var(--text3)}.dr .v{font-weight:600;text-align:right;max-width:60%}
+    .badge.assigned,.badge.in_progress{background:var(--accent2-light);color:var(--accent2)}
+    @media(min-width:1024px){.badge{font-size:.66rem;padding:5px 14px}}
+
+    .empty{text-align:center;padding:64px 20px}.empty .eicon{font-size:2.8rem;margin-bottom:12px;opacity:.7}.empty h2{font-size:.95rem;font-weight:700;margin-bottom:4px}.empty p{color:var(--text3);font-size:.78rem}
+    .spin{display:flex;align-items:center;justify-content:center;padding:48px;gap:6px}.spin-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:sp 1.4s infinite}.spin-dot:nth-child(2){animation-delay:.2s}.spin-dot:nth-child(3){animation-delay:.4s}@keyframes sp{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1.3)}}
+
+    @media(max-width:1023px){
+      .modal{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:flex-end;justify-content:center;padding:10px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+      .modal.show{display:flex}.modal.show .m-sheet{animation:mu .3s cubic-bezier(.16,1,.3,1)}
+      @keyframes mu{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+      .m-sheet{background:var(--elevated);border:1px solid var(--border-strong);border-radius:24px 24px 0 0;padding:24px 20px 32px;width:100%;max-width:448px;max-height:82dvh;overflow-y:auto;box-shadow:0 -4px 24px rgba(0,0,0,.08)}
+    }
+    @media(min-width:1024px){
+      .modal{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+      .modal.show{display:flex}.modal.show .m-sheet{animation:mdScale .2s cubic-bezier(.16,1,.3,1)}
+      @keyframes mdScale{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+      .m-sheet{background:var(--elevated);border:1px solid var(--border-strong);border-radius:24px;padding:32px;width:480px;max-height:80vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.12)}
+    }
+    .m-sheet h3{font-size:1rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;letter-spacing:-.2px}
+    .m-dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+    .m-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);font-size:.78rem}@media(min-width:1024px){.m-row{font-size:.82rem}}
+    .m-row:last-child{border:none}.m-row .mk{color:var(--text3);font-weight:500}.m-row .mv{color:var(--text);font-weight:600;text-align:right;max-width:65%;word-break:break-word}
+    .m-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}
+    .m-btn{padding:12px;border:none;border-radius:10px;font-weight:700;font-size:.74rem;cursor:pointer;transition:all .15s;font-family:var(--font);letter-spacing:-.1px}
+    .m-btn:active{transform:scale(.97)}.m-btn.accept{background:var(--accent);color:#fff}.m-btn.wa{background:#25D366;color:#fff}.m-btn.close{background:var(--border-strong);color:var(--text);grid-column:1/-1}
+
     .thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
-    .thumb{border-radius:10px;overflow:hidden;background:var(--bg);aspect-ratio:1}
+    .thumb{border-radius:10px;overflow:hidden;background:var(--bg);aspect-ratio:1;border:1px solid var(--border)}
     .thumb img{width:100%;height:100%;object-fit:cover}
-    .empty{text-align:center;padding:40px 20px;color:var(--text3)}.empty .ei{font-size:2.2rem;margin-bottom:8px}
-    .spin{display:flex;justify-content:center;padding:48px;gap:6px}.sd{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:sp 1.4s infinite}.sd:nth-child(2){animation-delay:.2s}.sd:nth-child(3){animation-delay:.4s}@keyframes sp{0%,80%,100%{opacity:.2}40%{opacity:1}}
-    .err{color:var(--danger);font-size:.75rem;text-align:center;margin-top:6px;display:none}
-    .back{display:flex;align-items:center;gap:6px;color:var(--accent);font-weight:600;font-size:.78rem;cursor:pointer;margin-bottom:14px;background:none;border:none;font-family:var(--font)}
-    .hdr{text-align:center;padding:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600;letter-spacing:.6px;text-transform:uppercase}
-    .tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
-    .tab{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid transparent;background:var(--accent-light);color:var(--text2);font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font)}
-    .tab.active{background:var(--accent);color:#fff}
-    .ph-display{font-size:.82rem;color:var(--accent);font-weight:600;text-align:center;margin-bottom:4px}
-    .logoff{display:block;width:100%;padding:10px;text-align:center;color:var(--danger);font-weight:600;font-size:.75rem;cursor:pointer;margin-top:10px;font-family:var(--font)}
+    .note{font-size:.76rem;color:var(--text3);text-align:center;padding:12px;background:var(--accent-light);color:var(--accent);border-radius:12px;font-weight:600;margin-top:8px}
+
+    .filters{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;padding:0 20px}
+    @media(min-width:1024px){.filters{padding:0}}
+    .filters::-webkit-scrollbar{display:none}
+    .fpill{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid transparent;background:var(--accent-light);color:var(--text2);font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .15s}
+    .fpill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .fpill:active{transform:scale(.96)}
+
+    .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;opacity:0;pointer-events:none;transition:opacity .25s}
+    .drawer-overlay.open{opacity:1;pointer-events:auto}
+    .drawer{position:fixed;top:0;right:0;bottom:0;width:280px;max-width:85vw;background:var(--elevated);z-index:60;transform:translateX(100%);transition:transform .25s cubic-bezier(.16,1,.3,1);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none}
+    .drawer::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}
+    .drawer.open{transform:translateX(0)}
+    .drawer-menu{padding:8px}
+    .drawer-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;color:var(--text2);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .12s;border:none;background:none;width:100%;text-align:left;font-family:var(--font)}
+    .drawer-item:hover{background:var(--bg);color:var(--text)}
+    .drawer-item span{width:24px;text-align:center;font-size:1rem}
+    .bnav{position:fixed;bottom:0;left:0;right:0;background:var(--overlay);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 16px;z-index:50}
+    @media(max-width:1023px){.bnav{display:flex}}
+    @supports(padding-bottom:env(safe-area-inset-bottom)){.bnav{padding-bottom:calc(8px + env(safe-area-inset-bottom))}}
+    .bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--text3);cursor:pointer;padding:6px 14px;transition:all .2s;font-family:var(--font);position:relative}
+    .bnav-item.active{color:var(--accent)}.bnav-item.active::after{content:'';position:absolute;top:-8px;width:20px;height:2px;border-radius:2px;background:var(--accent)}
+    .bnav-item .bni{font-size:1.25rem}.bnav-item.active .bni{transform:translateY(-1px)}
+    .bnav-item .bnl{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+
+    .login{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;transition:background .4s;padding:20px}
+    .login.hidden{display:none}
+    .login-box{width:320px;max-width:90vw;text-align:center}
+    .login-avatar{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,var(--accent),#16a34a);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:1.6rem;font-weight:800;color:#fff;box-shadow:0 8px 24px var(--accent-glow)}
+    .login-box h2{font-size:1.2rem;font-weight:700;margin-bottom:6px;letter-spacing:-.2px}
+    .login-box .sub{font-size:.76rem;color:var(--text3);margin-bottom:24px}
+    .login-box input{width:100%;padding:15px 18px;background:var(--elevated);border:1px solid var(--border-strong);border-radius:14px;color:var(--text);font-family:var(--font);font-size:.88rem;margin-bottom:12px;outline:none;text-align:center;transition:all .2s;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+    .login-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+    .login-box .err{color:var(--danger);font-size:.7rem;margin-bottom:6px;display:none}
+    .login-box button{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:14px;font-weight:700;font-size:.88rem;cursor:pointer;transition:all .2s;font-family:var(--font);box-shadow:0 4px 12px var(--accent-glow);letter-spacing:-.1px}
+    .login-box button:active{transform:scale(.97);opacity:.9}
+    .login-note{font-size:.62rem;color:var(--text3);margin-top:16px;line-height:1.5}
+
+    .drawer{background:var(--menu-bg)}
+    .hdr,.bnav{background:var(--menu-bg)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+    .d-sidebar{background:#14532d}
+    .d-brand{position:sticky;top:0;z-index:2;background:#14532d;border-bottom-color:rgba(255,255,255,.14)}
+    .d-brand-text h1{color:#fff}
+    .d-brand-text span{color:rgba(255,255,255,.6)}
+    .d-nav-item{color:rgba(255,255,255,.82)}
+    .d-nav-item .dni{color:inherit}
+    .d-nav-item:hover{background:rgba(255,255,255,.09);color:#fff}
+    .d-nav-item.active{background:rgba(255,255,255,.16);color:#fff}
+    .d-nav-item.active .dni{color:#fff}
+    .d-sidebar-footer{border-top-color:rgba(255,255,255,.14)}
+    .d-sidebar-footer button{color:rgba(255,255,255,.72)}
+    .d-sidebar-footer button:hover{background:rgba(255,255,255,.09);color:#fff}
+    .d-nav-label{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.45);padding:16px 12px 6px}
+    .d-hdr-actions{display:flex;align-items:center;gap:10px}
+    .ph-display{font-size:.76rem;color:var(--text3);font-weight:600}
+    .ph-display b{color:var(--accent)}
   </style>
 </head>
 <body>
-<div class="wrap">
-  <!-- LOGIN SCREEN -->
-  <div id="loginScreen">
-    <div class="logo">JB</div>
-    <h1>JAYABINA</h1>
-    <p class="sub">Customer Portal — View your bookings</p>
-    <input type="tel" id="phoneInput" placeholder="Phone number (e.g. 0123456789)" maxlength="13">
-    <div class="err" id="errPhone">Please enter a valid phone number</div>
-    <button class="btn" onclick="login()">View My Bookings</button>
+
+<!-- DESKTOP SIDEBAR -->
+<aside class="d-sidebar" id="dSidebar">
+  <div class="d-brand">
+    <div class="hdr-logo">JB</div>
+    <div class="d-brand-text"><h1>JAYABINA</h1><span>Customer Portal</span></div>
+  </div>
+  <div class="d-nav-label">Menu</div>
+  <button class="d-nav-item active" id="dsAll" onclick="filterTab('all')"><span class="dni"><i data-lucide="layout-grid"></i></span> All Bookings</button>
+  <button class="d-nav-item" id="dsActive" onclick="filterTab('active')"><span class="dni"><i data-lucide="clock"></i></span> Active</button>
+  <button class="d-nav-item" id="dsDone" onclick="filterTab('completed')"><span class="dni"><i data-lucide="check-check"></i></span> Completed</button>
+  <div class="d-sidebar-footer">
+    <button onclick="toggleTheme()"><i data-lucide="sun-moon"></i> Theme</button>
+    <button onclick="logout()" style="color:#fca5a5"><i data-lucide="log-out"></i> Switch account</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="d-main" id="dMain">
+  <div class="d-hdr">
+    <div><h1 id="dTitle">My Bookings</h1><p id="dSub">View your service bookings</p></div>
+    <div class="d-hdr-actions"><span class="ph-display" id="phoneDisplay"></span></div>
   </div>
 
-  <!-- BOOKINGS LIST -->
-  <div id="listScreen" style="display:none">
-    <div class="ph-display" id="phoneDisplay"></div>
-    <div class="tabs" id="tabs">
-      <button class="tab active" data-f="all" onclick="filterTab('all')">All</button>
-      <button class="tab" data-f="active" onclick="filterTab('active')">Active</button>
-      <button class="tab" data-f="completed" onclick="filterTab('completed')">Done</button>
-    </div>
-    <div id="bookingsList"></div>
-    <div class="logoff" onclick="logout()">Switch account</div>
+  <div class="stats-grid">
+    <div class="stat all" onclick="filterTab('all')"><div class="stat-icon"><i data-lucide="layout-grid"></i></div><div class="stat-val" id="sAll">0</div><div class="stat-lbl">All</div></div>
+    <div class="stat active" onclick="filterTab('active')"><div class="stat-icon"><i data-lucide="clock"></i></div><div class="stat-val" id="sActive">0</div><div class="stat-lbl">Active</div></div>
+    <div class="stat done" onclick="filterTab('completed')"><div class="stat-icon"><i data-lucide="check-check"></i></div><div class="stat-val" id="sDone">0</div><div class="stat-lbl">Completed</div></div>
   </div>
 
-  <!-- BOOKING DETAIL -->
-  <div id="detailScreen" style="display:none">
-    <button class="back" onclick="backToList()">← Back</button>
-    <div id="detailContent"></div>
+  <div class="sec"><span class="sec-title" id="secTitle">Bookings</span><span class="sec-count" id="secCount">0</span></div>
+  <div class="list" id="list"><div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div></div>
+</div>
+
+<!-- MOBILE HEADER -->
+<header class="hdr">
+  <div class="hdr-l">
+    <div class="hdr-logo">JB</div>
+    <div class="hdr-title"><h1 id="mTitleView">My Bookings</h1><span>JAYABINA</span></div>
+  </div>
+  <div class="hdr-r">
+    <button class="hdr-btn" onclick="toggleTheme()" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+    <button class="hdr-btn" id="burgerBtn" onclick="toggleDrawer()" aria-label="Open menu"><i data-lucide="menu"></i></button>
+  </div>
+</header>
+
+<!-- DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head" style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+    <div class="hdr-logo" style="width:40px;height:40px;font-size:.75rem">JB</div>
+    <div><div style="font-weight:800;font-size:.95rem">JAYABINA</div><div class="drawer-sub" style="font-size:.68rem;color:var(--text3)">Customer Portal</div></div>
+  </div>
+  <div class="drawer-menu">
+    <button class="drawer-item" onclick="filterTab('all');toggleDrawer()"><span><i data-lucide="layout-grid"></i></span> All Bookings</button>
+    <button class="drawer-item" onclick="filterTab('active');toggleDrawer()"><span><i data-lucide="clock"></i></span> Active</button>
+    <button class="drawer-item" onclick="filterTab('completed');toggleDrawer()"><span><i data-lucide="check-check"></i></span> Completed</button>
+  </div>
+  <div class="drawer-menu" style="border-top:1px solid var(--border);padding-top:8px">
+    <button class="drawer-item" onclick="toggleTheme();toggleDrawer()"><span><i data-lucide="sun-moon"></i></span> Theme</button>
+    <button class="drawer-item" onclick="logout()" style="color:var(--danger)"><span><i data-lucide="log-out"></i></span> Switch account</button>
   </div>
 </div>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="bnav">
+  <button class="bnav-item active" id="navAll" onclick="filterTab('all')"><span class="bni"><i data-lucide="layout-grid"></i></span><span class="bnl">All</span></button>
+  <button class="bnav-item" id="navActive" onclick="filterTab('active')"><span class="bni"><i data-lucide="clock"></i></span><span class="bnl">Active</span></button>
+  <button class="bnav-item" id="navDone" onclick="filterTab('completed')"><span class="bni"><i data-lucide="check-check"></i></span><span class="bnl">Done</span></button>
+  <button class="bnav-item" id="navMore" onclick="toggleDrawer()"><span class="bni"><i data-lucide="menu"></i></span><span class="bnl">More</span></button>
+</nav>
+
+<!-- MODAL -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="m-sheet"><h3 id="mTitle"></h3><div id="mBody"></div><div class="m-acts" id="mActs"></div></div></div>
+
+<!-- LOGIN -->
+<div class="login" id="loginOverlay"><div class="login-box">
+  <div class="login-avatar">JB</div>
+  <h2>JAYABINA</h2>
+  <p class="sub">View your service bookings</p>
+  <input type="tel" id="phoneInput" placeholder="Phone number (e.g. 0123456789)" maxlength="13" autocomplete="tel">
+  <div class="err" id="errPhone">Please enter a valid phone number</div>
+  <button onclick="login()">View My Bookings</button>
+  <p class="login-note">Jaya Bina Services &middot; Company No. JR0188646-T</p>
+</div></div>
 
 <script src="/jc-api.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -89,25 +303,45 @@ var API_URL=localStorage.getItem('jc_api_url')||'https://api.jayabina.com';
 var SB=JCApi.create(API_URL);
 var _lt;function relucide(){clearTimeout(_lt);_lt=setTimeout(function(){try{if(window.lucide)lucide.createIcons()}catch(e){}},30);}
 var _mo=new MutationObserver(relucide);_mo.observe(document.body,{childList:true,subtree:true});
-var myPhone='',myBookings=[],myTasks=[],filter='all',selId=null;
+var myPhone='',myBookings=[],myTasks={},filter='all',selId=null;
 var BC_BALANCE_FN=API_URL+'/api/payments/create-balance-intent';
 
 function esc(s){return(s||'').toString().replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})}
 function fd(d){if(!d)return'-';var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
 function ft(t){return t?t.replace('am',':00 AM').replace('pm',':00 PM').replace(/^(\d):/,'0$1:'):t}
 function waNum(p){p=(p||'').replace(/[^0-9]/g,'');if(p.indexOf('0')===0)p='6'+p.substring(1);return p}
-function show(id){document.querySelectorAll('#loginScreen,#listScreen,#detailScreen').forEach(function(x){x.style.display='none'});document.getElementById(id).style.display='block'}
 function bdg(s){var m={pending_payment:'Awaiting Payment',confirmed:'Confirmed',completed:'Completed',cancelled:'Cancelled'};return'<span class="badge '+s+'"><span class="bd"></span>'+(m[s]||s)+'</span>'}
+function tskBadge(s){if(!s)return'';var m={assigned:'Assigned',in_progress:'In Progress',awaiting_review:'In Review',completed:'Done'};return'<span class="badge '+s+'"><span class="bd"></span>'+(m[s]||s.replace(/_/g,' '))+'</span>';}
+
+var theme=document.documentElement.classList.contains('dark')?'dark':'light';
+function applyTheme(t){
+  var h=document.documentElement;h.classList.remove('light','dark');
+  h.classList.add(t==='dark'?'dark':'light');
+  var d=h.classList.contains('dark');
+  document.querySelector('meta[name=theme-color]').content=d?'#0a0f0a':'#f5f8f6';
+  relucide();
+}
+function toggleTheme(){
+  var h=document.documentElement;
+  theme=h.classList.contains('dark')?'light':'dark';
+  localStorage.setItem('theme',theme);applyTheme(theme);
+}
+
+function toggleDrawer(){
+  var d=document.getElementById('drawer'),o=document.getElementById('drawerOverlay'),b=document.getElementById('burgerBtn');
+  var open=!d.classList.contains('open');
+  d.classList.toggle('open',open);o.classList.toggle('open',open);
+  if(b)b.setAttribute('aria-expanded',open?'true':'false');
+}
 
 async function login(){
   var raw=document.getElementById('phoneInput').value.trim();
   if(!raw||!/^0[0-9]{8,10}$/.test(raw)){document.getElementById('errPhone').style.display='block';return}
   document.getElementById('errPhone').style.display='none';
   myPhone=raw;
-  localStorage.setItem('jc_login_phone',myPhone);
-  document.getElementById('phoneDisplay').textContent=raw;
+  document.getElementById('phoneDisplay').innerHTML='<b>'+raw+'</b>';
+  document.getElementById('loginOverlay').classList.add('hidden');
   await loadMyBookings();
-  show('listScreen');
   renderList();
 }
 
@@ -124,65 +358,100 @@ async function loadMyBookings(){
   }catch(e){myBookings=[];myTasks={}}
 }
 
-function filterTab(f){filter=f;document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',t.getAttribute('data-f')===f)});renderList()}
+function filterTab(f){
+  filter=f;
+  document.querySelectorAll('.d-nav-item').forEach(function(n){n.classList.toggle('active',n.id==='ds'+f.charAt(0).toUpperCase()+f.slice(1))});
+  document.querySelectorAll('.bnav-item').forEach(function(n){n.classList.remove('active')});
+  var bm={all:'navAll',active:'navActive',completed:'navDone'};if(bm[f])document.getElementById(bm[f]).classList.add('active');
+  document.querySelectorAll('.fpill').forEach(function(p){p.classList.toggle('active',p.getAttribute('data-f')===f)});
+  renderList();
+}
+
 function renderList(){
   var list=myBookings.slice();
   if(filter==='active')list=list.filter(function(b){return b.status==='pending_payment'||b.status==='confirmed'});
   else if(filter==='completed')list=list.filter(function(b){return b.status==='completed'});
-  var el=document.getElementById('bookingsList');
-  if(!list.length){el.innerHTML='<div class="empty"><div class="ei"><i data-lucide="inbox"></i></div><p>No bookings found.</p></div>';relucide();return}
-  var h='';
-  list.forEach(function(b){
-    var t=myTasks[b.booking_id];
-    var tBadge=t?'<span class="badge '+(t.status==='completed'?'completed':'confirmed')+'"><span class="bd"></span>'+(t.status==='completed'?'Done':t.status.replace('_',' '))+'</span>':'';
-    h+='<div class="card" onclick="openDetail(\''+b.id+'\')"><div class="row"><div><div class="cname">'+esc(b.customer_name)+'</div><div class="caddr">'+esc(b.customer_address)+'</div></div><span class="cdate">'+fd(b.booking_date)+'<br>'+ft(b.booking_time)+'</span></div><div class="row" style="margin-top:8px">'+bdg(b.status)+tBadge+'</div></div>';
-  });
-  el.innerHTML=h;relucide();
+
+  document.getElementById('sAll').textContent=myBookings.length;
+  document.getElementById('sActive').textContent=myBookings.filter(function(b){return b.status==='pending_payment'||b.status==='confirmed'}).length;
+  document.getElementById('sDone').textContent=myBookings.filter(function(b){return b.status==='completed'}).length;
+  document.getElementById('secCount').textContent=list.length;
+
+  var fm={all:'All Bookings',active:'Active Bookings',completed:'Completed Bookings'};
+  document.getElementById('secTitle').textContent=fm[filter]||'Bookings';
+  document.getElementById('dTitle').textContent=fm[filter]||'My Bookings';
+
+  var el=document.getElementById('list');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="eicon"><i data-lucide="inbox"></i></div><h2>No bookings</h2><p>No bookings match this filter.</p></div>';return}
+
+  var isDesktop=matchMedia('(min-width:1024px)').matches;
+  if(isDesktop){
+    var h='<div class="d-card"><table><thead><tr><th>Customer</th><th>Date &amp; Time</th><th>Payment</th><th>Status</th></tr></thead><tbody>';
+    list.forEach(function(b){
+      var t=myTasks[b.booking_id];
+      var pay=b.payment_status==='paid'?'Paid':'Pending';
+      h+='<tr onclick="openDetail(\''+b.id+'\')">';
+      h+='<td><div class="d-name"><strong>'+esc(b.customer_name)+'</strong></div><div class="d-addr">'+esc(b.customer_address)+'</div></td>';
+      h+='<td><span class="d-date">'+fd(b.booking_date)+'</span><span class="d-dot"></span><span class="d-date">'+ft(b.booking_time)+'</span></td>';
+      h+='<td><span style="font-size:.78rem;font-weight:600;color:'+(pay==='Paid'?'var(--accent)':'var(--warning)')+'">RM'+esc(b.deposit_amount)+' &middot; '+pay+'</span></td>';
+      h+='<td>'+bdg(b.status)+(t?tskBadge(t.status):'')+'</td>';
+      h+='</tr>';
+    });
+    h+='</tbody></table></div>';el.innerHTML=h;
+  }else{
+    var h='';
+    list.forEach(function(b){
+      var t=myTasks[b.booking_id];
+      h+='<div class="card" onclick="openDetail(\''+b.id+'\')">';
+      h+='<div class="card-body"><div class="card-meta"><span class="card-date">'+fd(b.booking_date)+' '+ft(b.booking_time)+'</span>'+bdg(b.status)+(t?tskBadge(t.status):'')+'</div>';
+      h+='<div class="card-name">'+esc(b.customer_name)+'</div>';
+      h+='<div class="card-addr">'+esc(b.customer_address)+'</div>';
+      h+='</div></div>';
+    });
+    el.innerHTML=h;
+  }
+  relucide();
 }
 
 async function openDetail(id){
   selId=id;
   var b=myBookings.find(function(x){return x.id===id});if(!b)return;
   var t=myTasks[id];
-  show('detailScreen');
+  document.getElementById('mTitle').innerHTML='<span class="m-dot"></span>'+b.customer_name;
 
-  // Load photos
   var photos=[];
   if(t){try{var pr=await SB.from('task_photos').select('*').eq('task_id',t.id).order('created_at',{ascending:true});photos=pr.data||[];}catch(e){}}
   var beforeP=photos.filter(function(p){return p.type==='before'});
   var afterP=photos.filter(function(p){return p.type==='after'});
   function thumbs(arr){if(!arr.length)return'';var s='<div class="thumbs">';arr.forEach(function(p){s+='<div class="thumb"><a href="'+esc(p.url)+'" target="_blank"><img src="'+esc(p.url)+'" loading="lazy"></a></div>'});return s+'</div>'}
 
-  var h='<div class="detail"><h2 style="font-size:1rem;font-weight:700;margin-bottom:14px">'+esc(b.customer_name)+'</h2>';
-  h+='<div class="dr"><span class="k">Date &amp; Time</span><span class="v">'+fd(b.booking_date)+' &middot; '+ft(b.booking_time)+'</span></div>';
-  h+='<div class="dr"><span class="k">Address</span><span class="v">'+esc(b.customer_address)+'</span></div>';
-  h+='<div class="dr"><span class="k">Status</span><span class="v">'+bdg(b.status)+'</span></div>';
-  if(t)h+='<div class="dr"><span class="k">Job Status</span><span class="v">'+esc(t.status.replace(/_/g,' '))+'</span></div>';
-  h+='<div class="dr"><span class="k">Deposit</span><span class="v">RM'+esc(b.deposit_amount)+' &middot; '+(b.payment_status==='paid'?'Paid':'Pending')+'</span></div>';
-  h+='<div class="dr"><span class="k">Balance</span><span class="v">RM150 '+(b.status==='completed'?'(Due)':'')+'</span></div>';
-  h+='<div class="dr"><span class="k">Ref</span><span class="v" style="font-size:.65rem;opacity:.6">#'+b.id.substring(0,8)+'</span></div>';
-  h+='</div>';
+  var h='<div class="m-row"><span class="mk">Date &amp; Time</span><span class="mv">'+fd(b.booking_date)+' &middot; '+ft(b.booking_time)+'</span></div>'+
+    '<div class="m-row"><span class="mk">Address</span><span class="mv">'+esc(b.customer_address)+'</span></div>'+
+    '<div class="m-row"><span class="mk">Status</span><span class="mv">'+bdg(b.status)+'</span></div>';
+  if(t)h+='<div class="m-row"><span class="mk">Job Status</span><span class="mv">'+tskBadge(t.status)+'</span></div>';
+  h+='<div class="m-row"><span class="mk">Deposit</span><span class="mv">RM'+esc(b.deposit_amount)+' &middot; '+(b.payment_status==='paid'?'Paid':'Pending')+'</span></div>';
+  h+='<div class="m-row"><span class="mk">Balance</span><span class="mv">RM150 '+(b.status==='completed'?'(Due)':'')+'</span></div>';
+  h+='<div class="m-row"><span class="mk">Ref</span><span class="mv" style="font-size:.65rem;opacity:.6">#'+b.id.substring(0,8)+'</span></div>';
 
-  if(beforeP.length){h+='<div class="detail"><div style="font-weight:700;margin-bottom:8px;font-size:.8rem">Before Photos ('+beforeP.length+')</div>'+thumbs(beforeP)+'</div>'}
-  if(afterP.length){h+='<div class="detail"><div style="font-weight:700;margin-bottom:8px;font-size:.8rem">After Photos ('+afterP.length+')</div>'+thumbs(afterP)+'</div>'}
+  if(beforeP.length)h+='<div style="margin-top:16px"><div style="font-weight:700;margin-bottom:8px;font-size:.78rem">Before Photos ('+beforeP.length+')</div>'+thumbs(beforeP)+'</div>';
+  if(afterP.length)h+='<div style="margin-top:16px"><div style="font-weight:700;margin-bottom:8px;font-size:.78rem">After Photos ('+afterP.length+')</div>'+thumbs(afterP)+'</div>';
 
-  // ACTIONS
-  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">';
-  h+='<button class="btn" style="flex:1;min-width:140px;background:#25D366" onclick="window.open(\'https://wa.me/'+waNum(myPhone)+'?text=Salam JAYABINA, booking ref '+b.id.substring(0,8)+'\',\'_blank\')">WhatsApp Support</button>';
+  document.getElementById('mBody').innerHTML=h;
 
-  // Pay balance button
+  var a='<button class="m-btn wa" onclick="window.open(\'https://wa.me/'+waNum(myPhone)+'?text=Salam JAYABINA, booking ref '+b.id.substring(0,8)+'\',\'_blank\')"><i data-lucide="message-circle"></i> WhatsApp</button>';
   if(b.status==='completed'&&b.payment_status==='paid'){
-    h+='<button class="btn" style="flex:1;min-width:140px" id="payBalanceBtn" onclick="payBalance(\''+b.id+'\')">Pay Balance RM150</button>';
+    a+='<button class="m-btn accept" id="payBalanceBtn" onclick="payBalance(\''+b.id+'\')"><i data-lucide="credit-card"></i> Pay Balance</button>';
   }
-
-  // Cancel button (only if not yet completed/cancelled)
   if(b.status!=='completed'&&b.status!=='cancelled'){
-    h+='<button class="btn out" style="flex:1;min-width:140px;color:var(--danger)" onclick="cancelBooking(\''+b.id+'\')">Cancel Booking</button>';
+    a+='<button class="m-btn" style="background:var(--danger-light);color:var(--danger)" onclick="cancelBooking(\''+b.id+'\')"><i data-lucide="x"></i> Cancel</button>';
   }
-  h+='</div>';
-
-  document.getElementById('detailContent').innerHTML=h;relucide();
+  a+='<button class="m-btn close" onclick="closeModal()">Close</button>';
+  document.getElementById('mActs').innerHTML=a;
+  openModal();
 }
+
+function openModal(){var m=document.getElementById('modal');m.classList.add('show');document.body.style.overflow='hidden';relucide()}
+function closeModal(){var m=document.getElementById('modal');m.classList.remove('show');document.body.style.overflow='';selId=null;renderList();relucide()}
 
 async function payBalance(bid){
   var btn=document.getElementById('payBalanceBtn');if(!btn)return;
@@ -192,24 +461,18 @@ async function payBalance(bid){
     var data=await res.json();
     if(data.url){location.href=data.url;return}
     throw new Error(data.error||'Payment failed');
-  }catch(e){alert('Error: '+e.message);btn.disabled=false;btn.textContent='Pay Balance RM150'}
+  }catch(e){alert('Error: '+e.message);btn.disabled=false;btn.textContent='Pay Balance'}
 }
 
-function backToList(){show('listScreen');renderList();relucide()}
-function logout(){myPhone='';myBookings=[];myTasks={};selId=null;localStorage.removeItem('jc_login_phone');show('loginScreen');document.getElementById('phoneInput').value='';relucide()}
-
-async function autoLogin(){
-  var savedPhone=localStorage.getItem('jc_login_phone');
-  if(!savedPhone){show('loginScreen');return}
-  myPhone=savedPhone;
-  document.getElementById('phoneInput').value=savedPhone;
-  document.getElementById('phoneDisplay').textContent=savedPhone;
-  await loadMyBookings();
-  show('listScreen');
-  renderList();
+async function cancelBooking(id){
+  if(!confirm('Cancel this booking?'))return;
+  try{var r=await SB.from('bookings').update({status:'cancelled',updated_at:new Date().toISOString()}).eq('id',id);if(r.error)throw r.error;
+    closeModal();await loadMyBookings();renderList();}catch(e){alert('Error: '+e.message)}
 }
 
-autoLogin();relucide();
+function logout(){myPhone='';myBookings=[];myTasks={};selId=null;document.getElementById('loginOverlay').classList.remove('hidden');document.getElementById('phoneInput').value='';document.getElementById('phoneDisplay').innerHTML='';renderList();relucide()}
+
+relucide();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){})}
 </script>
 </body>
