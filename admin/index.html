@@ -1088,7 +1088,8 @@ function openEditStaff(id){
     '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Email</div><input id="edEmail" class="mv-sel" value="'+esc(p.email)+'">'+
     '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Address</div><textarea id="edAddress" class="mv-sel" rows="2">'+esc(p.address)+'</textarea>'+
     '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Assigned Area</div><select id="edArea" class="mv-sel">'+aHTML+'</select>'+
-    '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Phone (login ID)</div><input class="mv-sel" value="'+esc(p.phone)+'" disabled style="opacity:.6">';
+    '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">Phone (login ID)</div><input id="edPhone" class="mv-sel" value="'+esc(p.phone)+'">'+
+    '<div style="margin:10px 0 4px;font-size:.7rem;color:var(--text3);font-weight:600">New Password (leave blank to keep current)</div><input id="edPass" type="password" class="mv-sel" placeholder="Min 8 chars" autocomplete="new-password">';
   document.getElementById('mActs').innerHTML='<button class="m-btn accept" onclick="saveEditStaff(\''+id+'\')">Save</button><button class="m-btn close" onclick="closeModal()">Close</button>';
   openModalFrame();
   relucide();
@@ -1101,8 +1102,14 @@ function pickEditAvatar(){
   inp.click();
 }
 async function saveEditStaff(id){
-  var r=await callStaffAdmin({action:'update',user_id:id,full_name:document.getElementById('edName').value.trim(),email:document.getElementById('edEmail').value.trim(),address:document.getElementById('edAddress').value.trim(),service_area:document.getElementById('edArea').value,avatar_url:editAvatar});
-  if(r.ok){closeModal();showStaff();}else alert('Error: '+(r.body.error||'failed'));
+  var r=await callStaffAdmin({action:'update',user_id:id,full_name:document.getElementById('edName').value.trim(),email:document.getElementById('edEmail').value.trim(),phone:document.getElementById('edPhone').value.trim(),address:document.getElementById('edAddress').value.trim(),service_area:document.getElementById('edArea').value,avatar_url:editAvatar});
+  if(!r.ok){alert('Error: '+(r.body.error||'failed'));return;}
+  var pw=document.getElementById('edPass').value;
+  if(pw.length>=8){
+    var r2=await callStaffAdmin({action:'reset_password',user_id:id,password:pw});
+    if(!r2.ok){alert('Profile saved but password reset failed: '+(r2.body.error||'failed'));return;}
+  }
+  closeModal();showStaff();
 }
 
 async function callStaffAdmin(payload){
@@ -1110,7 +1117,7 @@ async function callStaffAdmin(payload){
   var url=API_URL+'/api/profiles',method='POST',body=payload;
   if(payload.action==='update'){
     url=API_URL+'/api/profiles/'+payload.user_id;method='PATCH';
-    body={full_name:payload.full_name,email:payload.email,address:payload.address,service_area:payload.service_area,avatar_url:payload.avatar_url};
+    body={full_name:payload.full_name,email:payload.email,phone:payload.phone,address:payload.address,service_area:payload.service_area,avatar_url:payload.avatar_url};
   }else if(payload.action==='set_active'){
     url=API_URL+'/api/profiles/'+payload.user_id;method='PATCH';
     body={is_active:payload.is_active};
@@ -1134,7 +1141,7 @@ async function addStaff(){
   if(!name||!phone||pass.length<8){msg.style.color='var(--danger)';msg.textContent='Enter name, phone, and password (min 8).';return;}
   msg.style.color='var(--text3)';msg.textContent='Creating...';
   var r=await callStaffAdmin({action:'create',full_name:name,phone:phone,password:pass,email:email,address:address,service_area:area,avatar_url:newStaffAvatar});
-  if(r.ok){msg.style.color='var(--accent)';msg.textContent='Staff added.';showStaff();}
+  if(r.ok){msg.style.color='var(--accent)';msg.textContent='Staff added. Password: '+pass+'. Save this securely.';showStaff();}
   else{msg.style.color='var(--danger)';msg.textContent='Error: '+(r.body.error||'failed');}
 }
 async function setStaffActive(id,active){
