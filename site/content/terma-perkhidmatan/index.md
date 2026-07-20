@@ -15,5 +15,3 @@ Maklumat pada jayabina.com menerangkan situasi dan proses servis secara umum. Ke
 - Keadaan tersembunyi yang tidak dapat dilihat semasa semakan awal boleh memerlukan penilaian atau perubahan skop.
 - Sebarang kerja tambahan perlu dibincangkan sebelum dilaksanakan.
 - Polisi deposit, pembatalan, perubahan tarikh dan jaminan hendaklah dirujuk pada terma bertulis untuk servis berkenaan.
-
-Jangan membuat keputusan berdasarkan ilustrasi AI pada laman ini. Semua visual AI dilabel sebagai ilustrasi dan bukan bukti projek pelanggan.

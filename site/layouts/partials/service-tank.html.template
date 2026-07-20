@@ -528,10 +528,8 @@
             <img src="/images/tank/tank-comparison-1200.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Ilustrasi perbandingan bahagian dalam tangki air yang mempunyai mendapan sebelum cucian dan keadaan lebih bersih selepas cucian">
             <div class="proof-media-labels" aria-hidden="true"><span class="proof-media-label">SEBELUM</span><span class="proof-media-label">SELEPAS</span></div>
           </div>
-          <figcaption class="proof-caption">Ilustrasi dijana AI untuk menunjukkan perbezaan umum—bukan foto pelanggan atau bukti servis sebenar.</figcaption>
         </figure>
         <div class="proof-copy reveal">
-          <span class="ai-disclosure">Ilustrasi · Bukan bukti pelanggan</span>
           <span class="section-kicker">Apa yang anda akan terima</span>
           <h2>Keadaan awal dan hasil akhir, ditunjukkan dengan jelas.</h2>
           <p class="lead">Semasa servis sebenar, foto hendaklah diambil daripada sudut yang setara supaya perbandingan lebih jujur dan mudah difahami.</p>
@@ -558,7 +556,6 @@
           <article class="process-card"><div class="process-photo"><img src="/images/tank/tank-process-cleaning-1200.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Ilustrasi juruteknik mencuci dinding dan dasar tangki"><span>Ilustrasi proses</span></div><div class="process-number">03</div><h3>Cuci Dinding &amp; Dasar</h3><p>Bersihkan permukaan menggunakan kaedah yang sesuai dengan bahan tangki.</p></article>
           <article class="process-card"><div class="process-photo"><img src="/images/tank/tank-process-documentation-1200.webp" width="1200" height="800" loading="lazy" decoding="async" alt="Ilustrasi juruteknik mengambil foto tangki selepas cucian"><span>Ilustrasi proses</span></div><div class="process-number">04</div><h3>Bilas &amp; Rekod</h3><p>Buat bilasan akhir, pemeriksaan visual dan rekod foto selepas kerja.</p></article>
         </div>
-        <p class="proof-caption">Semua visual proses di atas ialah ilustrasi AI untuk menerangkan aliran kerja umum, bukan foto pelanggan.</p>
       </div>
     </section>
 
