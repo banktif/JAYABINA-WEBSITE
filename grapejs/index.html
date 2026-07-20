@@ -115,8 +115,9 @@
 <script>'use strict';
 var e=null,d=false,E=null,N='',T=0,X=40;
 function ct(t,n){var o=document.getElementById('fileInfo');o.className='file-info';if(t==='dirty'){o.classList.add('dirty');o.innerHTML='<b>'+((N||'Untitled'))+'</b><small>'+(n||'Unsaved')+'</small>'}else if(t==='loaded'){o.classList.add('saved');o.innerHTML='<b>'+((N||'Untitled'))+'</b><small>'+(n||'Ready')+'</small>'}else{o.innerHTML='<b>No file loaded</b><small>Open an HTML file to edit</small>'}}
-function tt(t,n){var o=document.getElementById('toast');o.textContent=t;o.className='toast '+(n?'ok':'error')+' show';clearTimeout(o._t);o._t=setTimeout(function(){o.className='toast'},n?3500:6000)}
-function L(t){var o=document.getElementById('fileInfo');if(o)o.innerHTML='<b>'+t+'</b>';console.log(t)}
+  function tt(t,n){var o=document.getElementById('toast');o.textContent=t;o.className='toast '+(n?'ok':'error')+' show';clearTimeout(o._t);o._t=setTimeout(function(){o.className='toast'},n?3500:8000)}
+  function L(t){var o=document.getElementById('fileInfo');if(o)o.innerHTML='<b>'+t+'</b>';console.log(t)}
+  function L2(t){console.log(t)}
 
 var B=false,O=false,R=window.JayaGrapesFull||{};var G=R;
 
@@ -147,7 +148,7 @@ function splitDocument(html){
   var bm=s.match(/<body([^>]*)>([\s\S]*?)<\/body>/i);
   var hd=hdm?hdm[1]:'',bd=bm?bm[2]:s;
   var sTag=/<script\b[\s\S]*?<\/script>/gi;
-  var stTag=/<style\b[^>]*>[\s\S]*?<\/style>/gi;
+  var stTag=/<style\b[^>]*>([\s\S]*?)<\/style>/gi;
   var sh=(hd.match(sTag)||[]).join('\n');
   var sb=(bd.match(sTag)||[]).join('\n');
   var cs='';
@@ -157,7 +158,8 @@ function splitDocument(html){
   var cB=bd.replace(sTag,'').replace(stTag,'').trim();
   var lk=[];
   hd.replace(/<link\b[^>]*rel=["']?stylesheet["']?[^>]*>/gi,function(t){var m=t.match(/href=["']([^"']+)["']/i);if(m)lk.push(m[1]);return t});
-  E={doctype:dt,htmlAttrs:hm?hm[1]:' lang="en"',bodyAttrs:bm?bm[1]:'',staticHead:sH,headScripts:sh,bodyScripts:sb,bodyHtml:cB,css:cs,stylesheets:lk}
+  E={doctype:dt,htmlAttrs:hm?hm[1]:' lang="en"',bodyAttrs:bm?bm[1]:'',staticHead:sH,headScripts:sh,bodyScripts:sb,bodyHtml:cB,css:cs,stylesheets:lk};
+  L2('[splitDoc] CSS: '+(cs||'').length+' chars, stylesheets: '+lk.length+' links, body: '+(cB||'').length+' chars')
 }
 
 function buildEditor(){
@@ -170,7 +172,7 @@ function buildEditor(){
     assetManager:{assets:[],upload:false},canvas:{styles:cs},
     deviceManager:{devices:[{id:'desktop',name:'Desktop',width:''},{id:'tablet',name:'Tablet',width:'768px',widthMedia:'992px'},{id:'mobile',name:'Mobile',width:'390px',widthMedia:'600px'}]},
     plugins:pl,pluginsOpts:{[R.presetWebpage]:{modalImportTitle:'Import HTML',modalImportLabel:'Paste HTML and CSS here',blocksBasicOpts:{flexGrid:true},navbarOpts:{},countdownOpts:{},formsOpts:{}},[R.customCode]:{},[R.touch]:{},[R.tabs]:{},[R.tooltip]:{},[R.styleBg]:{},[R.parserPostcss]:{},[R.blocksFlexbox]:{},[R.styleFilter]:{},[R.styleGradient]:{},[R.typed]:{}},
-    showOffsets:true,noticeOnUnload:false,avoidInlineStyle:true,components:E.bodyHtml,style:E.css};
+    showOffsets:true,noticeOnUnload:false,avoidInlineStyle:false,components:E.bodyHtml,style:E.css};
   e=R.grapesjs.init(cf);L('Editor: '+(e?'OK':'NULL'));if(!e){tt('Init returned null',false);ct();return}
   window.editor=e;addMarketingBlocks();
   e.on('load',function(){e.clearDirtyCount()});
