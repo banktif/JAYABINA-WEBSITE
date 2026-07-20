@@ -10,6 +10,7 @@
 
 This section supersedes older Supabase architecture and deploy notes below.
 
+- ⛔ **WWW SITE LOCKED (owner order, 2026-07-20):** `www.jayabina.com` (Pages project `jayabina`, `site/` Hugo source) must NEVER be deleted, modified, or redeployed without an explicit owner instruction in the current session. GrapesJS editor `protectReason()` guards `site/content/` — do NOT disable it.
 - ⛔ **ADMIN SYSTEM LOCKED (owner order, 2026-07-18):** `admin.jayabina.com` (Pages project `jayabina-admin`, `admin/index.html`, `admin/editor.html`, `admin/vendor/`) must NEVER be deleted, modified, or redeployed without an explicit owner instruction in the current session.
 - Frontend: www.jayabina.com (Hugo build from `site/`). Booking funnel PRIMARY di `www.jayabina.com/servis-cuci-tangki-air/`: booking → Bayarcash deposit RM150 → `www.jayabina.com/success.html`. Worker var `SITE_URL=https://www.jayabina.com`. The old cuci.jayabina.com Pages project (`jayabina`) has been decommissioned — all content migrated to www.
 - Portals: staff → `staff.jayabina.com` (Worker `jayabina-staff-router`, `cf-staff-router/`, serves `/worker/` from www); pelanggan → `akaun.jayabina.com` (Worker `jayabina-akaun-router`, `cf-akaun-router/`, serves `/customer/` from www).
