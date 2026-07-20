@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- ⛔ DESIGN LOCKED (owner order 2026-07-20): DO NOT modify or overwrite without explicit owner instruction. Rollback target: commit db18695. See AGENTS.md section "CURRENT CLOUDFLARE MIGRATION OVERRIDE" for full lock details. -->
 <html lang="ms" class="light">
 <head>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -14,7 +15,7 @@
   <script>
     (function(){
       var saved=localStorage.getItem('theme');
-      var mode=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+      var mode=saved==='dark'||saved==='light'?saved:'light';
       document.documentElement.className=mode;
       document.querySelector('meta[name=theme-color]').content=mode==='dark'?'#0a0f0a':'#f5f7f5';
     })();
