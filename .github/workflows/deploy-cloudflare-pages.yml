@@ -27,6 +27,9 @@ jobs:
         working-directory: site
         run: hugo --minify --destination ../site-public
 
+      - name: Copy grapejs to www
+        run: test -d grapejs && cp -r grapejs site-public/grapejs || true
+
       - name: Deploy jayabina
         run: wrangler pages deploy site-public --project-name jayabina --branch main
 
@@ -38,4 +41,11 @@ jobs:
           test -d admin/vendor && cp -r admin/vendor admin-public/ || true
           for f in theme.css admin-modern.css jc-api.js admin-favicon.svg admin-manifest.json; do test -f "$f" && cp "$f" admin-public/ || true; done
           wrangler pages deploy admin-public --project-name jayabina-admin --branch master
+
+      - name: Deploy grapejs
+        run: |
+          # Deploy grapejs visual editor — uses project directory as root
+          wrangler pages deploy grapejs --project-name grapejs --branch master || \
+          wrangler pages deploy grapejs --project-name jayabina-editor --branch master || \
+          echo "⚠️  grapejs project not found. Create it in CF dashboard with domain grapejs.jayabina.com"
 
