@@ -16,7 +16,7 @@
     .brand{display:flex;align-items:center;gap:10px}.brand-mark{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#42cf79,#166534);box-shadow:0 8px 22px rgba(56,184,106,.28);font-weight:900}.brand-copy b{display:block;font-size:13px;letter-spacing:.08em}.brand-copy small{display:block;color:var(--muted);font-size:10px;margin-top:1px}
     .file-info{margin-left:auto;min-width:0;text-align:right}.file-info b{display:block;font-size:11px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.file-info small{display:block;color:var(--muted);font-size:10px}.file-info.dirty b{color:var(--warning)}.file-info.saved b{color:var(--accent2)}
     .btn,.icon-btn{height:38px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--text);display:inline-flex;align-items:center;justify-content:center;gap:7px;font-weight:700;white-space:nowrap}.btn{padding:0 13px}.icon-btn{width:38px;padding:0}.btn:hover,.icon-btn:hover{border-color:#4d7d5e;background:var(--surface3)}.btn.primary{background:var(--accent);border-color:var(--accent);color:#05200e}.btn.primary:hover{background:#54ce81}.btn:disabled,.icon-btn:disabled{opacity:.42;cursor:not-allowed}.btn svg,.icon-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-    .file-drop-area{position:relative}#fileInput{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .file-drop-area{position:relative}
     .tool-group{display:flex;align-items:center;gap:5px;padding-right:8px;margin-right:3px;border-right:1px solid var(--line)}.tool-group:last-child{border-right:0}.tool-label{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-right:3px}.device-btn.active,.panel-btn.active{background:var(--accent);border-color:var(--accent);color:#06220f}.spacer{flex:1}
     .workspace{min-height:0;display:grid;grid-template-columns:276px minmax(320px,1fr) 310px;position:relative}.sidebar{min-height:0;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;z-index:20}.sidebar.right{border-right:0;border-left:1px solid var(--line)}.side-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}.side-head b{font-size:12px;text-transform:uppercase;letter-spacing:.08em}.side-close{display:none}.side-scroll{min-height:0;overflow:auto;flex:1}.right-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:7px;border-bottom:1px solid var(--line)}.right-tabs button{border:0;border-radius:8px;background:transparent;color:var(--muted);padding:8px 4px;font-weight:800;font-size:11px}.right-tabs button.active{background:var(--surface3);color:var(--accent2)}.right-pane{display:none;height:100%;overflow:auto}.right-pane.active{display:block}
     .canvas-wrap{min-width:0;min-height:0;position:relative;background:#d8dfda;overflow:hidden}.canvas-wrap #gjs{height:100%;width:100%}.empty{position:absolute;inset:0;display:grid;place-items:center;padding:24px;z-index:15;background:radial-gradient(circle at 50% 25%,#e9f4ec,#cbd6ce)}.empty-card{max-width:520px;text-align:center;background:#fff;color:#173321;border:1px solid #c4d5c9;border-radius:24px;padding:36px;box-shadow:0 22px 70px rgba(20,55,32,.18)}.empty-icon{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;margin:0 auto 18px;background:#e6f7ec;color:#166534;font-size:28px}.empty h1{font-size:24px;margin:0 0 8px}.empty p{margin:0 auto 20px;color:#597062;max-width:420px}.empty-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
@@ -37,8 +37,7 @@
   <header class="top-main">
     <div class="brand"><span class="brand-mark">J</span><span class="brand-copy"><b>JAYABINA</b><small>Visual Editor · GrapesJS 0.23.2</small></span></div>
     <div class="file-drop-area">
-      <button class="btn primary" id="openBtn" onclick="document.getElementById('fileInput').click()"><svg><use href="#i-upload"/></svg><span>Open HTML</span></button>
-      <input type="file" id="fileInput" accept=".html,.htm" onchange="handleFileOpen(this.files[0])">
+      <label class="btn primary" id="openBtn" style="cursor:pointer"><svg><use href="#i-upload"/></svg><span>Open HTML</span><input type="file" id="fileInput" accept=".html,.htm" onchange="handleFileOpen(this.files[0])" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none"></label>
     </div>
     <button class="btn primary" id="downloadBtn" onclick="handleDownload()" disabled><svg><use href="#i-download"/></svg><span>Download</span></button>
     <div class="file-info" id="fileInfo"><b>No file loaded</b><small>Open an HTML file to edit</small></div>
@@ -141,20 +140,26 @@ function splitDocument(html){
 }
 
 function handleFileOpen(file){
-  if(!file)return;if(!confirmDiscard())return;
+  if(!file){_log('No file selected');return}
+  if(!confirmDiscard()){_log('Discard cancelled');return}
   currentFileName=file.name||'untitled.html';
-  document.getElementById('fileInfo').innerHTML='<b>Loading '+esc(currentFileName)+'...</b><small>Parsing HTML</small>';
+  _log('File: '+esc(currentFileName)+' ('+Math.round(file.size/1024)+' KB)');
   var reader=new FileReader();
-  reader.onload=function(e){try{currentEnvelope=splitDocument(e.target.result);_openWithRetry()}catch(err){toast('Failed to parse HTML: '+err.message,false);setInfo()}};
-  reader.onerror=function(){toast('Failed to read file',false);setInfo()};reader.readAsText(file)
+  reader.onload=function(e){_log('File read OK');try{currentEnvelope=splitDocument(e.target.result);_log('HTML parsed: '+(currentEnvelope.bodyHtml||'').length+' chars body');_openWithRetry()}catch(err){_log('PARSE ERROR: '+err.message);toast('Failed to parse HTML: '+err.message,false);setInfo()}};
+  reader.onerror=function(){_log('READ ERROR');toast('Failed to read file',false);setInfo()};
+  _log('Reading file...');
+  reader.readAsText(file)
 }
+
+function _log(msg){var el=document.getElementById('fileInfo');el.innerHTML='<b>'+esc(msg)+'</b>';console.log('[GJS]',msg)}
 
 function _openWithRetry(){
   if(!window.JayaGrapesFull||!window.JayaGrapesFull.grapesjs){
-    document.getElementById('fileInfo').innerHTML='<b>Loading editor bundle...</b><small>Please wait</small>';
+    _log('Bundle not ready, retrying...');
     setTimeout(_openWithRetry,500);return
   }
-  try{buildEditor()}catch(e){toast('Editor init failed: '+e.message,false);setInfo()}
+  _log('Bundle ready, init editor...');
+  try{buildEditor()}catch(e){_log('INIT ERROR: '+e.message);toast('Editor init failed: '+e.message,false);setInfo()}
 }
 
 function buildEditor(){
@@ -162,7 +167,7 @@ function buildEditor(){
   var plugins=[G.presetWebpage,G.blocksBasic,G.pluginForms,G.pluginExport,G.customCode,G.touch,G.tabs,G.tooltip,G.styleBg,G.parserPostcss,G.blocksFlexbox,G.styleFilter,G.styleGradient,G.typed].filter(Boolean);
   var canvasStyles=(currentEnvelope.stylesheets||[]).map(function(href){try{return new URL(href,location.href).href}catch(e){return href}});
   var config={container:'#gjs',height:'100%',width:'auto',fromElement:false,storageManager:false,panels:{defaults:[]},blockManager:{appendTo:'#blocksPanel'},styleManager:{appendTo:'#stylesPanel',sectors:styleSectors()},traitManager:{appendTo:'#traitsPanel'},layerManager:{appendTo:'#layersPanel'},selectorManager:{appendTo:'#selectorsPanel'},assetManager:{assets:[],upload:false},canvas:{styles:canvasStyles},deviceManager:{devices:[{id:'desktop',name:'Desktop',width:''},{id:'tablet',name:'Tablet',width:'768px',widthMedia:'992px'},{id:'mobile',name:'Mobile',width:'390px',widthMedia:'600px'}]},plugins:plugins,pluginsOpts:{[G.presetWebpage]:{modalImportTitle:'Import HTML',modalImportLabel:'Paste HTML and CSS here',blocksBasicOpts:{flexGrid:true},navbarOpts:{},countdownOpts:{},formsOpts:{}},[G.customCode]:{},[G.touch]:{},[G.tabs]:{},[G.tooltip]:{},[G.styleBg]:{},[G.parserPostcss]:{},[G.blocksFlexbox]:{},[G.styleFilter]:{},[G.styleGradient]:{},[G.typed]:{}},showOffsets:true,noticeOnUnload:false,avoidInlineStyle:true,components:currentEnvelope.bodyHtml,style:currentEnvelope.css};
-  editor=G.grapesjs.init(config);window.editor=editor;addMarketingBlocks();
+  editor=G.grapesjs.init(config);_log('Editor instance created: '+(editor?'OK':'NULL!'));if(!editor){toast('Editor init returned null',false);setInfo();return}
   editor.on('load',function(){editor.clearDirtyCount()});
   editor.on('update',function(){if(!editor.getDirtyCount())return;dirty=true;document.getElementById('downloadBtn').disabled=false;setInfo('dirty','Unsaved changes')});
   editor.on('component:selected',function(){if(innerWidth<=760){showRightPane('styles');document.getElementById('rightSidebar').classList.add('open')}});
