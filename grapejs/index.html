@@ -175,7 +175,7 @@ function buildEditor(){
     showOffsets:true,noticeOnUnload:false,avoidInlineStyle:false,components:E.bodyHtml,style:E.css};
   e=R.grapesjs.init(cf);L('Editor: '+(e?'OK':'NULL'));if(!e){tt('Init returned null',false);ct();return}
   window.editor=e;addMarketingBlocks();
-  e.on('load',function(){e.clearDirtyCount()});
+  e.on('load',function(){e.clearDirtyCount();if(E.css){try{e.setStyle(E.css)}catch(er){console.log('setStyle error:',er)}}});
   e.on('update',function(){if(!e.getDirtyCount())return;d=true;document.getElementById('downloadBtn').disabled=false;ct('dirty','Unsaved')});
   d=false;document.getElementById('downloadBtn').disabled=false;document.getElementById('emptyState').classList.add('hidden');document.getElementById('canvasStatus').classList.remove('hidden');document.getElementById('canvasSite').textContent=N;ct('loaded','Ready');tt(N+' loaded',true)
 }
