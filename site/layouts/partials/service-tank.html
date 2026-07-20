@@ -637,6 +637,7 @@
             <div class="form-step"><span>3</span>Butiran anda</div>
             <div class="form-grid">
               <div class="field"><label for="customerName">Nama penuh</label><input id="customerName" name="name" type="text" autocomplete="name" placeholder="Contoh: Ahmad Firdaus" aria-describedby="nameError" aria-invalid="false"><span class="error" id="nameError">Sila isi nama penuh.</span></div>
+              <div class="field"><label for="customerEmail">Emel <span class="field-optional">(pilihan)</span></label><input id="customerEmail" name="email" type="email" autocomplete="email" placeholder="emel@contoh.com" aria-invalid="false"><span class="error" id="emailError">Sila isi emel yang sah.</span></div>
               <div class="field"><label for="customerPhone">Nombor telefon</label><input id="customerPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Contoh: 0123456789" aria-describedby="phoneError" aria-invalid="false"><span class="error" id="phoneError">Masukkan nombor Malaysia yang sah.</span></div>
               <div class="field full"><label for="customerAddress">Alamat &amp; poskod</label><textarea id="customerAddress" name="address" autocomplete="street-address" placeholder="No. rumah, jalan, taman dan poskod" aria-describedby="addressError" aria-invalid="false"></textarea><span class="error" id="addressError">Sila masukkan alamat lengkap dan poskod.</span></div>
             </div>
@@ -833,10 +834,12 @@
       document.getElementById('bookingForm').addEventListener('submit',async function(event){
         event.preventDefault();
         var name=document.getElementById('customerName').value.trim();
+        var emailVal=document.getElementById('customerEmail').value.trim();
         var phone=document.getElementById('customerPhone').value.replace(/[\s-]/g,'').trim();
         var address=document.getElementById('customerAddress').value.trim();
         var valid=true;
         showError('nameError','customerName',!name);if(!name)valid=false;
+        showError('emailError','customerEmail',!!(emailVal&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)));if(emailVal&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal))valid=false;
         showError('phoneError','customerPhone',!/^01\d{8,9}$/.test(phone));if(!/^01\d{8,9}$/.test(phone))valid=false;
         showError('addressError','customerAddress',address.length<10);if(address.length<10)valid=false;
         if(!selectedDate){document.getElementById('selectedDate').textContent='Sila pilih tarikh.';document.getElementById('selectedDate').style.color='var(--error)';valid=false}else{document.getElementById('selectedDate').style.color=''}
@@ -846,7 +849,7 @@
         if(!SB){alert('Sistem tempahan belum bersambung. Sila gunakan WhatsApp.');submit.disabled=false;submit.textContent='Bayar Deposit RM150 →';return}
         try{
           var existing=await fetchBookedSlots(selectedDate);if(existing.indexOf(selectedSlot)>-1)throw new Error('SLOT_TAKEN');
-          var bookingResult=await SB.from('bookings').insert({customer_name:name,customer_phone:phone,customer_address:address,booking_date:selectedDate,booking_time:selectedSlot,amount:300,deposit_amount:150,status:'pending_payment',payment_status:'pending'});
+          var bookingResult=await SB.from('bookings').insert({customer_name:name,customer_email:emailVal,customer_phone:phone,customer_address:address,booking_date:selectedDate,booking_time:selectedSlot,amount:300,deposit_amount:150,status:'pending_payment',payment_status:'pending'});
           if(bookingResult.error)throw new Error(bookingResult.error.message||'BOOKING_FAILED');
           var booking=Array.isArray(bookingResult.data)?bookingResult.data[0]:bookingResult.data;
           if(!booking||!booking.id)throw new Error('BOOKING_FAILED');

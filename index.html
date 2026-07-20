@@ -220,6 +220,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(11,20,19,.94
 .slot.on{border-color:var(--teal);background:rgba(14,140,134,.25);color:#fff}
 .slot.off{border-color:rgba(255,255,255,.04);color:rgba(232,246,244,.15);cursor:not-allowed;background:rgba(255,255,255,.01)}
 .fg{margin-bottom:14px}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:500px){.fg-row{grid-template-columns:1fr}}
 .fg label{display:block;font-size:.75rem;font-weight:600;color:rgba(232,246,244,.6);margin-bottom:5px}
 .fg input,.fg textarea{width:100%;padding:13px 16px;background:rgba(255,255,255,.06);border:1.5px solid var(--border);border-radius:12px;font-family:'Figtree',sans-serif;font-size:.85rem;color:#fff;outline:none;transition:border-color .2s,box-shadow .2s}
 .fg input:focus,.fg textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,140,134,.15)}
@@ -481,6 +483,7 @@ footer p{margin-top:4px}
 </section>
 
 <!-- ══════ 10. TEMPAHAN ══════ -->
+<!-- ⛔ DESIGN LOCK: BOOKING FORM (owner order 2026-07-20). DO NOT modify, delete, or reformat this section. The email field + 2-column layout + validation JS are locked. See AGENTS.md §3 LOCKED DECISIONS. -->
 <section class="sec-deep" id="tempah">
   <div class="wrap fade-up">
     <div class="book-card" id="bookCard">
@@ -497,9 +500,14 @@ footer p{margin-top:4px}
         <div class="slot" data-slot="4pm">🌤️ 4:00 PM</div>
       </div>
       <div class="book-step">3. Isi Butiran</div>
-      <div class="fg"><label>Nama Penuh</label><input type="text" id="cn" placeholder="Nama penuh kau..."><div class="ferr" id="ecn">Sila isi nama penuh.</div></div>
-      <div class="fg"><label>Nombor Telefon</label><input type="tel" id="cp" placeholder="012xxxxxxx"><div class="ferr" id="ecp">Nombor telefon mesti 10-11 digit, mula dengan 01.</div></div>
-      <div class="fg"><label>Alamat Penuh</label><textarea id="ca" placeholder="No rumah, jalan, taman, poskod. Biar kami boleh sampai tepat."></textarea><div class="ferr" id="eca">Alamat penuh diperlukan — termasuk poskod.</div></div>
+      <div class="fg-row">
+        <div class="fg"><label>Nama Penuh</label><input type="text" id="cn" placeholder="Nama penuh anda..." autocomplete="name"><div class="ferr" id="ecn">Sila isi nama penuh.</div></div>
+        <div class="fg"><label>Emel</label><input type="email" id="cem" placeholder="emel@contoh.com" autocomplete="email"><div class="ferr" id="ecm">Sila isi emel yang sah.</div></div>
+      </div>
+      <div class="fg-row">
+        <div class="fg"><label>Nombor Telefon</label><input type="tel" id="cp" placeholder="012xxxxxxx" autocomplete="tel"><div class="ferr" id="ecp">Nombor telefon mesti 10-11 digit, mula dengan 01.</div></div>
+      </div>
+      <div class="fg"><label>Alamat Penuh</label><textarea id="ca" placeholder="No rumah, jalan, taman, poskod. Biar kami boleh sampai tepat." autocomplete="street-address"></textarea><div class="ferr" id="eca">Alamat penuh diperlukan — termasuk poskod.</div></div>
       <div class="price-box">
         <div class="pr"><span>Servis Cuci Tangki</span><span>RM300</span></div>
         <div class="pr"><span>Deposit (50%)</span><span>RM150</span></div>
@@ -611,15 +619,21 @@ rCal();uSlots();
 
 // BOOKING
 document.getElementById('btnBook').addEventListener('click',async function(){
-  var n=document.getElementById('cn').value.trim(),p=document.getElementById('cp').value.trim(),a=document.getElementById('ca').value.trim(),v=true;
-  var en=document.getElementById('ecn'),ep=document.getElementById('ecp'),ea=document.getElementById('eca');
-  en.style.display='none';ep.style.display='none';ea.style.display='none';
-  if(!n){en.style.display='block';v=false}if(!p||!/^01\d{8,9}$/.test(p)){ep.style.display='block';v=false}if(!a||a.length<10){ea.style.display='block';v=false}
+  var n=document.getElementById('cn').value.trim(),
+      m=document.getElementById('cem').value.trim(),
+      p=document.getElementById('cp').value.trim(),
+      a=document.getElementById('ca').value.trim(),v=true;
+  var en=document.getElementById('ecn'),em=document.getElementById('ecm'),ep=document.getElementById('ecp'),ea=document.getElementById('eca');
+  en.style.display='none';em.style.display='none';ep.style.display='none';ea.style.display='none';
+  if(!n){en.style.display='block';v=false}
+  if(m&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)){em.style.display='block';v=false}
+  if(!p||!/^01\d{8,9}$/.test(p)){ep.style.display='block';v=false}
+  if(!a||a.length<10){ea.style.display='block';v=false}
   if(!sd){alert('Pilih tarikh dulu.');v=false}if(!ss){alert('Pilih slot masa dulu.');v=false}if(!v)return;
   var btn=this;btn.disabled=true;btn.classList.add('loading');btn.textContent='Menyimpan...';
   try{var booked=await fetchBookedSlots(sd);if(booked.indexOf(ss)>-1){alert('Maaf, slot ni dah ditempah.');btn.disabled=false;btn.classList.remove('loading');btn.textContent='💳 Bayar Deposit RM150 →';return}}catch(e){}
   try{
-    var res=await fetch(API_URL+'/api/bookings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customer_name:n,customer_phone:p,customer_address:a,booking_date:sd,booking_time:ss,amount:300,deposit_amount:150,status:'pending_payment',payment_status:'pending'})});
+    var res=await fetch(API_URL+'/api/bookings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customer_name:n,customer_email:m,customer_phone:p,customer_address:a,booking_date:sd,booking_time:ss,amount:300,deposit_amount:150,status:'pending_payment',payment_status:'pending'})});
     var out=await res.json();
     if(!res.ok||out.error)throw new Error(out.error||'Tempahan gagal');
     var booking=(out.data&&out.data.id)?out.data:(Array.isArray(out.data)?out.data[0]:null);
@@ -632,7 +646,7 @@ document.getElementById('btnBook').addEventListener('click',async function(){
     var ssl=ss==='9am'?'9:00 AM':(ss==='11am'?'11:00 AM':(ss==='2pm'?'2:00 PM':'4:00 PM'));
     var dp=sd.split('-'),dl=dp[2]+'/'+dp[1]+'/'+dp[0];
     btn.style.display='none';document.querySelector('.price-box').style.display='none';
-    document.querySelectorAll('.book-step,.fg,.cal-nav,.cal,.sel-date,.slots').forEach(function(x){x.style.display='none'});
+    document.querySelectorAll('.book-step,.fg,.fg-row,.cal-nav,.cal,.sel-date,.slots').forEach(function(x){x.style.display='none'});
     document.getElementById('cal').style.display='none';
     document.getElementById('confirmMsg').classList.add('show');
     document.getElementById('cmText').innerHTML='Terima kasih <strong>'+n.replace(/</g,'&lt;')+'</strong>!<br>Booking: <strong>'+dl+', '+ssl+'</strong><br>Ref: <code>'+bookingId.substring(0,8)+'</code><br><br>Halaman bayaran tidak dapat dibuka. Bayar deposit <strong>RM150</strong> melalui WhatsApp di bawah.';

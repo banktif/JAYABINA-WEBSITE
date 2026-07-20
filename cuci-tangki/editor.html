@@ -266,6 +266,7 @@ async function loadSite(){
   var fpath=currentSite.file||'index.html';
   var reason=protectReason(fpath);
   if(reason){toast('Blocked: '+reason,false);return}
+  if(currentSite.repo==='banktif/jayabina-salespage' && fpath==='index.html'){toast('🔒 jayabina index.html is design-locked (owner order: 2026-07-20). Use git to modify.',false);return}
   var info=document.getElementById('siteInfo');info.textContent='Loading...';
   var url='https://raw.githubusercontent.com/'+currentSite.repo+'/'+(currentSite.branch||'master')+'/'+fpath;
   try{
@@ -363,6 +364,7 @@ async function saveToGitHub(){
   var fpath=currentSite.file||'index.html';
   var reason=protectReason(fpath);
   if(reason){toast('BLOCKED: '+reason+' — This file is locked and cannot be edited.',false);return}
+  if(currentSite.repo==='banktif/jayabina-salespage' && fpath==='index.html'){toast('🔒 jayabina index.html is design-locked (owner order: 2026-07-20). Use git to modify.',false);return}
   if(!pat){toast('Set GitHub PAT first (⚙ Sites → paste in token field below)',false);return}
   var html=editor.getHtml(),css=editor.getCss();
   var headM=currentHTML.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
