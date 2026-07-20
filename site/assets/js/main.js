@@ -51,4 +51,7 @@ document.addEventListener('DOMContentLoaded',function(){
     if(lead)new IntersectionObserver(function(entries){leadVisible=entries[0].isIntersecting;updateSticky()},{threshold:.02}).observe(lead);
     if(footer)new IntersectionObserver(function(entries){footerVisible=entries[0].isIntersecting;updateSticky()},{threshold:.02}).observe(footer);updateSticky();
   }
+
+  function footerAcc(){var isDesktop=window.matchMedia('(min-width:768px)').matches;document.querySelectorAll('.f-acc').forEach(function(acc){acc.open=isDesktop;acc.classList.toggle('static',isDesktop)})}
+  footerAcc();window.addEventListener('resize',footerAcc);
 });
