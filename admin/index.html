@@ -1448,8 +1448,8 @@ async function loadTemplates(){
 function renderTemplates(){
   var el=document.getElementById('tplContent');if(!el)return;
   var types=['header','footer_desktop','footer_mobile'],h='';
-  // Color theme section
-  h+='<div class="panel" style="display:grid;gap:12px;border-left:3px solid var(--accent2);background:var(--accent-light)"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="display:flex;align-items:center;gap:10px"><i data-lucide="palette" style="color:var(--accent2);width:20px;height:20px"></i><b style="font-size:1rem;color:var(--text)">Color Theme</b></div><div style="display:flex;gap:8px;align-items:center"><select id="tplTheme" onchange="applyColorTheme()" style="font-size:.78rem;padding:6px 10px;border:1px solid var(--text3);border-radius:8px;background:var(--white);color:var(--text)"><option value="">Loading...</option></select></div></div><p style="margin:0;color:var(--text2);font-size:.82rem">Pick a gradient color for header and footer. Change it instantly — writes to GitHub and deploys.</p><div id="tplThemeMsg" style="font-size:.75rem;color:var(--text3)"></div></div>';
+  // Color theme section — header and footer separate
+  h+='<div class="panel" style="display:grid;gap:12px;border-left:3px solid var(--accent2);background:var(--accent-light)"><div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap"><div style="display:flex;align-items:center;gap:10px"><i data-lucide="palette" style="color:var(--accent2);width:20px;height:20px"></i><b style="font-size:1rem;color:var(--text)">Color Theme</b></div><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><div style="display:flex;align-items:center;gap:6px"><span style="font-size:.72rem;color:var(--text2);white-space:nowrap">Header:</span><select id="tplThemeHeader" onchange="applyColorTheme()" style="font-size:.78rem;padding:6px 10px;border:1px solid var(--text3);border-radius:8px;background:var(--white);color:var(--text)"><option value="">...</option></select></div><div style="display:flex;align-items:center;gap:6px"><span style="font-size:.72rem;color:var(--text2);white-space:nowrap">Footer:</span><select id="tplThemeFooter" onchange="applyColorTheme()" style="font-size:.78rem;padding:6px 10px;border:1px solid var(--text3);border-radius:8px;background:var(--white);color:var(--text)"><option value="">...</option></select></div></div></div><p style="margin:0;color:var(--text2);font-size:.82rem">Pick gradient colors independently for header and footer. All 10 are gradient-based (like the final CTA section).</p><div id="tplThemeMsg" style="font-size:.75rem;color:var(--text3)"></div></div>';
   types.forEach(function(type){
     var info=TPL_TYPES[type],templates=websiteState.templates[type]||[],activeSlot=websiteState.activeSlots[type];
     h+='<div class="panel" style="display:grid;gap:14px;border-left:3px solid var(--accent)"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div style="display:flex;align-items:center;gap:10px"><i data-lucide="'+info.icon+'" style="color:var(--accent);width:20px;height:20px"></i><b style="font-size:1rem;color:var(--text)">'+info.label+'</b>'+(activeSlot?'<span class="tpl-badge active">Active: Template '+activeSlot+'</span>':'<span class="tpl-badge inactive">No active template</span>')+'</div><div style="display:flex;gap:8px;align-items:center"><select id="tplSlot_'+type+'" onchange="selectTemplateSlot(\''+type+'\')" style="font-size:.78rem;padding:6px 10px;border:1px solid var(--text3);border-radius:8px;background:var(--white);color:var(--text)">'+[1,2,3].map(function(s){return'<option value="'+s+'"'+(websiteState.activeSlots[type]===s?' selected':'')+'>Template '+s+(websiteState.activeSlots[type]===s?' (active)':'')+'</option>'}).join('')+'</select></div></div><p style="margin:0;color:var(--text2);font-size:.82rem">'+info.desc+'</p><textarea id="tplCode_'+type+'" class="site-code" style="min-height:200px;font-size:.78rem;font-family:monospace" spellcheck="false" placeholder="Edit template HTML..."></textarea><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="d-btn acc" onclick="saveTemplate(\''+type+'\')"><i data-lucide="save"></i> Save template</button><button class="d-btn" onclick="activateTemplate(\''+type+'\')" title="Set this as the active template"><i data-lucide="check-circle"></i> Make active</button><label class="d-btn" style="cursor:pointer"><i data-lucide="upload"></i> Upload HTML<input type="file" accept=".html,.htm" style="display:none" onchange="uploadTemplateFile(event,\''+type+'\')"></label></div><div id="tplMsg_'+type+'" style="font-size:.75rem;color:var(--text3)">Select a template slot to load its HTML.</div></div>';
@@ -1510,24 +1510,27 @@ async function loadColorTheme(){
   try{
     var res=await websiteRequest('/templates/theme'),body=await res.json();
     if(!res.ok)return;
-    var sel=document.getElementById('tplTheme');if(!sel)return;
-    var themes=body.data.themes,current=body.data.theme;
-    sel.innerHTML='';
+    var selH=document.getElementById('tplThemeHeader'),selF=document.getElementById('tplThemeFooter');
+    if(!selH||!selF)return;
+    var themes=body.data.themes,currentH=body.data.header,currentF=body.data.footer;
+    selH.innerHTML='';selF.innerHTML='';
     Object.keys(themes).forEach(function(key){
-      sel.innerHTML+='<option value="'+key+'"'+(key===current?' selected':'')+'>'+themes[key].name+'</option>';
+      var opt='<option value="'+key+'"';
+      selH.innerHTML+=opt+(key===currentH?' selected':'')+'>'+themes[key].name+'</option>';
+      selF.innerHTML+=opt+(key===currentF?' selected':'')+'>'+themes[key].name+'</option>';
     });
   }catch(e){}
 }
 async function applyColorTheme(){
-  var sel=document.getElementById('tplTheme'),msg=document.getElementById('tplThemeMsg');
-  if(!sel||!msg)return;
-  var theme=sel.value;if(!theme)return;
-  if(!confirm('Change header and footer colors to the selected theme? This writes to GitHub and deploys.'))return;
-  msg.style.color='var(--text3)';msg.textContent='Applying theme...';
+  var selH=document.getElementById('tplThemeHeader'),selF=document.getElementById('tplThemeFooter'),msg=document.getElementById('tplThemeMsg');
+  if(!selH||!selF||!msg)return;
+  var header=selH.value,footer=selF.value;if(!header||!footer)return;
+  if(!confirm('Change header to '+selH.options[selH.selectedIndex].text+' and footer to '+selF.options[selF.selectedIndex].text+'? This deploys immediately.'))return;
+  msg.style.color='var(--text3)';msg.textContent='Applying...';
   try{
-    var res=await websiteRequest('/templates/theme',{method:'PUT',body:{theme:theme}}),body=await res.json();
+    var res=await websiteRequest('/templates/theme',{method:'PUT',body:{header:header,footer:footer}}),body=await res.json();
     if(!res.ok)throw new Error(body.error||'Unable to apply theme');
-    msg.style.color='var(--accent)';msg.textContent='Theme applied! Deploying (~1-2 min). Commit: '+esc((body.data.commit_sha||'').slice(0,7));
+    msg.style.color='var(--accent)';msg.textContent='Theme applied! Deploying (~1-2 min).';
   }catch(e){msg.style.color='var(--danger)';msg.textContent='Error: '+errorMessage(e);}
 }
 async function seedTemplates(){
