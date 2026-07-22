@@ -1,3 +1,108 @@
+# AGENTS.md — Universal Operating Standards
+
+This is an AGENTS.md file — the open, cross-tool standard read natively by
+Codex, Cursor, GitHub Copilot, Claude Code, OpenCode, and most other AI
+coding agents. Committing this to a repo's root means every agent that
+touches the repo picks up these rules automatically — no per-tool setup.
+
+---
+
+## 1. Git checkpoint discipline (mandatory, every session)
+
+Before touching any file, you MUST:
+
+1. Check current git status is clean (`git status`). If not clean, stop and
+   report — do not proceed on top of uncommitted changes.
+2. Create a checkpoint tag before starting work:
+   `git tag checkpoint-$(date +%Y%m%d-%H%M)`
+3. State the tag name you created in your first response of the session.
+
+At the end of the session (or after any risky multi-file change), commit with
+a clear message describing what changed and why — not "update files" or
+"fix bug".
+
+If a task will touch more than 3 files or modify core logic (database schema,
+auth, payment, task queue), create a new branch instead of committing to
+main:
+`git checkout -b task/<short-description>`
+
+---
+
+## 2. No claiming success without verification
+
+You are NOT allowed to report a task as "done", "fixed", "working", or
+"complete" unless you have actually run one of the following and show the
+output:
+
+- The test suite (`pytest`, etc.) — paste the actual pass/fail output
+- The specific script/endpoint you changed, with real output/response shown
+- A lint/type check, if that's what the task was about
+
+If you cannot run verification (e.g. no test exists, external dependency
+unavailable), you MUST say so explicitly: "I could not verify this because
+X — here's what I changed and what still needs manual testing."
+
+Never say "should work now" or "this fixes it" without pasted proof. If asked
+"did it work?" and you have not run anything, the correct answer is "I
+haven't verified yet — running now" — not a confident yes.
+
+---
+
+## 3. Rollback safety net
+
+Before any change that touches more than one file:
+
+1. Confirm the last checkpoint tag exists (`git tag --list "checkpoint-*"`)
+2. If something breaks mid-task, do not keep patching on top — offer to
+   roll back first: `git reset --hard checkpoint-<name>`, then retry with a
+   different approach.
+
+Never force-push over shared history without stating clearly: "This will
+discard commits after `<tag>`. Confirm before I proceed."
+
+---
+
+## 4. Scope discipline
+
+- Only touch files directly relevant to the task described. If you think a
+  broader refactor is needed, propose it separately — do not do it inline
+  without asking.
+- Do not delete or rewrite existing working code "for cleanliness" unless
+  explicitly asked.
+- If the task is ambiguous, ask ONE clarifying question before writing code —
+  do not guess silently on things like schema fields, API contracts, or
+  business logic (e.g. tax calculation, invoice numbering).
+
+---
+
+## 5. Reporting format (every response)
+
+End every substantive task with:
+
+```
+CHANGED: <files touched>
+VERIFIED: <what you ran, and the result — or "not verified: <reason>">
+CHECKPOINT: <tag or commit used before this task>
+NEXT: <what still needs manual review from the user, if anything>
+```
+
+This format is non-negotiable — it exists so the user (non-technical,
+reviewing your output) can trust what actually happened without needing to
+read the code.
+
+This file is the UNIVERSAL standard — one copy, committed at the repo root,
+applies automatically to whichever agent tool touches this repo. Add a
+short project-specific note below this line if the repo needs it (stack,
+things that break silently) — keep sections above unchanged.
+
+For Claude Code compatibility: also create a `CLAUDE.md` at the repo root
+containing only `@AGENTS.md` on its first line — this makes Claude Code
+import this same file instead of needing a separate copy.
+
+---
+
+## PROJECT-SPECIFIC: JAYABINA
+
 # JAYABINA — AGENTS.md
 # Project rules & memory anchor. READ THIS FIRST every new session.
 # Last updated: 2026-07-20
@@ -349,3 +454,10 @@ cp -r admin worker customer public/
 - ❌ Put images in `blog/static/img/` for 5000 articles (use Cloudinary URLs in markdown)
 - ❌ Change `disableKinds: ["home"]` — will overwrite sales page `index.html`
 - ❌ Move Hugo source outside `blog/` — Cloudflare Pages expects Hugo config there
+
+---
+
+## REPO-SPECIFIC NOTES
+
+- **Stack:** Cloudflare Pages (Hugo frontend), Cloudflare Workers (`cf-api/`, custom PBKDF2/JWT auth), Cloudflare D1 (SQLite-at-edge), Bayarcash v3 payments, Cloudinary images, GrapesJS visual editor.
+- **Silent breakage risks:** JWT token sign/verify shares `JWT_SECRET` between Worker deploy and D1 — if either secret drifts, all auth breaks. `wrangler deploy` with empty `wrangler.jsonc` bindings can overwrite secrets. CF Pages CI deploys from `site/` Hugo output, not repo root — always sync `worker/index.html` and `customer/index.html` to `site/static/`. Bayarcash callback URL must match production Worker domain exactly. D1 migrations must be idempotent — never `DROP TABLE` without explicit owner instruction.
