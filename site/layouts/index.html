@@ -89,7 +89,7 @@
     .sec-faq::after{content:'';position:absolute;width:300px;height:300px;left:-140px;bottom:-160px;border-radius:50%;border:1px solid rgba(20,108,67,.09);box-shadow:0 0 0 55px rgba(20,108,67,.03)}
     .sec-about{overflow:hidden;background:linear-gradient(135deg,#f1fbf5 0%,#e8f5ee 50%,#f4faf6 100%)}
     .sec-about::before{content:'';position:absolute;width:480px;height:480px;right:-200px;top:-220px;border-radius:50%;border:1px solid rgba(20,108,67,.1);box-shadow:0 0 0 70px rgba(20,108,67,.03)}
-    .about-layout{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center}
+    .about-layout{display:grid;grid-template-columns:1.12fr .88fr;gap:52px;align-items:center}
     .about-copy p{color:var(--grey-600)}
     .about-facts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
     .about-fact{padding:16px;border-radius:14px;background:var(--white);border:1px solid var(--grey-200)}
@@ -97,12 +97,9 @@
     .about-fact strong{display:block;color:var(--grey-900);font-size:1rem}
     .about-img{aspect-ratio:4/3;border-radius:22px;overflow:hidden;border:1px solid #bfddca;box-shadow:var(--shadow);background:var(--green-100);display:grid;place-items:center;color:var(--green-800);font-weight:700;font-size:.88rem;text-align:center;padding:18px;line-height:1.6}
     .about-visual{position:relative}
-    .about-stack{display:grid;gap:14px}
-    .about-placeholder{display:flex;align-items:center;gap:14px}
-    .about-ph{width:80px;height:80px;flex-shrink:0;border-radius:16px;border:1px solid rgba(20,108,67,.1);display:grid;place-items:center;overflow:hidden}
-    .about-ph svg{width:40px;height:40px}
-    .about-caption{font-size:.9rem;font-weight:700;color:#0d3b2e;line-height:1.3}
-    @media(max-width:1023px){.about-layout{grid-template-columns:1fr;gap:36px}.about-stack{grid-template-columns:1fr 1fr 1fr;gap:12px}.about-placeholder{flex-direction:column;text-align:center;gap:8px}}
+    .about-ph-lg{aspect-ratio:4/3;border-radius:22px;overflow:hidden;border:1px solid #bfddca;box-shadow:0 14px 40px rgba(5,46,34,.1);display:grid;place-items:center;background:linear-gradient(135deg,#f1fbf5,#dff5e8)}
+    .about-ph-lg svg{width:60%;max-width:200px;height:auto}
+    @media(max-width:1023px){.about-layout{grid-template-columns:1fr;gap:36px}.about-visual{order:-1}}
     .section-kicker{display:inline-flex;align-items:center;gap:9px;margin-bottom:16px;color:var(--green-700);font-size:.875rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
     .section-kicker::before{content:'';width:24px;height:2px;background:currentColor;border-radius:99px}
     .section-head{display:flex;align-items:end;justify-content:space-between;gap:32px;margin-bottom:44px}
@@ -296,6 +293,11 @@
     <section class="section sec-about" id="tentang">
       <div class="container">
         <div class="about-layout">
+          <div class="about-visual reveal">
+            <div class="about-ph-lg">
+              <svg viewBox="0 0 120 90" fill="none"><rect width="120" height="90" rx="8" fill="#146c43" fill-opacity=".06"/><circle cx="40" cy="35" r="16" stroke="#146c43" stroke-width="2"/><path d="M12 72l20-28 12 16 18-32 10 44H12z" fill="#146c43" fill-opacity=".08"/><path d="M60 20L70 6l10 14 16-4-2 18 12 10-16 6 4 16-18-8-14 12 2-18-14-8 16-6z" fill="#146c43" fill-opacity=".15"/><text x="60" y="82" text-anchor="middle" font-size="7" fill="#146c43" font-weight="700" opacity=".4">SERVIS KAMI</text></svg>
+            </div>
+          </div>
           <div class="about-copy reveal">
             <span class="section-kicker">Tentang Kami</span>
             <h2>Primex Jaya Bina Solutions — syarikat servis rumah berdaftar di KL &amp; Selangor.</h2>
@@ -307,29 +309,6 @@
               <div class="about-fact"><span>Hubungan</span><strong><a class="js-whatsapp" data-message="Assalamualaikum JAYABINA. Saya nak tahu lanjut pasal servis anda: ____ (tukar atap / cuci tangki / mengecat). Poskod saya: ____." href="https://wa.me/60139373275" target="_blank" rel="noopener" style="color:var(--green-700)">WhatsApp 60139373275</a></strong></div>
             </div>
           </div>
-          <div class="about-visual reveal">
-            <div class="about-stack">
-              <div class="about-placeholder">
-                <div class="about-ph" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0)">
-                  <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="24" r="14" stroke="#146c43" stroke-width="2"/><path d="M8 56l16-20 10 12 14-22 8 30H8z" fill="#146c43" fill-opacity=".1" stroke="#146c43" stroke-width="1.5"/></svg>
-                </div>
-                <span class="about-caption">Tukar Atap Baharu</span>
-              </div>
-              <div class="about-placeholder">
-                <div class="about-ph" style="background:linear-gradient(135deg,#ecfdf5,#d1fae5)">
-                  <svg viewBox="0 0 64 64" fill="none"><rect x="15" y="8" width="34" height="48" rx="8" stroke="#146c43" stroke-width="2"/><path d="M20 32h24M20 40h24" stroke="#146c43" stroke-width="1.5" opacity=".3"/></svg>
-                </div>
-                <span class="about-caption">Servis Cuci Tangki Air</span>
-              </div>
-              <div class="about-placeholder">
-                <div class="about-ph" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7)">
-                  <svg viewBox="0 0 64 64" fill="none"><path d="M8 54V12l16 14 12-10 16 14v24H8z" stroke="#146c43" stroke-width="2"/><rect x="26" y="30" width="12" height="18" rx="3" fill="#146c43" fill-opacity=".08"/></svg>
-                </div>
-                <span class="about-caption">Mengecat Rumah &amp; Ofis</span>
-              </div>
-            </div>
-          </div>
-        </div>
         </div>
       </div>
     </section>
