@@ -616,17 +616,6 @@
         link.href='https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(message);
       });
 
-      var menuToggle=document.getElementById('menuToggle');
-      var mobileMenu=document.getElementById('mobileMenu');
-      function closeMenu(returnFocus){menuToggle.setAttribute('aria-expanded','false');menuToggle.setAttribute('aria-label','Buka menu');mobileMenu.classList.remove('open');mobileMenu.setAttribute('aria-hidden','true');document.body.classList.remove('menu-open');if(returnFocus)menuToggle.focus()}
-      function openMenu(){menuToggle.setAttribute('aria-expanded','true');menuToggle.setAttribute('aria-label','Tutup menu');mobileMenu.classList.add('open');mobileMenu.setAttribute('aria-hidden','false');document.body.classList.add('menu-open');var first=mobileMenu.querySelector('a');if(first)first.focus()}
-      menuToggle.addEventListener('click',function(){this.getAttribute('aria-expanded')==='true'?closeMenu(false):openMenu()});
-      mobileMenu.querySelectorAll('a').forEach(function(link){link.addEventListener('click',function(){closeMenu(false)})});
-      document.addEventListener('keydown',function(event){if(event.key==='Escape'&&mobileMenu.classList.contains('open'))closeMenu(true);if(event.key==='Tab'&&mobileMenu.classList.contains('open')){var focusable=Array.from(mobileMenu.querySelectorAll('a[href]'));if(!focusable.length)return;var first=focusable[0],last=focusable[focusable.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}}});
-      document.addEventListener('click',function(event){if(!mobileMenu.contains(event.target)&&!menuToggle.contains(event.target)&&mobileMenu.classList.contains('open'))closeMenu()});
-
-      document.querySelectorAll('a[href^="#"]').forEach(function(link){link.addEventListener('click',function(event){var target=document.querySelector(this.getAttribute('href'));if(target){event.preventDefault();var distance=Math.abs(target.getBoundingClientRect().top);var instant=window.matchMedia('(prefers-reduced-motion: reduce)').matches||distance>2200;if(instant){var oldBehavior=document.documentElement.style.scrollBehavior;document.documentElement.style.scrollBehavior='auto';target.scrollIntoView({behavior:'auto',block:'start'});window.setTimeout(function(){document.documentElement.style.scrollBehavior=oldBehavior},0)}else{target.scrollIntoView({behavior:'smooth',block:'start'})}}})});
-
       var navLinks=document.querySelectorAll('.nav-links a');
       var sections=document.querySelectorAll('main section[id]');
       var sectionObserver=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){navLinks.forEach(function(link){var active=link.getAttribute('href')==='#'+entry.target.id;link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')})}})},{rootMargin:'-30% 0px -60% 0px'});
