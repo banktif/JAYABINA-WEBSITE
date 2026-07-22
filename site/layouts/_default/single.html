@@ -1,5 +1,5 @@
 {{ define "main" }}
-{{ $b := hugo.Data.business }}
+{{ $b := site.Data.business }}
 <header class="page-hero"><div class="container"><span class="section-kicker">{{ .Params.eyebrow | default "JAYABINA" }}</span><h1>{{ .Params.headline | default .Title }}</h1>{{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}</div></header>
 <section class="section"><div class="container content-layout"><article class="prose">{{ .Content }}</article>{{ if .Params.contactPage }}<aside class="contact-card"><span class="section-kicker">HUBUNGI TERUS</span><h2>WhatsApp JAYABINA</h2><p>Hantar maklumat servis, lokasi atau poskod dan gambar jika ada.</p><a class="btn btn-secondary" href="https://wa.me/{{ $b.whatsapp }}?text={{ "Assalamualaikum JAYABINA. Saya mahu bertanya tentang servis. Jenis servis: ____. Lokasi/poskod: ____." | urlquery }}" target="_blank" rel="noopener">Mulakan Pertanyaan</a><p class="fine-print">Telefon: <a href="tel:{{ $b.phone_tel }}">{{ $b.phone_display }}</a><br>{{ $b.legal_name }}<br>{{ $b.company_number }}</p></aside>{{ end }}</div></section>
 {{ end }}

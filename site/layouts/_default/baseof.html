@@ -22,7 +22,7 @@
     {{ block "main" . }}{{ end }}
   </main>
   {{ partial "footer.html" . }}
-  {{ $b := hugo.Data.business }}
+  {{ $b := site.Data.business }}
   {{ $waMessage := "Assalamualaikum JAYABINA. Saya mahu bertanya tentang servis. Jenis servis: ____. Lokasi/poskod: ____." }}
   <a class="floating-wa" href="https://wa.me/{{ $b.whatsapp }}?text={{ $waMessage | urlquery }}" target="_blank" rel="noopener" aria-label="Tanya JAYABINA melalui WhatsApp">WhatsApp</a>
   {{ if .IsHome }}

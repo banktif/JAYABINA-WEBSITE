@@ -1,6 +1,6 @@
 {{ define "main" }}
-{{ $b := hugo.Data.business }}
-{{ $services := hugo.Data.services }}
+{{ $b := site.Data.business }}
+{{ $services := site.Data.services }}
 <style>
 .sv-services{padding:clamp(78px,9vw,124px) 0;background:linear-gradient(180deg,#f1fbf5 0%,#e8f5ee 40%,#f4faf6 100%);position:relative;overflow:hidden}
 .sv-services::before{content:'';position:absolute;width:560px;height:560px;right:-220px;top:-240px;border-radius:50%;border:1px solid rgba(20,108,67,.1);box-shadow:0 0 0 80px rgba(20,108,67,.035),0 0 0 160px rgba(20,108,67,.02)}

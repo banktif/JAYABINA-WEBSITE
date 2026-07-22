@@ -14,7 +14,7 @@
 <meta name="twitter:title" content="{{ .Title }}">
 <meta name="twitter:description" content="{{ $description }}">
 <meta name="twitter:image" content="{{ $ogImage | absURL }}">
-{{ $b := hugo.Data.business }}
+{{ $b := site.Data.business }}
 {{ $org := dict "@context" "https://schema.org" "@type" "Organization" "name" $b.legal_name "alternateName" $b.brand "identifier" $b.company_number "url" (site.BaseURL) "telephone" $b.phone_tel }}
 <script type="application/ld+json">{{ $org | jsonify | safeJS }}</script>
 {{ with .Params.serviceName }}
