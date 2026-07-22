@@ -101,19 +101,23 @@
     .btn-wa{background:var(--wa);color:var(--white);box-shadow:0 10px 24px rgba(18,140,126,.2)}
     .btn-wa:hover{background:#0b5f59}
     :focus-visible{outline:3px solid var(--white);outline-offset:2px;box-shadow:0 0 0 5px #16a36a}
-    .hero{min-height:760px;padding:144px 0 78px;background:linear-gradient(135deg,var(--green-950) 0%,var(--green-900) 58%,#126044 100%);color:var(--white);position:relative;overflow:hidden}
-    .hero::before{content:'';position:absolute;width:620px;height:620px;border:1px solid rgba(255,255,255,.08);border-radius:50%;right:-190px;top:-250px;box-shadow:0 0 0 90px rgba(255,255,255,.025),0 0 0 180px rgba(255,255,255,.018)}
+    .hero{min-height:700px;padding:160px 0 90px;background:linear-gradient(135deg,#051f15 0%,#0d3b2e 35%,#145c3d 70%,#126044 100%);color:var(--white);position:relative;overflow:hidden}
+    .hero-bg{position:absolute;inset:0;background-image:radial-gradient(circle at 80% 20%,rgba(74,222,128,.08) 0%,transparent 50%),radial-gradient(circle at 20% 80%,rgba(72,199,142,.06) 0%,transparent 50%);pointer-events:none}
+    .hero::before{content:'';position:absolute;width:720px;height:720px;border:1px solid rgba(255,255,255,.06);border-radius:50%;right:-280px;top:-320px;box-shadow:0 0 0 100px rgba(74,222,128,.03),0 0 0 200px rgba(74,222,128,.02)}
     .hero h1{color:var(--white)}
     .hero h1 span{color:#9de3ba}
-    .hero-copy>.lead{color:#d7e8e1;max-width:58ch;margin-bottom:30px}
-    .hero-badge{display:inline-flex;align-items:center;gap:10px;margin-bottom:24px;padding:8px 13px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(255,255,255,.07);color:#e9f7ef;font-size:.875rem;font-weight:700;letter-spacing:.04em}
-    .pulse{width:8px;height:8px;background:#4ade80;border-radius:50%;box-shadow:0 0 0 5px rgba(74,222,128,.13)}
+    .hero-copy>.lead{color:#c7d8d1;max-width:56ch;margin-bottom:24px;font-size:clamp(1.1rem,1.05rem + .2vw,1.25rem);line-height:1.6}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;margin-bottom:20px;padding:6px 14px;border:1px solid rgba(157,227,186,.25);border-radius:999px;background:rgba(157,227,186,.08);color:#9de3ba;font-size:.8rem;font-weight:700;letter-spacing:.03em}
+    .pulse{width:7px;height:7px;background:#4ade80;border-radius:50%;box-shadow:0 0 0 4px rgba(74,222,128,.2)}
+    .hero-trust{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:6px}
+    .ht-item{display:flex;align-items:center;gap:6px;color:#b8d4c5;font-size:.85rem;font-weight:600}
+    .ht-icon{width:20px;height:20px;display:grid;place-items:center;border-radius:50%;background:rgba(74,222,128,.15);color:#4ade80;font-size:.65rem;font-weight:800}
     .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
-    .hero-visual{position:relative;margin:0;padding:10px;border:1px solid rgba(255,255,255,.18);border-radius:28px;background:rgba(255,255,255,.06);box-shadow:0 32px 80px rgba(0,0,0,.24)}
-    .hero-visual img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:20px}
-    .hero-visual-badge{position:absolute;left:24px;bottom:24px;padding:9px 14px;border-radius:999px;background:rgba(5,46,34,.9);border:1px solid rgba(255,255,255,.25);color:var(--white);font-size:.82rem;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+    .hero-visual{position:relative;margin:0;padding:12px;border:1px solid rgba(255,255,255,.12);border-radius:24px;background:rgba(255,255,255,.04);backdrop-filter:blur(10px);box-shadow:0 32px 80px rgba(0,0,0,.3)}
+    .hero-visual img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:16px}
+    .hero-visual-badge{position:absolute;left:26px;bottom:26px;padding:10px 16px;border-radius:999px;background:rgba(5,46,34,.92);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:.82rem;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);backdrop-filter:blur(6px)}
 
-    .hero-grid{display:grid;grid-template-columns:1fr 1.5fr;column-gap:56px;row-gap:20px;align-items:center}
+    .hero-grid{display:grid;grid-template-columns:1fr 1.5fr;column-gap:64px;row-gap:20px;align-items:center}
     .hero-grid .hero-copy{grid-column:1;grid-row:1}
     .hero-grid>.hero-visual{grid-column:2;grid-row:1 / 3}
 
@@ -292,12 +296,15 @@
     .js .reveal.visible,.js.js-fallback .reveal{opacity:1;transform:none}
 
     @media(max-width:1023px){
-      .container{width:min(calc(100% - 40px),var(--container))}      .hero{min-height:auto;padding:116px 0 72px}
+      .container{width:min(calc(100% - 40px),var(--container))}      .hero{min-height:auto;padding:130px 0 80px}
+      .hero::before{width:450px;height:450px;right:-240px;top:-280px}
       .hero-grid{grid-template-columns:1fr;row-gap:20px}
-      .hero-grid>.hero-copy,.hero-grid>.hero-actions,.hero-grid>.hero-visual{grid-column:auto;grid-row:auto}
+      .hero-grid>.hero-copy,.hero-grid>.hero-visual{grid-column:auto;grid-row:auto}
       .hero-copy{max-width:760px;text-align:center}
       .hero-copy h1,.hero-copy .lead{text-align:center}
+      .hero-trust{justify-content:center}
       .hero-visual{max-width:680px}
+      .hero-visual-badge{left:20px;bottom:20px;font-size:.76rem}
       .trust-grid{grid-template-columns:1fr 1fr}
       .trust-item:nth-child(2){border-right:0}
       .trust-item:nth-child(-n+2){border-bottom:1px solid var(--grey-200)}
@@ -392,11 +399,17 @@
 
   <main>
     <section class="hero" id="hero">
+      <div class="hero-bg"></div>
       <div class="container hero-grid">
-        <div class="hero-copy">
-          <div class="hero-badge"><span class="pulse"></span>Servis cuci tangki air rumah · KL &amp; Selangor</div>
+        <div class="hero-copy reveal">
+          <div class="hero-badge"><span class="pulse"></span>Servis Cuci Tangki Air · KL &amp; Selangor</div>
           <h1>Tangki dah lama tak dicuci? <span>Kami buka, cuci &amp; tunjuk keadaannya.</span></h1>
-          <p class="lead">Tak perlu meneka keadaan tangki rumah anda. Kami tunjuk keadaan awal, jelaskan kerja yang diperlukan, kemudian hantar foto hasil cucian terus ke WhatsApp.</p>
+          <p class="lead">Tak perlu meneka. Kami tunjuk keadaan awal, jelaskan kerja, dan hantar foto hasil cucian terus ke WhatsApp anda.</p>
+          <div class="hero-trust">
+            <div class="ht-item"><span class="ht-icon">✓</span><span>Harga tetap RM300</span></div>
+            <div class="ht-item"><span class="ht-icon">✓</span><span>Deposit RM150</span></div>
+            <div class="ht-item"><span class="ht-icon">✓</span><span>Rekod foto penuh</span></div>
+          </div>
           <div class="hero-actions">
             <a class="btn btn-light" href="#tempah">Semak Slot &amp; Harga</a>
             <a class="btn btn-hero-ghost" href="#bukti">Lihat Visual Proses</a>
