@@ -106,8 +106,9 @@
     .hero h1{color:var(--white)}
     .hero h1 span{color:#9de3ba}
     .hero-copy>.lead{color:#d7e8e1;max-width:58ch;margin-bottom:30px}
-    .hero-badge{display:inline-flex;align-items:center;gap:10px;margin-bottom:24px;padding:8px 13px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(255,255,255,.07);color:#e9f7ef;font-size:.875rem;font-weight:700;letter-spacing:.04em}
-    .pulse{width:8px;height:8px;background:#4ade80;border-radius:50%;box-shadow:0 0 0 5px rgba(74,222,128,.13)}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;margin-bottom:20px;padding:6px 14px;border:1px solid rgba(157,227,186,.25);border-radius:999px;background:rgba(157,227,186,.08);color:#9de3ba;font-size:.8rem;font-weight:700;letter-spacing:.03em;text-transform:lowercase}
+    .hero-badge::before{content:'';width:7px;height:7px;background:#4ade80;border-radius:50%;box-shadow:0 0 0 4px rgba(74,222,128,.2);flex-shrink:0}
+    .pulse{width:7px;height:7px;background:#4ade80;border-radius:50%;box-shadow:0 0 0 4px rgba(74,222,128,.2)}
     .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
     .hero-visual{position:relative;margin:0;padding:10px;border:1px solid rgba(255,255,255,.18);border-radius:28px;background:rgba(255,255,255,.06);box-shadow:0 32px 80px rgba(0,0,0,.24)}
     .hero-visual img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:20px}
@@ -322,7 +323,7 @@
     <section class="hero" id="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="hero-badge"><span class="pulse"></span>Servis mengecat rumah &amp; ofis · KL &amp; Selangor</div>
+          <div class="hero-badge">Servis mengecat rumah &amp; ofis · KL &amp; Selangor</div>
           <h1>Cat mengelupas, warna pudar? <span>Kami cat semula sampai segar.</span></h1>
           <p class="lead">Dinding kusam dan cat mengelupas bukan je nampak buruk — ia ubah cara tetamu tengok rumah anda. Bagi kami peluang segarkan semula.</p>
           <div class="hero-actions">
