@@ -443,7 +443,7 @@ body.admin-app{
   .admin-app .hdr{
     height:calc(64px + env(safe-area-inset-top));
     padding:env(safe-area-inset-top) 16px 0;
-    background:var(--nav-glass)!important;
+    background:rgba(255,255,255,.94)!important;
     border-color:var(--border);
     backdrop-filter:blur(18px)!important;
     -webkit-backdrop-filter:blur(18px)!important;
@@ -460,7 +460,7 @@ body.admin-app{
   .admin-app .bnav{
     min-height:70px;
     padding:7px 8px calc(7px + env(safe-area-inset-bottom));
-    background:var(--nav-glass)!important;
+    background:rgba(255,255,255,.94)!important;
     border-color:var(--border);
     box-shadow:var(--shadow-lg);
     backdrop-filter:blur(18px)!important;
