@@ -96,7 +96,7 @@ body{font-family:var(--font);background:radial-gradient(circle at 90% 0,var(--ca
 table{width:100%;border-collapse:collapse}
 thead th{padding:14px 16px;text-align:center;font-size:.66rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border);background:var(--card-muted)}
 thead th:first-child{border-radius:12px 0 0 0}thead th:last-child{border-radius:0 12px 0 0}
-tbody td{padding:16px;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+tbody td{padding:16px;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle;text-align:center}
 tbody tr{transition:background .12s;cursor:pointer}
 tbody tr:hover{background:var(--card-muted)}
 .d-name strong{font-weight:700;letter-spacing:-.2px}

@@ -118,7 +118,7 @@
     .day-head{display:flex;align-items:center;gap:10px;margin:18px 0 12px}
     .day-head h3{font-size:.95rem;font-weight:700}
     .day-head button{padding:6px 14px;border-radius:10px;border:1px solid var(--border-strong);background:var(--bg);color:var(--text2);cursor:pointer;font-family:var(--font);font-size:.72rem;font-weight:600}
-    .tk-card{background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:8px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:all .15s}
+    .tk-card{background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:8px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:all .15s;text-align:center}
     .tk-card:hover{border-color:var(--accent)}
     .tk-slot{font-size:.7rem;font-weight:700;color:var(--text2);background:var(--bg);padding:5px 11px;border-radius:20px;white-space:nowrap}
     .tk-body{flex:1;min-width:0}
@@ -185,7 +185,7 @@
     .bk-grid{display:grid;grid-template-columns:1fr;gap:12px}
     @media(min-width:768px){.bk-grid{grid-template-columns:repeat(2,1fr);gap:14px}}
     @media(min-width:1500px){.bk-grid{grid-template-columns:repeat(3,1fr)}}
-    .bk-card{background:var(--elevated);border:1px solid var(--border);border-radius:18px;padding:16px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s;cursor:pointer}
+    .bk-card{background:var(--elevated);border:1px solid var(--border);border-radius:18px;padding:16px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s;cursor:pointer;text-align:center}
     .bk-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:var(--border-strong)}
     .bk-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--text3)}
     .bk-card.s-pending_payment::before{background:var(--warning)}
