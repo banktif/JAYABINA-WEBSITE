@@ -241,6 +241,38 @@
 
     .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 20px;border-radius:30px;font-size:.78rem;font-weight:600;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
     .toast.show{opacity:1}
+
+    .schedule-page{display:none}
+    .cal-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 20px 16px}
+    .cal-nav h2{font-size:1rem;font-weight:700;margin:0;white-space:nowrap;letter-spacing:-.2px}
+    .cal-nav button{width:36px;height:36px;border:1px solid var(--border-strong);border-radius:10px;background:var(--elevated);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:all .15s;font-family:var(--font)}
+    .cal-nav button:active{transform:scale(.93)}
+    .cal-nav .cal-today{font-size:.7rem;font-weight:700;color:var(--accent);background:var(--accent-light);padding:6px 14px;border-radius:20px;cursor:pointer;border:none;width:auto;height:auto}
+    .cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+    .cal-day{border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--elevated);padding:10px 8px;min-height:120px;transition:all .15s}
+    .cal-day:hover{border-color:var(--accent)}
+    .cal-day.today{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow)}
+    .cal-day .cdd{font-size:.68rem;font-weight:700;color:var(--text3);margin-bottom:6px}
+    .cal-day.today .cdd{color:var(--accent)}
+    .cal-day .cddn{font-size:.66rem;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+    .cal-task{display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:7px;margin-bottom:3px;font-size:.65rem;font-weight:600;cursor:pointer;transition:all .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cal-task:active{transform:scale(.97)}
+    .cal-task .cts{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+    .cal-task.assigned{background:var(--accent2-light);color:var(--accent2)}.cal-task.assigned .cts{background:var(--accent2)}
+    .cal-task.in_progress{background:var(--warning-light);color:var(--warning)}.cal-task.in_progress .cts{background:var(--warning)}
+    .cal-task.awaiting_review{background:var(--warning-light);color:var(--warning)}.cal-task.awaiting_review .cts{background:var(--warning)}
+    .cal-task.completed{background:var(--accent-light);color:var(--accent)}.cal-task.completed .cts{background:var(--accent)}
+    @media(max-width:1023px){
+      .cal-week{grid-template-columns:1fr;gap:8px;padding:0 16px}
+      .cal-day{min-height:auto;padding:14px}
+      .cal-day .cdd{font-size:.8rem;margin-bottom:8px}
+      .cal-day .cddn{display:none}
+      .cal-nav{padding:0 16px 14px}
+    }
+    @media(min-width:1024px){
+      .cal-nav{padding:0 0 20px}
+      .cal-week{gap:10px}
+    }
   </style>
 </head>
 <body>
@@ -256,6 +288,8 @@
   <button class="d-nav-item" id="dsToday" onclick="setFilter('today')"><span class="dni"><i data-lucide="calendar"></i></span> Today</button>
   <button class="d-nav-item" id="dsAll" onclick="setFilter('all')"><span class="dni"><i data-lucide="layout-grid"></i></span> All Jobs</button>
   <button class="d-nav-item" id="dsDone" onclick="setFilter('completed')"><span class="dni"><i data-lucide="check-check"></i></span> Completed</button>
+  <div class="d-nav-label">Plan</div>
+  <button class="d-nav-item" onclick="switchView('schedule')"><span class="dni"><i data-lucide="calendar-days"></i></span> Schedule</button>
   <div class="d-sidebar-footer">
     <button onclick="switchView('profile')"><i data-lucide="user-cog"></i> Profile</button>
     <button onclick="toggleTheme()"><i data-lucide="sun-moon"></i> Theme</button>
@@ -307,6 +341,15 @@
   </div>
 </div>
 
+<!-- MAIN (Schedule View) -->
+<div class="d-main schedule-page" id="dMainSchedule">
+  <div class="d-hdr">
+    <div><h1 id="dCalTitle">Schedule</h1><p>Visual job planner across your assigned dates</p></div>
+  </div>
+  <div class="cal-nav" id="calNav"></div>
+  <div class="cal-week" id="calWeek"><div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div></div>
+</div>
+
 <!-- MOBILE HEADER -->
 <header class="hdr">
   <div class="hdr-l">
@@ -331,6 +374,7 @@
     <button class="drawer-item" onclick="setFilter('today');toggleDrawer()"><span><i data-lucide="calendar"></i></span> Today</button>
     <button class="drawer-item" onclick="setFilter('all');toggleDrawer()"><span><i data-lucide="layout-grid"></i></span> All Jobs</button>
     <button class="drawer-item" onclick="setFilter('completed');toggleDrawer()"><span><i data-lucide="check-check"></i></span> Completed</button>
+    <button class="drawer-item" onclick="switchView('schedule');toggleDrawer()"><span><i data-lucide="calendar-days"></i></span> Schedule</button>
   </div>
   <div class="drawer-menu" style="border-top:1px solid var(--border);padding-top:8px">
     <button class="drawer-item" onclick="switchView('profile');toggleDrawer()"><span><i data-lucide="user-cog"></i></span> Profile</button>
@@ -344,6 +388,7 @@
   <button class="bnav-item active" id="navActive" onclick="setFilter('active')"><span class="bni"><i data-lucide="briefcase"></i></span><span class="bnl">Active</span></button>
   <button class="bnav-item" id="navToday" onclick="setFilter('today')"><span class="bni"><i data-lucide="calendar"></i></span><span class="bnl">Today</span></button>
   <button class="bnav-item" id="navDone" onclick="setFilter('completed')"><span class="bni"><i data-lucide="check-check"></i></span><span class="bnl">Done</span></button>
+  <button class="bnav-item" id="navSched" onclick="switchView('schedule')"><span class="bni"><i data-lucide="calendar-days"></i></span><span class="bnl">Schedule</span></button>
   <button class="bnav-item" id="navMore" onclick="toggleDrawer()"><span class="bni"><i data-lucide="menu"></i></span><span class="bnl">More</span></button>
 </nav>
 
@@ -408,17 +453,18 @@ function toggleDrawer(){
 
 function switchView(v){
   currentView=v;
-  var jobs=document.getElementById('dMainJobs'),pf=document.getElementById('dMainProfile'),mh=document.getElementById('mTitleView');
+  var jobs=document.getElementById('dMainJobs'),pf=document.getElementById('dMainProfile'),sc=document.getElementById('dMainSchedule'),mh=document.getElementById('mTitleView');
+  jobs.style.display='none';pf.style.display='none';if(sc)sc.style.display='none';
+  document.querySelectorAll('.d-nav-item').forEach(function(n){n.classList.remove('active')});
+  document.querySelectorAll('.bnav-item').forEach(function(n){n.classList.remove('active')});
   if(v==='profile'){
-    jobs.style.display='none';pf.style.display='block';
-    if(mh)mh.textContent='Profile';
-    document.querySelectorAll('.d-nav-item').forEach(function(n){n.classList.remove('active')});
-    document.querySelectorAll('.bnav-item').forEach(function(n){n.classList.remove('active')});
-    pfLoad();
+    pf.style.display='block';if(mh)mh.textContent='Profile';pfLoad();
+  }else if(v==='schedule'){
+    if(sc)sc.style.display='block';if(mh)mh.textContent='Schedule';
+    document.getElementById('navSched').classList.add('active');
+    renderCalendar();
   }else{
-    jobs.style.display='block';pf.style.display='none';
-    if(mh)mh.textContent='My Jobs';
-    renderJobs();
+    jobs.style.display='block';if(mh)mh.textContent='My Jobs';renderJobs();
   }
   relucide();
 }
@@ -478,6 +524,7 @@ async function loadJobs(){
     var tids=tasks.map(function(t){return t.id});photos={};
     for(var i=0;i<tids.length;i++){try{var pq=await SB.from('task_photos').select('*').eq('task_id',tids[i]);if(pq.data){(photos[tids[i]]=photos[tids[i]]||[]).push.apply(photos[tids[i]],Array.isArray(pq.data)?pq.data:[pq.data])}}catch(e){}}
     renderJobs();
+    renderCalendar();
   }catch(e){l.innerHTML='<div class="empty"><div class="eicon"><i data-lucide="alert-triangle"></i></div><h2>Error</h2><p>'+esc(e.message)+'</p></div>'}
 }
 
@@ -487,6 +534,7 @@ function setFilter(f){
   filter=f;currentView='jobs';
   document.getElementById('dMainJobs').style.display='block';
   document.getElementById('dMainProfile').style.display='none';
+  var sc=document.getElementById('dMainSchedule');if(sc)sc.style.display='none';
   document.querySelectorAll('.d-nav-item').forEach(function(n){n.classList.toggle('active',n.id==='ds'+f.charAt(0).toUpperCase()+f.slice(1))});
   document.querySelectorAll('.bnav-item').forEach(function(n){n.classList.remove('active')});
   var bm={active:'navActive',today:'navToday',completed:'navDone'};if(bm[f])document.getElementById(bm[f]).classList.add('active');
@@ -699,6 +747,51 @@ async function doChangePassword(){
     if(!res.ok)throw new Error(d.error||'Failed');
     toast('Password updated');closePwModal();
   }catch(e){toast('Error: '+e.message);btn.disabled=false;btn.textContent='Update Password'}
+}
+
+var calWeekStart=new Date();
+function getMonday(d){var day=d.getDay();var diff=d.getDate()-day+(day===0?-6:1);var m=new Date(d);m.setDate(diff);m.setHours(0,0,0,0);return m}
+function formatDate(d){return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}
+function formatRange(s,e){var sm=s.toLocaleDateString('en-GB',{month:'short'});var em=e.toLocaleDateString('en-GB',{month:'short',year:'numeric'});return s.getDate()+(sm!==em?' '+sm:'')+' \u2013 '+e.getDate()+' '+em}
+
+function navigateWeek(dir){
+  calWeekStart.setDate(calWeekStart.getDate()+dir*7);
+  renderCalendar();
+}
+function goToday(){
+  calWeekStart=getMonday(new Date());
+  renderCalendar();
+}
+
+function renderCalendar(){
+  var el=document.getElementById('calWeek'),nav=document.getElementById('calNav');
+  var monday=getMonday(new Date(calWeekStart));
+  calWeekStart=monday;
+  var sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
+
+  nav.innerHTML='<button onclick="navigateWeek(-1)">\u2039</button><h2>'+formatRange(monday,sunday)+'</h2><div style="display:flex;gap:6px"><button class="cal-today" onclick="goToday()">Today</button><button onclick="navigateWeek(1)">\u203a</button></div>';
+
+  var t=today();
+  var dayNames=['MON','TUE','WED','THU','FRI','SAT','SUN'];
+  var byDate={};
+  jobs.forEach(function(x){var d=x.b.booking_date;if(!byDate[d])byDate[d]=[];byDate[d].push(x)});
+
+  var h='';
+  for(var i=0;i<7;i++){
+    var day=new Date(monday);day.setDate(monday.getDate()+i);
+    var ds=day.getFullYear()+'-'+String(day.getMonth()+1).padStart(2,'0')+'-'+String(day.getDate()).padStart(2,'0');
+    var isToday=ds===t;
+    h+='<div class="cal-day'+(isToday?' today':'')+'">';
+    h+='<div class="cdd">'+day.getDate()+(i===0||day.getDate()===1?' '+day.toLocaleDateString('en-GB',{month:'short'}):'')+'</div>';
+    h+='<div class="cddn">'+dayNames[i]+'</div>';
+    var dayJobs=(byDate[ds]||[]).slice().sort(function(a,b){return slotOrder(a.b.booking_time)-slotOrder(b.b.booking_time)});
+    dayJobs.forEach(function(x){
+      var tn=x.b.customer_name.split(' ')[0];
+      h+='<div class="cal-task '+x.t.status+'" onclick="openJob(\''+x.t.id+'\')"><span class="cts"></span>'+ft(x.b.booking_time)+' '+esc(tn)+'</div>';
+    });
+    h+='</div>';
+  }
+  el.innerHTML=h;relucide();
 }
 
 checkAccess();relucide();
