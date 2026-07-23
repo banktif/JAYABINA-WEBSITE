@@ -161,6 +161,26 @@
       .cal-week-header{padding:0 0 12px}
       .cal-week{gap:10px}
     }
+
+    /* Mobile card drawer */
+    .card-drawer-overlay{position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .2s ease}
+    .card-drawer-overlay.open{opacity:1;pointer-events:auto}
+    .card-drawer{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--card-bg);border-radius:18px 18px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -6px 36px rgba(0,0,0,.18);transform:translateY(100%);transition:transform .22s ease}
+    .card-drawer.open{transform:translateY(0)}
+    .card-drawer .cd-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+    .card-drawer .cd-av{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--accent-light);color:var(--accent);font-weight:800;font-size:.85rem;flex-shrink:0}
+    .card-drawer .cd-info{flex:1;min-width:0}
+    .card-drawer .cd-name{font-weight:700;font-size:.95rem}
+    .card-drawer .cd-meta{font-size:.74rem;color:var(--text3);margin-top:2px}
+    .card-drawer .cd-acts{display:grid;gap:8px}
+    .card-drawer .cd-btn{width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border-strong);border-radius:12px;background:var(--elevated);color:var(--text);font-size:.88rem;font-weight:600;cursor:pointer;transition:all .12s;font-family:var(--font)}
+    .card-drawer .cd-btn:active{transform:scale(.97)}
+    .card-drawer .cd-btn.accept{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .card-drawer .cd-btn.done{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+    .card-drawer .cd-btn.reject{background:var(--danger);color:#fff;border-color:var(--danger)}
+    .card-drawer .cd-btn.wa{color:#25D366;border-color:#25D366}
+    .card-drawer .cd-btn.view{background:var(--accent);color:#fff;border-color:var(--accent)}
+    @media(min-width:1024px){.card-drawer,.card-drawer-overlay{display:none}}
   </style>
 </head>
 <body>
@@ -476,7 +496,7 @@ function renderJobs(){
     var h='';
     list.forEach(function(x){
       var b=x.b,t2=x.t;
-      h+='<div class="card" onclick="openJob(\''+t2.id+'\')">';
+      h+='<div class="card" onclick="openCardDrawer(\''+t2.id+'\')">';
       h+='<div class="card-body"><div class="card-meta"><span class="card-date">'+fd(b.booking_date)+' '+ft(b.booking_time)+'</span>'+badge(t2.status)+'</div>';
       h+='<div class="card-name">'+esc(b.customer_name)+'</div>';
       h+='<div class="card-addr">'+esc(b.customer_address)+'</div>';
@@ -534,6 +554,8 @@ function openJob(id){
 
 function openModal(){var m=document.getElementById('modal');m.classList.add('show');document.body.style.overflow='hidden';relucide()}
 function closeModal(){var m=document.getElementById('modal');m.classList.remove('show');document.body.style.overflow='';openId=null;loadJobs();relucide()}
+function openCardDrawer(id){if(window.innerWidth>=1024){openJob(id);return}var x=jobs.find(function(y){return y.t.id===id});if(!x)return;var b=x.b,t2=x.t;var ph=b.customer_phone.replace(/[^0-9]/g,'');if(ph.startsWith('0'))ph='6'+ph.substring(1);var init=(b.customer_name||'').split(' ');var initTxt=(init[0]?init[0][0]:'')+(init.length>1?init[init.length-1][0]:'').toUpperCase();var h='<div class="cd-head"><div class="cd-av">'+initTxt+'</div><div class="cd-info"><div class="cd-name">'+esc(b.customer_name)+'</div><div class="cd-meta">'+fd(b.booking_date)+' '+ft(b.booking_time)+'</div></div></div><div class="cd-acts"><button class="cd-btn view" onclick="closeCardDrawer();openJob(\''+id+'\')">View Details</button>';h+='<button class="cd-btn wa" onclick="closeCardDrawer();window.open(\'https://wa.me/'+ph+'\',\'_blank\')">WhatsApp Customer</button>';if(t2.status==='assigned'){h+='<button class="cd-btn accept" onclick="closeCardDrawer();acceptJob(\''+t2.id+'\')">Accept Job</button>';h+='<button class="cd-btn reject" onclick="closeCardDrawer();rejectJob(\''+t2.id+'\',\''+esc(b.customer_name)+'\')">Reject Job</button>'}if(t2.status==='in_progress')h+='<button class="cd-btn done" onclick="closeCardDrawer();openJob(\''+t2.id+'\')">Finish Job</button>';h+='<button class="cd-btn" onclick="closeCardDrawer()">Close</button></div>';document.getElementById('cdContent').innerHTML=h;document.getElementById('cdOverlay').classList.add('open');document.getElementById('cdDrawer').classList.add('open');document.body.style.overflow='hidden'}
+function closeCardDrawer(){document.getElementById('cdOverlay').classList.remove('open');document.getElementById('cdDrawer').classList.remove('open');document.body.style.overflow=''}
 
 // ACCEPT / REJECT
 async function acceptJob(id){
@@ -705,7 +727,7 @@ function renderTaskList(){
     dayJobs.forEach(function(x){
       var b=x.b,t2=x.t;
       var nm=b.customer_name.split(' ');var init=(nm[0]?nm[0][0]:'')+(nm.length>1?nm[nm.length-1][0]:'').toUpperCase();
-      h+='<div class="ctl-card '+t2.status+'" onclick="openJob(\''+t2.id+'\')">';
+      h+='<div class="ctl-card '+t2.status+'" onclick="openCardDrawer(\''+t2.id+'\')">';
       h+='<div class="ctl-av">'+init+'</div>';
       h+='<div class="ctl-body"><div class="ctl-name">'+esc(b.customer_name)+'</div>';
       h+='<div class="ctl-addr">'+esc(b.customer_address)+'</div>';
@@ -720,5 +742,7 @@ function renderTaskList(){
 checkAccess();relucide();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){})}
 </script>
+<div class="card-drawer-overlay" id="cdOverlay" onclick="closeCardDrawer()"></div>
+<div class="card-drawer" id="cdDrawer"><div id="cdContent"></div></div>
 </body>
 </html>
