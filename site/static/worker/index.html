@@ -314,13 +314,14 @@
     @media(max-width:1023px){
       .cal-nav{padding:0 16px 12px;flex-wrap:wrap;gap:10px}
       .cal-nav-head h2{font-size:.98rem}
-      .cal-week{grid-template-columns:1fr;gap:10px;padding:0 16px}
-      .cal-day{min-height:auto;padding:14px 16px;border-radius:16px}
-      .cal-day .cd-num{font-size:.9rem}
-      .cal-day .cd-tasks{gap:5px}
-      .cal-task{padding:9px 12px;font-size:.72rem}
-      .cal-task .ct-avatar{width:28px;height:28px;border-radius:8px;font-size:.64rem}
-      .cal-task .ct-time{font-size:.66rem}
+      .cal-week{display:flex;flex-direction:row;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 16px}
+      .cal-week::-webkit-scrollbar{display:none}
+      .cal-day{flex:0 0 auto;width:128px;min-height:auto;padding:12px 14px;border-radius:16px;scroll-snap-align:start}
+      .cal-day .cd-num{font-size:.88rem;margin-bottom:4px}
+      .cal-day .cd-tasks{gap:4px}
+      .cal-task{padding:6px 9px;font-size:.67rem}
+      .cal-task .ct-avatar{width:22px;height:22px;border-radius:6px;font-size:.56rem}
+      .cal-task .ct-time{font-size:.6rem}
     }
     @media(min-width:1024px){
       .cal-nav{padding:0 0 24px}
