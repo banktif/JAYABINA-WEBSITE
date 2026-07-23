@@ -291,6 +291,26 @@
     .tpl-badge{display:inline-block;padding:3px 11px;border-radius:20px;font-size:.68rem;font-weight:700;letter-spacing:.2px}
     .tpl-badge.active{background:var(--accent-light);color:var(--accent)}
     .tpl-badge.inactive{background:var(--bg);color:var(--text3)}
+
+    /* Mobile card drawer */
+    .card-drawer-overlay{position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .2s ease}
+    .card-drawer-overlay.open{opacity:1;pointer-events:auto}
+    .card-drawer{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--card-bg);border-radius:18px 18px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -6px 36px rgba(0,0,0,.18);transform:translateY(100%);transition:transform .22s ease}
+    .card-drawer.open{transform:translateY(0)}
+    .card-drawer .cd-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+    .card-drawer .cd-av{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--accent-light);color:var(--accent);font-weight:800;font-size:.85rem;flex-shrink:0}
+    .card-drawer .cd-info{flex:1;min-width:0}
+    .card-drawer .cd-name{font-weight:700;font-size:.95rem}
+    .card-drawer .cd-meta{font-size:.74rem;color:var(--text3);margin-top:2px}
+    .card-drawer .cd-acts{display:grid;gap:8px}
+    .card-drawer .cd-btn{width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border-strong);border-radius:12px;background:var(--elevated);color:var(--text);font-size:.88rem;font-weight:600;cursor:pointer;transition:all .12s;font-family:var(--font)}
+    .card-drawer .cd-btn:active{transform:scale(.97)}
+    .card-drawer .cd-btn.accept{background:#166534;color:#fff;border-color:#166534}
+    .card-drawer .cd-btn.done{background:#0f766e;color:#fff;border-color:#0f766e}
+    .card-drawer .cd-btn.decline{background:var(--danger);color:#fff;border-color:var(--danger)}
+    .card-drawer .cd-btn.wa{color:#25D366;border-color:#25D366}
+    .card-drawer .cd-btn.view{background:var(--accent);color:#fff;border-color:var(--accent)}
+    @media(min-width:1024px){.card-drawer,.card-drawer-overlay{display:none}}
   </style>
   <link rel="stylesheet" href="/admin-modern.css?v=1784815474">
 </head>
@@ -500,12 +520,7 @@ function renderBookings(f){
     var h='';
     f.forEach(function(b){
       var pay=(b.payment_status==='paid'?'Paid':'Pending');
-      h+='<div class="card" onclick="showModal(\''+b.id+'\')"><div class="bk-ava" style="width:44px;height:44px;border-radius:12px;font-size:.9rem;flex-shrink:0">'+initials(b.customer_name)+'</div><div class="card-body"><div class="card-meta"><span class="card-date">'+fd(b.booking_date)+' '+ft(b.booking_time)+'</span>'+badge(b.status)+'</div><div class="card-name">'+esc(b.customer_name)+'</div><div class="card-addr">'+esc(b.customer_address)+'</div><div class="card-phone">RM'+esc(b.deposit_amount)+' &middot; '+pay+'</div><div class="qact">';
-      if(b.status==='pending_payment')h+='<button class="qact-btn accept" onclick="event.stopPropagation();quickUpdate(\''+b.id+'\',\'confirmed\')">Confirm</button>';
-      if(b.status==='confirmed'||b.status==='pending_payment')h+='<button class="qact-btn done" onclick="event.stopPropagation();quickUpdate(\''+b.id+'\',\'completed\')">Complete</button>';
-      h+='<button class="qact-btn" style="color:#25D366;border-color:#25D366" onclick="event.stopPropagation();window.open(\'https://wa.me/'+waNum(b.customer_phone)+'\',\'_blank\')">WA</button>';
-      if(b.status!=='cancelled'&&b.status!=='completed')h+='<button class="qact-btn decline" onclick="event.stopPropagation();quickUpdate(\''+b.id+'\',\'cancelled\')">Cancel</button>';
-      h+='</div></div></div>';
+      h+='<div class="card" onclick="openCardDrawer(\''+b.id+'\')"><div class="bk-ava" style="width:44px;height:44px;border-radius:12px;font-size:.9rem;flex-shrink:0">'+initials(b.customer_name)+'</div><div class="card-body"><div class="card-meta"><span class="card-date">'+fd(b.booking_date)+' '+ft(b.booking_time)+'</span>'+badge(b.status)+'</div><div class="card-name">'+esc(b.customer_name)+'</div><div class="card-addr">'+esc(b.customer_address)+'</div><div class="card-phone">RM'+esc(b.deposit_amount)+' &middot; '+pay+'</div></div></div>';
     });
     document.getElementById('list').innerHTML=h;
   }
@@ -544,6 +559,8 @@ function statusNeedsConfirm(s){return s==='cancelled'||s==='completed'}
 function confirmStatus(s){if(!statusNeedsConfirm(s))return true;return window.confirm(s==='completed'?'Mark this job as completed?':'Cancel this booking?')}
 async function updateStatus(id,s){if(!confirmStatus(s))return;try{var r=await SB.from('bookings').update({status:s,updated_at:new Date().toISOString()}).eq('id',id);if(r.error)throw r.error;closeModal();await load(cf)}catch(e){alert(errorMessage(e))}}
 async function quickUpdate(id,s){if(!confirmStatus(s))return;try{var r=await SB.from('bookings').update({status:s,updated_at:new Date().toISOString()}).eq('id',id);if(r.error)throw r.error;await load(cf)}catch(e){alert(errorMessage(e))}}
+function openCardDrawer(id){if(window.innerWidth>=1024){showModal(id);return}var b=all.find(function(x){return x.id===id});if(!b)return;var ph=b.customer_phone.replace(/[^0-9]/g,'');if(ph.startsWith('0'))ph='6'+ph.substring(1);var h='<div class="cd-head"><div class="cd-av">'+initials(b.customer_name)+'</div><div class="cd-info"><div class="cd-name">'+esc(b.customer_name)+'</div><div class="cd-meta">'+fd(b.booking_date)+' '+ft(b.booking_time)+' &middot; RM'+esc(b.deposit_amount)+' deposit</div></div></div><div class="cd-acts"><button class="cd-btn view" onclick="closeCardDrawer();showModal(\''+id+'\')">View Details</button>';if(b.status==='pending_payment')h+='<button class="cd-btn accept" onclick="closeCardDrawer();quickUpdate(\''+id+'\',\'confirmed\')">Confirm Booking</button>';if(b.status==='confirmed'||b.status==='pending_payment')h+='<button class="cd-btn done" onclick="closeCardDrawer();quickUpdate(\''+id+'\',\'completed\')">Mark Complete</button>';h+='<button class="cd-btn wa" onclick="closeCardDrawer();window.open(\'https://wa.me/'+ph+'\',\'_blank\')">WhatsApp Customer</button>';if(b.status!=='cancelled'&&b.status!=='completed')h+='<button class="cd-btn decline" onclick="closeCardDrawer();quickUpdate(\''+id+'\',\'cancelled\')">Cancel Booking</button>';h+='<button class="cd-btn" onclick="closeCardDrawer()">Close</button></div>';document.getElementById('cdContent').innerHTML=h;document.getElementById('cdOverlay').classList.add('open');document.getElementById('cdDrawer').classList.add('open');document.body.style.overflow='hidden'}
+function closeCardDrawer(){document.getElementById('cdOverlay').classList.remove('open');document.getElementById('cdDrawer').classList.remove('open');document.body.style.overflow=''}
 
 // ═══════════ VIEW SWITCHING ═══════════
 function esc(s){return(s===null||s===undefined?'':s).toString().replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})}
@@ -1758,5 +1775,7 @@ document.addEventListener('keydown',function(e){
   else if(document.getElementById('drawer').classList.contains('open'))toggleDrawer();
 });
 </script>
+<div class="card-drawer-overlay" id="cdOverlay" onclick="closeCardDrawer()"></div>
+<div class="card-drawer" id="cdDrawer"><div id="cdContent"></div></div>
 </body>
 </html>
