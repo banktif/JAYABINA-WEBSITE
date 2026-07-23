@@ -36,7 +36,7 @@ jobs:
           cp admin/index.html admin-public/index.html 2>/dev/null || true
           test -f admin/editor.html && cp admin/editor.html admin-public/ || true
           test -d admin/vendor && cp -r admin/vendor admin-public/ || true
-          for f in theme.css admin-modern.css jc-api.js admin-favicon.svg admin-manifest.json; do test -f "$f" && cp "$f" admin-public/ || true; done
+          for f in theme.css admin-modern.css portal-shared.css jc-api.js admin-favicon.svg admin-manifest.json; do test -f "$f" && cp "$f" admin-public/ || true; done
           wrangler pages deploy admin-public --project-name jayabina-admin --branch master
 
 
