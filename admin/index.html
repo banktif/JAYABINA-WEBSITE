@@ -2015,20 +2015,40 @@ async function showStaffPriority(){
     var pq=await SB.from('profiles').select('*').eq('role','staff').eq('is_active',1).order('priority','asc');
     if(!viewActive(viewId,'staffPriority'))return;var staff=pq.data||[];
     if(!staff.length){l.innerHTML='<div class="empty"><p>No active staff</p></div>';return}
-    var h='<div class="panel"><p>Drag-and-drop ranking coming soon. Set priorities below:</p>';
+    var h='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><p style="margin:0;font-size:.78rem">Set priority 1 (highest) to 200 (lowest). Click <strong>Save All</strong> to apply.</p>'+
+      '<button class="btn-primary" onclick="saveAllPriority()" style="white-space:nowrap"><i data-lucide="save"></i> Save All</button>'+
+      '</div><div id="priMsg" style="font-size:.72rem;margin-bottom:8px;text-align:right"></div>';
     h+='<div style="display:flex;flex-direction:column;gap:8px">';
     staff.forEach(function(s,i){
       h+='<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:var(--elevated);border:1px solid var(--border)">';
-      h+='<div style="width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem">'+(s.priority||999)+'</div>';
-      h+='<div style="flex:1"><strong>'+esc(s.full_name)+'</strong><div style="font-size:.68rem;color:var(--text3)">'+esc(s.phone)+' &middot; '+s.job_count_today+'/'+s.max_jobs_per_day+' jobs today</div></div>';
-      h+='<input type="number" value="'+(s.priority||i+1)+'" min="1" max="200" style="width:60px;padding:6px;border:1px solid var(--border);border-radius:8px;text-align:center;font-family:var(--font)" onchange="setStaffPriority(\''+s.id+'\',this.value)">';
+      h+='<div style="width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem">'+(i+1)+'</div>';
+      h+='<div style="flex:1"><strong>'+esc(s.full_name)+'</strong><div style="font-size:.68rem;color:var(--text3)">'+esc(s.phone)+' &middot; '+(s.job_count_today||0)+'/'+(s.max_jobs_per_day||4)+' jobs today</div></div>';
+      h+='<div style="display:flex;align-items:center;gap:6px"><span style="font-size:.62rem;color:var(--text3)">Priority:</span><input type="number" data-sid="'+s.id+'" value="'+(s.priority||i+1)+'" min="1" max="200" style="width:60px;padding:6px;border:1px solid var(--border);border-radius:8px;text-align:center;font-family:var(--font)"></div>';
       h+='</div>';
     });
-    h+='</div></div>';
+    h+='</div>';
     l.innerHTML=h;
   }catch(e){if(viewActive(viewId,'staffPriority'))l.innerHTML='<div class="empty"><p>'+esc(e.message)+'</p></div>'}
   relucide();
 }
+
+async function saveAllPriority(){
+  var m=document.getElementById('priMsg');m.textContent='Saving...';m.style.color='var(--text3)';
+  var inputs=document.querySelectorAll('input[data-sid]');
+  var count=0;
+  for(var i=0;i<inputs.length;i++){
+    try{
+      var id=inputs[i].getAttribute('data-sid');
+      var val=parseInt(inputs[i].value)||999;
+      await SB.from('profiles').update({priority:val}).eq('id',id);
+      count++;
+    }catch(e){}
+  }
+  m.textContent=count+' staff priorities saved ✓';
+  m.style.color='var(--accent)';
+  setTimeout(function(){m.textContent=''},3000);
+}
+
 async function setStaffPriority(id,val){
   try{
     await SB.from('profiles').update({priority:parseInt(val)||999}).eq('id',id);
