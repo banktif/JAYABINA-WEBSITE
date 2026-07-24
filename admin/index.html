@@ -53,8 +53,8 @@
     }
 
     /* Drawer accordion sections (mobile collapsible menu) */
-    .dr-section{overflow:hidden;max-height:800px;transition:max-height .3s ease}
-    .dr-section.collapsed{max-height:0!important}
+    .dr-section{overflow:hidden;transition:max-height .3s ease}
+    .dr-section.collapsed{max-height:0}
     .dr-section-trigger{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;color:var(--text2);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .12s;border:none;background:none;width:100%;text-align:left;font-family:var(--font);min-height:48px}
     .dr-section-trigger:hover{background:var(--bg);color:var(--text)}
     .dr-section-trigger span{width:24px;text-align:center;font-size:1rem;flex-shrink:0}
@@ -608,7 +608,7 @@ async function quickUpdate(id,s){if(!confirmStatus(s))return;try{var r=await SB.
 // ═══════════ VIEW SWITCHING ═══════════
 function esc(s){return(s===null||s===undefined?'':s).toString().replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})}
 function toggleSection(id){var s=document.getElementById(id);if(s)s.classList.toggle('collapsed');}
-function toggleDrSection(id){var s=document.getElementById(id),t=s?s.querySelector('.dr-section-trigger'):null;if(!s)return;var collapsed=s.classList.contains('collapsed');if(collapsed){s.classList.remove('collapsed');s.style.maxHeight=s.scrollHeight+'px';if(t)t.setAttribute('aria-expanded','true')}else{s.style.maxHeight=s.scrollHeight+'px';s.classList.add('collapsed');if(t)t.setAttribute('aria-expanded','false');requestAnimationFrame(function(){s.style.maxHeight='0px'})}}
+function toggleDrSection(id){var s=document.getElementById(id),t=s?s.querySelector('.dr-section-trigger'):null;if(!s)return;var collapsed=s.classList.contains('collapsed');if(collapsed){s.classList.remove('collapsed');s.style.maxHeight=s.scrollHeight+'px';if(t)t.setAttribute('aria-expanded','true');s.addEventListener('transitionend',function c(){if(!s.classList.contains('collapsed'))s.style.maxHeight='';s.removeEventListener('transitionend',c)},{once:true})}else{s.style.maxHeight=s.scrollHeight+'px';s.classList.add('collapsed');if(t)t.setAttribute('aria-expanded','false');requestAnimationFrame(function(){s.style.maxHeight='0px'})}}
 function errorMessage(e){return e&&e.message?e.message:(typeof e==='string'?e:'Request failed. Please try again.')}
 function localDateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function moneyValue(v){var n=Number(v);return Number.isFinite(n)?n:0}
