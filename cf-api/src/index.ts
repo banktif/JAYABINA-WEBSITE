@@ -23,6 +23,8 @@ import { handleAIVerify } from './routes/ai-verify';
 import { handlePartners } from './routes/partners';
 import { handleSubscriptions } from './routes/subscriptions';
 import { handleAbandon } from './routes/analytics';
+import { handleTracking } from './routes/tracking';
+import { handleRefund } from './routes/payments';
 import { createDb } from './db/client';
 import { bookings as bookingsTable } from './db/schema';
 
@@ -213,6 +215,11 @@ app.all('/api/subscriptions', (c) => handleSubscriptionsRoute(c.req.raw, c.env))
 app.all('/api/subscriptions/*', (c) => handleSubscriptionsRoute(c.req.raw, c.env));
 
 app.all('/api/analytics/abandon', (c) => handleAbandon(c.req.raw, c.env));
+
+app.all('/api/tracking', (c) => handleTracking(c.req.raw, c.env));
+app.all('/api/tracking/*', (c) => handleTracking(c.req.raw, c.env));
+
+app.all('/api/payments/refund', (c) => handleRefund(c.req.raw, c.env));
 
 app.notFound(() => err('Not found', 404));
 
