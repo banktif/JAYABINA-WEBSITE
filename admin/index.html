@@ -1819,8 +1819,9 @@ async function showQuotations(){
     }else{
       h+='<div class="d-card"><table><thead><tr><th>Customer</th><th>Service</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>';
       rows.forEach(function(r){
-        h+='<tr><td><strong>'+esc(r.customer_name)+'</strong></td><td>'+esc(r.service_type)+'</td><td>RM'+(r.amount||0)+'</td><td><span class="bc-badge '+r.status+'"><span class="bdot"></span>'+r.status+'</span></td><td><div style="display:flex;gap:4px">';
-        if(r.status==='draft')h+='<button class="d-btn acc" onclick="updateQuoteStatus(\''+r.id+'\',\'sent\')">Send</button>';
+        h+='<tr><td><strong>'+esc(r.customer_name)+'</strong></td><td>'+esc(r.service_type)+'</td><td>RM'+(r.amount||0)+'</td><td><span class="bc-badge '+r.status+'"><span class="bdot"></span>'+r.status+'</span></td><td><div style="display:flex;gap:4px;flex-wrap:wrap">';
+        if(r.status==='draft'||r.status==='sent')h+='<button class="d-btn" onclick="window.open(\''+API_URL+'/api/quotations/'+r.id+'/pdf\',\'_blank\')" title="View PDF">📄</button>';
+        if(r.status==='draft')h+='<button class="d-btn acc" onclick="sendQuote(\''+r.id+'\')">Send</button>';
         if(r.status==='sent')h+='<button class="d-btn don" onclick="updateQuoteStatus(\''+r.id+'\',\'accepted\')">Accept</button>';
         h+='<button class="d-btn del" onclick="updateQuoteStatus(\''+r.id+'\',\'rejected\')">Reject</button></div></td></tr>';
       });
@@ -1834,32 +1835,93 @@ async function showQuotations(){
 function showQuoteForm(){
   var l=document.getElementById('list');
   l.innerHTML='<div class="panel"><h3>New Quotation</h3>'+
-    '<div style="display:flex;flex-direction:column;gap:10px;max-width:480px">'+
+    '<div style="display:flex;flex-direction:column;gap:10px;max-width:560px">'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
     '<div class="pf-field"><label>Customer Name</label><input id="qfName" class="sInp" placeholder="Full name"></div>'+
     '<div class="pf-field"><label>Phone</label><input id="qfPhone" class="sInp" placeholder="0123456789"></div>'+
+    '</div>'+
     '<div class="pf-field"><label>Address</label><input id="qfAddr" class="sInp" placeholder="Full address"></div>'+
-    '<div class="pf-field"><label>Service Type</label><select id="qfService" class="sInp"><option value="cuci_tangki">Cuci Tangki Air</option><option value="tukar_atap">Tukar Atap</option><option value="cat_rumah">Cat Rumah</option></select></div>'+
-    '<div class="pf-field"><label>Amount (RM)</label><input id="qfAmt" class="sInp" type="number" value="300"></div>'+
-    '<div style="display:flex;gap:8px;margin-top:8px"><button class="btn-primary" onclick="createQuote()">Create Quotation</button><button class="d-btn" onclick="showQuotations()">Cancel</button></div>'+
+    '<div class="pf-field"><label>Service Type</label><select id="qfService" class="sInp" onchange="loadTemplate()"><option value="">Select...</option><option value="cuci_tangki">Cuci Tangki Air</option><option value="tukar_atap">Tukar Atap</option><option value="cat_rumah">Cat Rumah</option></select></div>'+
+    '<div class="pf-field"><label>Line Items</label><div id="qfItems" style="display:flex;flex-direction:column;gap:4px"></div>'+
+    '<button class="d-btn" style="align-self:flex-start;margin-top:4px" onclick="addItem()">+ Add Item</button></div>'+
+    '<div class="pf-field"><label>Notes (optional)</label><textarea id="qfNotes" class="sInp" style="min-height:40px;resize:none" placeholder="Terms, conditions..."></textarea></div>'+
+    '<div style="font-size:.78rem;font-weight:700;margin-top:4px">Total: RM<span id="qfTotal">0</span></div>'+
+    '<div style="display:flex;gap:8px;margin-top:8px"><button class="btn-primary" onclick="createQuote()">Create & Save</button><button class="d-btn" onclick="createAndSendQuote()">Create & Send WA</button><button class="d-btn" onclick="showQuotations()">Cancel</button></div>'+
     '<div id="qfMsg" style="font-size:.72rem;margin-top:8px"></div>'+
     '</div></div>';
+  addItem();addItem();
   relucide();
 }
 
-async function createQuote(){
-  var m=document.getElementById('qfMsg');m.textContent='Creating...';
+function addItem(){var c=document.getElementById('qfItems');var i=c.children.length;
+  var d=document.createElement('div');d.style.cssText='display:flex;gap:6px';
+  d.innerHTML='<input class="sInp" style="flex:1" placeholder="Item description" oninput="calcTotal()">'+
+    '<input class="sInp" type="number" value="0" style="width:90px" placeholder="RM" oninput="calcTotal()">'+
+    '<button class="d-btn del" style="padding:4px 8px;font-size:.7rem" onclick="this.parentElement.remove();calcTotal()">✕</button>';
+  c.appendChild(d);calcTotal();
+}
+
+function calcTotal(){
+  var t=0;var items=document.querySelectorAll('#qfItems>div');
+  items.forEach(function(d){var ins=d.querySelectorAll('input');t+=parseFloat(ins[1]?.value)||0});
+  document.getElementById('qfTotal').textContent=t;
+}
+
+async function loadTemplate(){
+  var s=document.getElementById('qfService').value;
   try{
-    var body={
-      customer_name:document.getElementById('qfName').value.trim(),
-      customer_phone:document.getElementById('qfPhone').value.trim(),
-      customer_address:document.getElementById('qfAddr').value.trim(),
-      service_type:document.getElementById('qfService').value,
-      amount:parseFloat(document.getElementById('qfAmt').value)||300
-    };
-    if(!body.customer_name||!body.customer_phone){m.textContent='Name and phone required';return}
+    var r=await fetch(API_URL+'/api/quotations/templates',{headers:{'Authorization':'Bearer '+localStorage.getItem('jc_token')}});
+    var d=await r.json();var tpl=(d.data||{})[s];
+    if(tpl&&tpl.items){
+      document.getElementById('qfItems').innerHTML='';
+      tpl.items.forEach(function(item){addItemPrefill(item.description,item.amount)});
+    }
+  }catch(e){}
+}
+function addItemPrefill(desc,amt){
+  var c=document.getElementById('qfItems');
+  var d=document.createElement('div');d.style.cssText='display:flex;gap:6px';
+  d.innerHTML='<input class="sInp" style="flex:1" value="'+esc(desc)+'" oninput="calcTotal()">'+
+    '<input class="sInp" type="number" value="'+amt+'" style="width:90px" oninput="calcTotal()">'+
+    '<button class="d-btn del" style="padding:4px 8px;font-size:.7rem" onclick="this.parentElement.remove();calcTotal()">✕</button>';
+  c.appendChild(d);calcTotal();
+}
+
+async function createQuote(){
+  var m=document.getElementById('qfMsg');m.textContent='Saving...';
+  try{
+    var items=[];document.querySelectorAll('#qfItems>div').forEach(function(d){
+      var ins=d.querySelectorAll('input');if(ins[0].value.trim())items.push({description:ins[0].value.trim(),amount:parseFloat(ins[1].value)||0});
+    });
+    var total=items.reduce(function(s,i){return s+i.amount},0);
+    var body={customer_name:document.getElementById('qfName').value.trim(),customer_phone:document.getElementById('qfPhone').value.trim(),
+      customer_address:document.getElementById('qfAddr').value.trim(),service_type:document.getElementById('qfService').value,
+      amount:total,details:items.length?items:null,notes:document.getElementById('qfNotes').value.trim()};
+    if(!body.customer_name||!body.customer_phone||!body.service_type){m.textContent='Name, phone, and service required';return}
     var res=await SB.from('quotations').insert(body);
     if(res.error)throw res.error;
-    m.textContent='Created!';setTimeout(showQuotations,800);
+    m.textContent='Created! Quotation ID: '+(res.data||{}).id;setTimeout(showQuotations,1000);
+  }catch(e){m.textContent='Error: '+(e.message||e)}
+}
+
+async function createAndSendQuote(){
+  var m=document.getElementById('qfMsg');m.textContent='Creating & sending...';
+  try{
+    var items=[];document.querySelectorAll('#qfItems>div').forEach(function(d){
+      var ins=d.querySelectorAll('input');if(ins[0].value.trim())items.push({description:ins[0].value.trim(),amount:parseFloat(ins[1].value)||0});
+    });
+    var total=items.reduce(function(s,i){return s+i.amount},0);
+    var body={customer_name:document.getElementById('qfName').value.trim(),customer_phone:document.getElementById('qfPhone').value.trim(),
+      customer_address:document.getElementById('qfAddr').value.trim(),service_type:document.getElementById('qfService').value,
+      amount:total,details:items.length?items:null,notes:document.getElementById('qfNotes').value.trim()};
+    if(!body.customer_name||!body.customer_phone||!body.service_type){m.textContent='Name, phone, and service required';return}
+    var res=await SB.from('quotations').insert(body);
+    if(res.error)throw res.error;
+    var qid=(res.data||{}).id;
+    var token=localStorage.getItem('jc_token');
+    var sr=await fetch(API_URL+'/api/quotations/'+qid+'/send',{method:'POST',headers:{'Authorization':'Bearer '+token}});
+    var sd=await sr.json();
+    m.textContent='Sent! '+(sd.data&&sd.data.wa?'✓WA ':'')+(sd.data&&sd.data.email?'✓Email':'');setTimeout(showQuotations,1500);
   }catch(e){m.textContent='Error: '+(e.message||e)}
 }
 
@@ -1867,6 +1929,17 @@ async function updateQuoteStatus(id,status){
   try{
     var res=await SB.from('quotations').update({status:status}).eq('id',id);
     if(res.error)throw res.error;
+    showQuotations();
+  }catch(e){alert('Error: '+(e.message||e))}
+}
+
+async function sendQuote(id){
+  try{
+    var token=localStorage.getItem('jc_token');
+    var res=await fetch(API_URL+'/api/quotations/'+id+'/send',{method:'POST',headers:{'Authorization':'Bearer '+token}});
+    var d=await res.json();
+    if(!res.ok)throw new Error(d.error);
+    alert('Sent! WA: '+(d.data?.wa?'✓':'✗')+' Email: '+(d.data?.email?'✓':'✗'));
     showQuotations();
   }catch(e){alert('Error: '+(e.message||e))}
 }
