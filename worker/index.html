@@ -151,6 +151,16 @@
       .cal-week-header{padding:0 0 12px}
       .cal-week{gap:10px}
     }
+
+    /* ── Workflow Progress ── */
+    .wf-progress{display:flex;flex-direction:column;gap:4px;margin-bottom:16px;padding:12px;background:var(--accent-light);border-radius:12px}
+    .wf-step{display:flex;align-items:center;gap:10px;font-size:.72rem;font-weight:600;color:var(--text3);padding:3px 0}
+    .wf-step.active{color:var(--accent);font-weight:700}
+    .wf-step.done{color:var(--accent);text-decoration:none}
+    .wf-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;background:var(--elevated);border:2px solid var(--border);color:var(--text3);flex-shrink:0}
+    .wf-step.active .wf-dot{border-color:var(--accent);background:var(--accent);color:#fff}
+    .wf-step.done .wf-dot{border-color:var(--accent);background:var(--accent);color:#fff}
+    .wf-label{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   </style>
 </head>
 <body>
@@ -408,6 +418,12 @@ async function loadJobs(){
   }catch(e){l.innerHTML='<div class="empty"><div class="eicon"><i data-lucide="alert-triangle"></i></div><h2>Error</h2><p>'+esc(e.message)+'</p></div>'}
 }
 
+function ws(id){return(jobs.find(function(y){return y.t.id===id})||{}).t.workflow_step||0}
+function wsName(s){
+  var m={1:'Accept Job',2:'Confirm Job',3:'Heading to Site',4:'Arrive at Site',5:'Take Before Photos',6:'Start Job',7:'Take After Photos',8:'Request Payment',9:'Finish Job'};
+  return m[s]||'Step '+s;
+}
+
 function slotOrder(s){var slots=(settings.slots||'9am,11am,2pm,4pm').split(',').map(function(s){return s.trim()});var idx=slots.indexOf(s);return idx>=0?idx:9}
 
 function setFilter(f){
@@ -454,11 +470,17 @@ function renderJobs(){
       h+='<td><div class="d-acts" onclick="event.stopPropagation()">';
       h+='<button class="d-btn" style="color:#25D366;border-color:#25D366" onclick="window.open(\'https://wa.me/'+waNum(b.customer_phone)+'\',\'_blank\')"><i data-lucide="message-circle"></i> WA</button>';
       h+='<button class="d-btn" style="color:var(--accent2);border-color:var(--accent2)" onclick="window.open(\''+mapsUrl(b.customer_address)+'\',\'_blank\')"><i data-lucide="map-pin"></i> Maps</button>';
-      if(t2.status==='assigned'){
-        h+='<button class="d-btn acc" onclick="acceptJob(\''+t2.id+'\')"><i data-lucide="check"></i> Accept</button>';
+      var ws=t2.workflow_step||0;
+      if(ws===1){
+        h+='<button class="d-btn acc" onclick="wfAccept(\''+t2.id+'\')"><i data-lucide="check"></i> Accept</button>';
         h+='<button class="d-btn rej" onclick="rejectJob(\''+t2.id+'\',\''+esc(b.customer_name)+'\')"><i data-lucide="x"></i> Reject</button>';
       }
-      if(t2.status==='in_progress')h+='<button class="d-btn don" onclick="openJob(\''+t2.id+'\')"><i data-lucide="check"></i> Finish</button>';
+      if(ws===2)h+='<button class="d-btn acc" onclick="wfStep(\''+t2.id+'\',\'confirm\')"><i data-lucide="check"></i> Confirm</button>';
+      if(ws===3)h+='<button class="d-btn acc" onclick="wfStep(\''+t2.id+'\',\'heading\')"><i data-lucide="navigation"></i> Heading</button>';
+      if(ws===4)h+='<button class="d-btn acc" onclick="wfStep(\''+t2.id+'\',\'arrive\')"><i data-lucide="map-pin"></i> Arrive</button>';
+      if(ws===5)h+='<button class="d-btn acc" onclick="openJob(\''+t2.id+'\')"><i data-lucide="camera"></i> Photos</button>';
+      if(ws===6)h+='<button class="d-btn don" onclick="openJob(\''+t2.id+'\')"><i data-lucide="check"></i> Finish</button>';
+      if(ws===8)h+='<button class="d-btn don" onclick="wfStep(\''+t2.id+'\',\'finish\')"><i data-lucide="check-check"></i> Done</button>';
       h+='</div></td></tr>';
     });
     h+='</tbody></table></div>';el.innerHTML=h;
@@ -472,11 +494,15 @@ function renderJobs(){
       h+='<div class="card-addr">'+esc(b.customer_address)+'</div>';
       h+='<div class="qact">';
       h+='<button class="qact-btn" style="color:#25D366;border-color:#25D366" onclick="event.stopPropagation();window.open(\'https://wa.me/'+waNum(b.customer_phone)+'\',\'_blank\')">WA</button>';
-      if(t2.status==='assigned'){
-        h+='<button class="qact-btn accept" onclick="event.stopPropagation();acceptJob(\''+t2.id+'\')">Accept</button>';
+      var ws2=t2.workflow_step||0;
+      if(ws2===1){
+        h+='<button class="qact-btn accept" onclick="event.stopPropagation();wfAccept(\''+t2.id+'\')">Accept</button>';
         h+='<button class="qact-btn reject" onclick="event.stopPropagation();rejectJob(\''+t2.id+'\',\''+esc(b.customer_name)+'\')">Reject</button>';
       }
-      if(t2.status==='in_progress')h+='<button class="qact-btn done" onclick="event.stopPropagation();openJob(\''+t2.id+'\')">Finish</button>';
+      if(ws2===2)h+='<button class="qact-btn accept" onclick="event.stopPropagation();wfStep(\''+t2.id+'\',\'confirm\')">Confirm</button>';
+      if(ws2===3)h+='<button class="qact-btn accept" onclick="event.stopPropagation();wfStep(\''+t2.id+'\',\'heading\')">Heading</button>';
+      if(ws2===6)h+='<button class="qact-btn done" onclick="event.stopPropagation();openJob(\''+t2.id+'\')">Finish</button>';
+      if(ws2===8)h+='<button class="qact-btn done" onclick="event.stopPropagation();wfStep(\''+t2.id+'\',\'finish\')">Done</button>';
       h+='</div></div></div>';
     });
     el.innerHTML=h;
@@ -489,37 +515,81 @@ function photosFor(id,type){return(photos[id]||[]).filter(function(p){return p.t
 function openJob(id){
   openId=id;var x=jobs.find(function(y){return y.t.id===id});if(!x)return;
   var b=x.b,t2=x.t;
+  var step=(t2.workflow_step||0);
   document.getElementById('mTitle').innerHTML='<span class="m-dot"></span>'+b.customer_name;
   var beforeP=photosFor(id,'before'),afterP=photosFor(id,'after');
+  var bc=(t2.before_photos_count||beforeP.length||0),ac=(t2.after_photos_count||afterP.length||0);
   function thumbs(arr){if(!arr.length)return'<div style="font-size:.74rem;color:var(--text3)">No photos yet.</div>';var s='<div class="thumbs">';arr.forEach(function(p){s+='<div class="thumb"><img src="'+esc(p.url)+'" loading="lazy"></div>'});return s+'</div>'}
 
-  var h='<div class="m-row"><span class="mk">Status</span><span class="mv">'+badge(t2.status)+'</span></div>'+
+  var steps='';
+  for(var s=1;s<=9;s++){
+    var done=s<step,active=s===step;
+    steps+='<div class="wf-step'+(done?' done':'')+(active?' active':'')+'"><span class="wf-dot">'+(done?'&#10003;':s)+'</span><span class="wf-label">'+wsName(s)+'</span></div>';
+  }
+
+  var h='<div class="wf-progress">'+steps+'</div>'+
+    '<div class="m-row"><span class="mk">Status</span><span class="mv">'+badge(t2.status)+'</span></div>'+
     '<div class="m-row"><span class="mk">Date &amp; Time</span><span class="mv">'+fd(b.booking_date)+' &middot; '+ft(b.booking_time)+'</span></div>'+
     '<div class="m-row"><span class="mk">Customer</span><span class="mv">'+esc(b.customer_name)+'</span></div>'+
     '<div class="m-row"><span class="mk">Address</span><span class="mv">'+esc(b.customer_address)+'</span></div>'+
     '<div class="m-row"><span class="mk">Phone</span><span class="mv"><a style="display:inline-flex;align-items:center;gap:4px;color:var(--accent);font-weight:700;text-decoration:none;font-size:.78rem;padding:6px 14px;background:var(--accent-light);border-radius:20px" href="https://wa.me/'+waNum(b.customer_phone)+'" target="_blank"><i data-lucide="message-circle"></i> WhatsApp</a></span></div>';
 
-  if(beforeP.length)h+='<div style="margin-top:16px"><div style="font-weight:700;margin-bottom:8px;font-size:.78rem">Before Photos ('+beforeP.length+')</div>'+thumbs(beforeP)+'</div>';
-  if(t2.status==='assigned'||t2.status==='in_progress')h+='<div class="up" id="upBefore" onclick="pickPhoto(\''+id+'\',\'before\')"><i data-lucide="camera"></i> Tap to add BEFORE photo</div>';
+  if(beforeP.length)h+='<div style="margin-top:16px"><div style="font-weight:700;margin-bottom:8px;font-size:.78rem">Before Photos ('+bc+'/2 minimum)</div>'+thumbs(beforeP)+'</div>';
+  if(afterP.length)h+='<div style="margin-top:16px"><div style="font-weight:700;margin-bottom:8px;font-size:.78rem">After Photos ('+ac+'/2 minimum)</div>'+thumbs(afterP)+'</div>';
 
-  if(t2.status==='in_progress'||t2.status==='awaiting_review'||t2.status==='completed'){
-    if(afterP.length)h+='<div style="margin-top:16px"><div style="font-weight:700;margin-bottom:8px;font-size:.78rem">After Photos ('+afterP.length+')</div>'+thumbs(afterP)+'</div>';
-    if(t2.status==='in_progress')h+='<div class="up" id="upAfter" onclick="pickPhoto(\''+id+'\',\'after\')"><i data-lucide="camera"></i> Tap to add AFTER photo</div>';
-  }
-  if(t2.status==='awaiting_review')h+='<div class="note"><i data-lucide="clock"></i> Waiting for admin review &amp; approval.</div>';
-  if(t2.status==='completed')h+='<div class="note"><i data-lucide="check-check"></i> Job completed. Thank you!</div>';
+  if(step<6)h+='<div class="up" id="upBefore" onclick="pickPhoto(\''+id+'\',\'before\')"><i data-lucide="camera"></i> Upload BEFORE photo ('+bc+'/2)</div>';
+  if(step===6)h+='<div class="up" id="upAfter" onclick="pickPhoto(\''+id+'\',\'after\')"><i data-lucide="camera"></i> Upload AFTER photo ('+ac+'/2)</div>';
+
+  if(step===9||t2.status==='completed')h+='<div class="note"><i data-lucide="check-check"></i> Job completed. Thank you!</div>';
+  if(t2.status==='awaiting_review'&&step===8)h+='<div class="note"><i data-lucide="clock"></i> Waiting for customer payment on site.</div>';
 
   document.getElementById('mBody').innerHTML=h;
   var a='';
-  if(t2.status==='assigned'){
-    a+='<button class="m-btn accept" onclick="acceptJob(\''+id+'\')"><i data-lucide="check"></i> Accept Job</button>';
+  a+='<button class="m-btn wa" onclick="window.open(\'https://wa.me/'+waNum(b.customer_phone)+'\',\'_blank\')"><i data-lucide="message-circle"></i> WhatsApp</button>';
+  a+='<button class="m-btn" style="background:var(--accent2);color:#fff" onclick="window.open(\''+mapsUrl(b.customer_address)+'\',\'_blank\')"><i data-lucide="map-pin"></i> Maps</button>';
+
+  if(step===1){
+    a+='<button class="m-btn accept" onclick="wfAccept(\''+id+'\')"><i data-lucide="check"></i> Accept Job</button>';
     a+='<button class="m-btn danger" onclick="rejectJob(\''+id+'\',\''+esc(b.customer_name)+'\')"><i data-lucide="x"></i> Reject</button>';
   }
-  if(t2.status==='in_progress')a+='<button class="m-btn done" id="modalFinishBtn" onclick="finishJob(\''+id+'\')"'+(afterP.length?'':' disabled')+'><i data-lucide="check"></i> Finish'+(afterP.length?'':' (need after photo)')+'</button>';
-  a+='<button class="m-btn wa" onclick="window.open(\'https://wa.me/'+waNum(b.customer_phone)+'\',\'_blank\')"><i data-lucide="message-circle"></i> WhatsApp</button>';
+  if(step===2)a+='<button class="m-btn accept" onclick="wfStep(\''+id+'\',\'confirm\')"><i data-lucide="check"></i> Confirm Job</button>';
+  if(step===3)a+='<button class="m-btn accept" onclick="wfStep(\''+id+'\',\'heading\')"><i data-lucide="navigation"></i> Heading to Site</button>';
+  if(step===4)a+='<button class="m-btn accept" onclick="wfStep(\''+id+'\',\'arrive\')"><i data-lucide="map-pin"></i> Arrive at Site</button>';
+  if(step===5){
+    if(bc>=2)a+='<button class="m-btn accept" onclick="wfStep(\''+id+'\',\'start\')"><i data-lucide="play"></i> Start Job</button>';
+    else a+='<button class="m-btn" disabled style="opacity:.5"><i data-lucide="camera"></i> Need 2 Before Photos</button>';
+  }
+  if(step===6){
+    if(ac>=2)a+='<button class="m-btn accept" onclick="wfStep(\''+id+'\',\'request-payment\')"><i data-lucide="credit-card"></i> Request Payment</button>';
+    else a+='<button class="m-btn" disabled style="opacity:.5"><i data-lucide="camera"></i> Need 2 After Photos</button>';
+  }
+  if(step===8)a+='<button class="m-btn done" onclick="wfStep(\''+id+'\',\'finish\')"><i data-lucide="check-check"></i> Finish Job</button>';
+
   a+='<button class="m-btn close" onclick="closeModal()">Close</button>';
   document.getElementById('mActs').innerHTML=a;
   openModal();
+}
+
+async function wfStep(id,action){
+  var token=SB.auth.getToken();
+  try{
+    var res=await fetch(API_URL+'/api/workflow/'+id+'/'+action,{method:'POST',headers:{'Authorization':'Bearer '+token}});
+    var d=await res.json();
+    if(!res.ok)throw new Error(d.error||'Failed');
+    toast(d.data&&d.data.message||action+' done');
+    await loadJobs();if(openId===id)openJob(id);
+  }catch(e){toast('Error: '+e.message)}
+}
+
+async function wfAccept(id){
+  var token=SB.auth.getToken();
+  try{
+    var res=await fetch(API_URL+'/api/workflow/'+id+'/accept',{method:'POST',headers:{'Authorization':'Bearer '+token}});
+    var d=await res.json();
+    if(!res.ok)throw new Error(d.error||'Failed');
+    toast('Job accepted! Confirm your attendance 24h before.');
+    await loadJobs();if(openId===id)openJob(id);
+  }catch(e){toast('Error: '+e.message)}
 }
 
 function openModal(){var m=document.getElementById('modal');m.classList.add('show');document.body.style.overflow='hidden';relucide()}
@@ -527,15 +597,7 @@ function closeModal(){var m=document.getElementById('modal');m.classList.remove(
 
 // ACCEPT / REJECT
 async function acceptJob(id){
-  var token=SB.auth.getToken();
-  try{
-    var res=await fetch(API_URL+'/api/tasks/'+id+'/accept',{method:'POST',headers:{'Authorization':'Bearer '+token}});
-    var d=await res.json();
-    if(!res.ok)throw new Error(d.error||'Failed to accept');
-    toast('Job accepted! You can now upload photos and complete the job.');
-    var x=jobs.find(function(y){return y.t.id===id});if(x){x.t.status='in_progress'}
-    closeModal();renderJobs();
-  }catch(e){toast('Error: '+e.message)}
+  wfAccept(id);
 }
 async function rejectJob(id,name){
   if(!confirm('Reject job for "'+name+'"? It will be reassigned to another staff.'))return;
@@ -562,22 +624,26 @@ async function doUpload(id,type,file){
     var res=await fetch('https://api.cloudinary.com/v1_1/'+settings.cloud_name+'/image/upload',{method:'POST',body:fd2});
     var data=await res.json();
     if(!data.secure_url)throw new Error(data.error?data.error.message:'Upload failed');
-    var {error}=await SB.from('task_photos').insert({task_id:id,type:type,url:data.secure_url,uploaded_by:me.id});
-    if(error)throw error;
+
+    var token=SB.auth.getToken();
+    var wr=await fetch(API_URL+'/api/workflow/photos',{
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({task_id:id,type:type,url:data.secure_url})
+    });
+    var wd=await wr.json();
+    if(!wr.ok)throw new Error(wd.error||'Photo save failed');
+
     (photos[id]=photos[id]||[]).push({task_id:id,type:type,url:data.secure_url});
-    toast('Photo uploaded');openJob(id);
+    var x=jobs.find(function(y){return y.t.id===id});
+    if(x){
+      if(type==='before')x.t.before_photos_count=(x.t.before_photos_count||0)+1;
+      else x.t.after_photos_count=(x.t.after_photos_count||0)+1;
+    }
+    toast('Photo uploaded ('+(wd.data&&wd.data.can_proceed?'ready to proceed':'keep going')+')');openJob(id);
   }catch(e){toast('Error: '+e.message);if(box){box.classList.remove('busy');box.innerHTML='<i data-lucide="camera"></i> Tap to retry'}}
 }
 async function finishJob(id){
-  if(!photosFor(id,'after').length){toast('Add at least 1 after photo');return}
-  try{
-    var token=SB.auth.getToken();
-    var res=await fetch(API_URL+'/api/tasks/'+id,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({status:'awaiting_review',finished_at:new Date().toISOString(),updated_at:new Date().toISOString()})});
-    var d=await res.json();
-    if(!res.ok)throw new Error(d.error||'Failed to finish');
-    var x=jobs.find(function(y){return y.t.id===id});if(x)x.t.status='awaiting_review';
-    await loadJobs();openJob(id);
-  }catch(e){toast('Error: '+e.message)}
+  wfStep(id,'request-payment');
 }
 
 // PROFILE

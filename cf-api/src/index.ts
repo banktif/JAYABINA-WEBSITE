@@ -16,6 +16,8 @@ import { handleWebsite } from './routes/website';
 import { handleQuotations } from './routes/quotations';
 import { handleInvoices } from './routes/invoices';
 import { handleReceipts } from './routes/receipts';
+import { handleWorkflow, handleWorkflowPhoto } from './routes/workflow';
+import { handleEmail } from './routes/email';
 import { createDb } from './db/client';
 import { bookings as bookingsTable } from './db/schema';
 
@@ -159,6 +161,28 @@ const handleReceiptsRoute = (req: Request, env: Env) => {
 };
 app.all('/api/receipts', (c) => handleReceiptsRoute(c.req.raw, c.env));
 app.all('/api/receipts/*', (c) => handleReceiptsRoute(c.req.raw, c.env));
+
+const handleWorkflowPhotoRoute = (req: Request, env: Env) => handleWorkflowPhoto(req, env);
+app.all('/api/workflow/photos', (c) => handleWorkflowPhotoRoute(c.req.raw, c.env));
+
+const handleWorkflowRoute = (req: Request, env: Env) => {
+  const path = new URL(req.url).pathname.replace(/\/+$/, '') || '/';
+  return handleWorkflow(req, env, path);
+};
+app.all('/api/workflow/:id/accept', (c) => handleWorkflowRoute(c.req.raw, c.env));
+app.all('/api/workflow/:id/confirm', (c) => handleWorkflowRoute(c.req.raw, c.env));
+app.all('/api/workflow/:id/heading', (c) => handleWorkflowRoute(c.req.raw, c.env));
+app.all('/api/workflow/:id/arrive', (c) => handleWorkflowRoute(c.req.raw, c.env));
+app.all('/api/workflow/:id/start', (c) => handleWorkflowRoute(c.req.raw, c.env));
+app.all('/api/workflow/:id/request-payment', (c) => handleWorkflowRoute(c.req.raw, c.env));
+app.all('/api/workflow/:id/finish', (c) => handleWorkflowRoute(c.req.raw, c.env));
+
+const handleEmailRoute = (req: Request, env: Env) => {
+  const path = new URL(req.url).pathname.replace(/\/+$/, '') || '/';
+  return handleEmail(req, env, path);
+};
+app.all('/api/email', (c) => handleEmailRoute(c.req.raw, c.env));
+app.all('/api/email/*', (c) => handleEmailRoute(c.req.raw, c.env));
 
 app.notFound(() => err('Not found', 404));
 

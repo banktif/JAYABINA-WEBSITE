@@ -101,6 +101,8 @@ export interface Env {
   BAYARCASH_PAYMENT_CHANNEL: string;
   WA_PHONE_NUMBER_ID?: string;
   WA_ACCESS_TOKEN?: string;
+  WA_WEBHOOK_VERIFY_TOKEN?: string;
+  RESEND_API_KEY?: string;
   BACKUP_SECRET: string;
   GH_PAT?: string;
   SITE_URL: string;
