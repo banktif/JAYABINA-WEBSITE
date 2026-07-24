@@ -178,11 +178,20 @@ This section supersedes older Supabase architecture and deploy notes below.
 
   **D. MOBILE LAYOUT (all pages, ≤1023px):**
   1. Mobile order MUST be: **center headline → center subheadline → image → buttons, NO text below buttons**.
-  2. `.hero-grid` must collapse to single column: `grid-template-columns:1fr; row-gap:20px`.
-  3. All `.hero-grid>` children must have `grid-column:auto; grid-row:auto`.
-  4. `.hero-copy` must have `text-align:center` on mobile.
-  5. `.hero-copy h1, .hero-copy .lead` must have `text-align:center` on mobile.
+  2. Achieved via: `.hero-copy{display:contents}` + `.hero-visual{order:1}` + `.hero-actions{order:2}` at `@media(max-width:1023px)`.
+  3. `.hero-grid{grid-template-columns:1fr;row-gap:20px}`.
+  4. All `.hero-grid>` children must have `grid-column:auto;grid-row:auto`.
+  5. `.hero-copy h1`, `.hero-copy .lead` must have `text-align:center` on mobile.
   6. NEVER add `.hero-note` or any text element below `.hero-actions`.
+  7. NEVER revert to `order:-1` or remove `display:contents` — this WILL break mobile hero flow.
+
+  **🔁 MOBILE HERO ROLLBACK (all 3 service pages):**
+  ```bash
+  git show 26d6c6a:site/layouts/partials/service-tank.html > site/layouts/partials/service-tank.html
+  git show 26d6c6a:site/layouts/partials/service-roof.html > site/layouts/partials/service-roof.html
+  git show 26d6c6a:site/layouts/partials/service-paint.html > site/layouts/partials/service-paint.html
+  ```
+  Commit `26d6c6a` is the canonical unified mobile hero state — protected tag `mobile-hero-locked`.
 
   **E. HOMEPAGE HERO (site/layouts/index.html):**
   1. Same rules as service pages for mobile layout.
