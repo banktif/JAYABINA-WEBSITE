@@ -2000,9 +2000,12 @@ async function showInvoices(){
     if(!rows.length){
       h+='<div class="empty"><div class="eicon"><i data-lucide="receipt"></i></div><h2>No invoices yet</h2><p>Enter a Booking ID and click "Generate Invoice".</p></div>';
     }else{
-      h+='<div class="d-card"><table><thead><tr><th>#</th><th>Customer</th><th>Total</th><th>Deposit</th><th>Balance</th><th>Status</th></tr></thead><tbody>';
+      h+='<div class="d-card"><table><thead><tr><th>#</th><th>Customer</th><th>Total</th><th>Deposit</th><th>Balance</th><th>Status</th><th></th></tr></thead><tbody>';
       rows.forEach(function(r){
-        h+='<tr><td>'+esc(r.number)+'</td><td>'+esc(r.customer_name)+'</td><td>RM'+(r.subtotal||0)+'</td><td>RM'+(r.deposit_paid||0)+'</td><td>RM'+(r.balance_due||0)+'</td><td><span class="bc-badge '+r.status+'"><span class="bdot"></span>'+r.status+'</span></td></tr>';
+        var acts='<a href="'+API_URL+'/api/invoices/'+r.id+'/pdf" target="_blank" class="d-btn" style="padding:2px 6px;font-size:.68rem;text-decoration:none" title="View PDF">&#128196;</a>';
+        if(r.status==='pending')acts+='<button class="d-btn acc" style="padding:2px 6px;font-size:.68rem" onclick="sendInvoice(\''+r.id+'\')">Send</button>';
+        if(r.status!=='paid')acts+='<button class="d-btn don" style="padding:2px 6px;font-size:.68rem" onclick="markInvoicePaid(\''+r.id+'\')">Paid</button>';
+        h+='<tr><td>'+esc(r.number)+'</td><td>'+esc(r.customer_name)+'</td><td>RM'+(r.subtotal||0)+'</td><td>RM'+(r.deposit_paid||0)+'</td><td>RM'+(r.balance_due||0)+'</td><td><span class="bc-badge '+r.status+'"><span class="bdot"></span>'+r.status+'</span></td><td><div style="display:flex;gap:3px">'+acts+'</div></td></tr>';
       });
       h+='</tbody></table></div>';
     }
@@ -2011,6 +2014,23 @@ async function showInvoices(){
   relucide();
 }
 
+async function sendInvoice(id){
+  var token=localStorage.getItem('jc_token');
+  try{
+    var res=await fetch(API_URL+'/api/invoices/'+id+'/send',{method:'POST',headers:{'Authorization':'Bearer '+token}});
+    var d=await res.json();
+    alert('Sent! WA: '+(d.data?.wa?'Yes':'No')+' Email: '+(d.data?.email?'Yes':'No'));
+    showInvoices();
+  }catch(e){alert('Error: '+(e.message||e))}
+}
+async function markInvoicePaid(id){
+  if(!confirm('Mark invoice as paid?'))return;
+  try{
+    var res=await SB.from('invoices').update({status:'paid'}).eq('id',id);
+    if(res.error)throw res.error;
+    showInvoices();
+  }catch(e){alert('Error: '+(e.message||e))}
+}
 async function generateInvoice(){
   var m=document.getElementById('invMsg');var bid=document.getElementById('invBid').value.trim();
   if(!bid){m.textContent='Enter a Booking ID';return}
@@ -2034,9 +2054,9 @@ async function showReceipts(){
     var res=await SB.from('receipts').select('*').order('created_at',{ascending:false});
     if(!viewActive(viewId,'receipts'))return;var rows=res.data||[];
     if(!rows.length){l.innerHTML='<div class="empty"><div class="eicon"><i data-lucide="file-check"></i></div><h2>No receipts</h2><p>Receipts auto-generate when payments are received.</p></div>';return}
-    var h='<div class="d-card"><table><thead><tr><th>#</th><th>Customer</th><th>Type</th><th>Amount</th></tr></thead><tbody>';
+    var h='<div class="d-card"><table><thead><tr><th>#</th><th>Customer</th><th>Type</th><th>Amount</th><th></th></tr></thead><tbody>';
     rows.forEach(function(r){
-      h+='<tr><td>'+esc(r.number)+'</td><td>'+esc(r.customer_name)+'</td><td>'+esc(r.payment_type)+'</td><td>RM'+(r.amount||0)+'</td></tr>';
+      h+='<tr><td>'+esc(r.number)+'</td><td>'+esc(r.customer_name)+'</td><td>'+esc(r.payment_type)+'</td><td>RM'+(r.amount||0)+'</td><td><a href="'+API_URL+'/api/receipts/'+r.id+'/pdf" target="_blank" class="d-btn" style="padding:2px 6px;font-size:.68rem;text-decoration:none" title="View PDF">&#128196;</a></td></tr>';
     });
     h+='</tbody></table></div>';
     l.innerHTML=h;

@@ -253,8 +253,44 @@ const worker = {
     // Process notification queue + scheduled reminders
     ctx.waitUntil(processNotifications(env));
     ctx.waitUntil(sendScheduledReminders(env));
+
+    // Quotation expiry check
+    ctx.waitUntil(expireQuotations(env));
   }
 };
+
+async function expireQuotations(env: Env) {
+  try {
+    const db = createDb(env);
+    const today = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+
+    // Mark past quotations as expired
+    await db.update(bookingsTable).set({}).where(eq(bookingsTable.id, '')).all(); // no-op for import guarantee
+    const { quotations } = await import('./db/schema');
+    await db.update(quotations).set({ status: 'expired', updatedAt: sql`(datetime('now'))` })
+      .where(sql`${quotations.status} IN ('draft','sent') AND ${quotations.validUntil} IS NOT NULL AND ${quotations.validUntil} < date('now')`);
+
+    // Send reminders for quotations expiring tomorrow
+    const expiringSoon = await db.select().from(quotations)
+      .where(sql`${quotations.status} = 'sent' AND ${quotations.validUntil} = '${tomorrow}'`).all();
+
+    if (expiringSoon.length > 0 && env.WA_PHONE_NUMBER_ID && env.WA_ACCESS_TOKEN) {
+      const siteUrl = env.SITE_URL || 'https://www.jayabina.com';
+      for (const q of expiringSoon) {
+        try {
+          let digits = String(q.customerPhone).replace(/\D/g, '');
+          if (digits.startsWith('0')) digits = '6' + digits;
+          const msg = `*JAYABINA — Peringatan Sebut Harga*\n\nKepada: ${q.customerName}\nSebut harga untuk ${q.serviceType} akan tamat esok!\n\nJumlah: RM${q.amount}\n\nSila sahkan sebelum tamat: ${siteUrl}/api/quotations/public/${q.id}`;
+          await fetch(`https://graph.facebook.com/v22.0/${env.WA_PHONE_NUMBER_ID}/messages`, {
+            method: 'POST', headers: { 'Authorization': `Bearer ${env.WA_ACCESS_TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messaging_product: 'whatsapp', to: digits, type: 'text', text: { body: msg } })
+          });
+        } catch {}
+      }
+    }
+  } catch (e) { /* silent - non-critical */ }
+}
 
 export { app };
 export default worker;

@@ -42,6 +42,7 @@
   <button class="d-nav-item" id="dsActive" onclick="filterTab('active')"><span class="dni"><i data-lucide="clock"></i></span> Active</button>
   <button class="d-nav-item" id="dsDone" onclick="filterTab('completed')"><span class="dni"><i data-lucide="check-check"></i></span> Completed</button>
   <div class="d-nav-label">Records</div>
+  <button class="d-nav-item" id="dsQuotations" onclick="showQuotations()"><span class="dni"><i data-lucide="file-text"></i></span> Quotations</button>
   <button class="d-nav-item" id="dsInvoices" onclick="showInvoices()"><span class="dni"><i data-lucide="receipt"></i></span> Invoices</button>
   <button class="d-nav-item" id="dsReceipts" onclick="showReceipts()"><span class="dni"><i data-lucide="file-check"></i></span> Receipts</button>
   <div class="d-nav-label">Account</div>
@@ -92,6 +93,9 @@
     <button class="drawer-item" onclick="filterTab('all');toggleDrawer()"><span><i data-lucide="layout-grid"></i></span> All Bookings</button>
     <button class="drawer-item" onclick="filterTab('active');toggleDrawer()"><span><i data-lucide="clock"></i></span> Active</button>
     <button class="drawer-item" onclick="filterTab('completed');toggleDrawer()"><span><i data-lucide="check-check"></i></span> Completed</button>
+    <button class="drawer-item" onclick="showQuotations();toggleDrawer()"><span><i data-lucide="file-text"></i></span> Quotations</button>
+    <button class="drawer-item" onclick="showInvoices();toggleDrawer()"><span><i data-lucide="receipt"></i></span> Invoices</button>
+    <button class="drawer-item" onclick="showReceipts();toggleDrawer()"><span><i data-lucide="file-check"></i></span> Receipts</button>
   </div>
   <div class="drawer-menu" style="border-top:1px solid var(--border);padding-top:8px">
     <button class="drawer-item" onclick="toggleTheme();toggleDrawer()"><span><i data-lucide="sun-moon"></i></span> Theme</button>
@@ -310,7 +314,51 @@ async function autoLogin(){
   relucide();
 }
 
-// INVOICES & RECEIPTS
+// QUOTATIONS, INVOICES & RECEIPTS
+async function showQuotations(){
+  currentView='quotations';var l=document.getElementById('list');
+  document.getElementById('dTitle').textContent='Quotations';document.getElementById('dSub').textContent='Your quotations & estimates';
+  clearNav();setNav('dsQuotations');document.getElementById('secTitle').textContent='Quotations';
+  l.innerHTML='<div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div>';
+  var h='<div class="empty"><div class="eicon"><i data-lucide="file-text"></i></div><h2>Quotations</h2><p>No quotations yet. When admin sends you a quotation, it will appear here.</p></div>';
+  try{
+    var resp=await fetch(API_URL+'/api/quotations/customer?phone='+encodeURIComponent(myPhone));
+    var data=await resp.json();
+    var rows=(data.data||data)||[];
+    if(Array.isArray(rows)&&rows.length){
+      h='<div class="d-card"><table><thead><tr><th>#</th><th>Service</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>';
+      rows.forEach(function(r){
+        var stBadge='<span class="badge '+r.status+'"><span class="bd"></span>'+r.status+'</span>';
+        var actions='';
+        if(r.status==='sent'||r.status==='draft'){
+          actions='<button class="d-btn acc" onclick="acceptQuote(\''+r.id+'\')">Accept</button><button class="d-btn del" onclick="rejectQuote(\''+r.id+'\')">Reject</button>';
+        }
+        h+='<tr><td>'+esc(r.customer_name)+'</td><td>'+esc(r.service_type)+'</td><td>RM'+(r.amount||0)+'</td><td>'+stBadge+'</td><td><div style="display:flex;gap:4px">'+actions+'</div></td></tr>';
+      });
+      h+='</tbody></table></div>';
+    }
+  }catch(e){}
+  l.innerHTML=h;relucide();
+}
+async function acceptQuote(id){
+  if(!confirm('Accept this quotation? A booking will be created.'))return;
+  try{
+    var res=await fetch(API_URL+'/api/quotations/'+id+'/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:myPhone})});
+    var d=await res.json();
+    if(!res.ok)throw new Error(d.error||'Failed');
+    alert('Accepted! Booking created.');
+    showQuotations();
+  }catch(e){alert('Error: '+(e.message||e))}
+}
+async function rejectQuote(id){
+  if(!confirm('Reject this quotation?'))return;
+  try{
+    var res=await fetch(API_URL+'/api/quotations/'+id+'/reject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:myPhone})});
+    var d=await res.json();
+    if(!res.ok)throw new Error(d.error||'Failed');
+    showQuotations();
+  }catch(e){alert('Error: '+(e.message||e))}
+}
 async function showInvoices(){
   currentView='invoices';var l=document.getElementById('list');
   document.getElementById('dTitle').textContent='Invoices';document.getElementById('dSub').textContent='Your invoices & receipts';
@@ -318,17 +366,32 @@ async function showInvoices(){
   l.innerHTML='<div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div>';
   var h='<div class="empty"><div class="eicon"><i data-lucide="receipt"></i></div><h2>Invoices</h2><p>Invoices are generated when a job is completed.</p></div>';
   try{
-    var res=await SB.from('invoices').select('*').eq('customer_phone',myPhone).order('created_at',{ascending:false});
-    var rows=res.data||[];
-    if(rows.length){
-      h='<div class="d-card"><table><thead><tr><th>#</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead><tbody>';
+    var resp=await fetch(API_URL+'/api/invoices/customer?phone='+encodeURIComponent(myPhone));
+    var data=await resp.json();
+    var rows=(data.data||data)||[];
+    if(Array.isArray(rows)&&rows.length){
+      h='<div class="d-card"><table><thead><tr><th>#</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th><th></th></tr></thead><tbody>';
       rows.forEach(function(r){
-        h+='<tr><td>'+esc(r.number)+'</td><td>RM'+(r.subtotal||0)+'</td><td>RM'+(r.deposit_paid||0)+'</td><td>RM'+(r.balance_due||0)+'</td><td><span class="badge '+r.status+'"><span class="bd"></span>'+r.status+'</span></td></tr>';
+        var acts='<a href="'+API_URL+'/api/invoices/'+r.id+'/pdf" target="_blank" class="d-btn" style="padding:4px 8px;font-size:.7rem;text-decoration:none">PDF</a>';
+        if(r.status!=='paid'&&(r.balance_due||0)>0){
+          acts+='<button class="d-btn acc" style="padding:4px 8px;font-size:.7rem" onclick="payInvoice(\''+r.id+'\')">Pay</button>';
+        }
+        h+='<tr><td>'+esc(r.number)+'</td><td>RM'+(r.subtotal||0)+'</td><td>RM'+(r.deposit_paid||0)+'</td><td>RM'+(r.balance_due||0)+'</td><td><span class="badge '+r.status+'"><span class="bd"></span>'+r.status+'</span></td><td><div style="display:flex;gap:4px">'+acts+'</div></td></tr>';
       });
       h+='</tbody></table></div>';
     }
   }catch(e){}
   l.innerHTML=h;relucide();
+}
+async function payInvoice(id){
+  try{
+    var res=await fetch(API_URL+'/api/invoices/'+id+'/pay',{method:'POST'});
+    var d=await res.json();
+    var result=d.data||d;
+    if(!res.ok)throw new Error(result.error||'Failed');
+    if(result.url){location.href=result.url;return}
+    throw new Error('No payment URL');
+  }catch(e){alert('Error: '+(e.message||e))}
 }
 async function showReceipts(){
   currentView='receipts';var l=document.getElementById('list');
@@ -337,12 +400,13 @@ async function showReceipts(){
   l.innerHTML='<div class="spin"><div class="spin-dot"></div><div class="spin-dot"></div><div class="spin-dot"></div></div>';
   var h='<div class="empty"><div class="eicon"><i data-lucide="file-check"></i></div><h2>Receipts</h2><p>Receipts are issued when payments are received.</p></div>';
   try{
-    var res=await SB.from('receipts').select('*').eq('customer_phone',myPhone).order('created_at',{ascending:false});
-    var rows=res.data||[];
-    if(rows.length){
-      h='<div class="d-card"><table><thead><tr><th>#</th><th>Type</th><th>Amount</th><th>Date</th></tr></thead><tbody>';
+    var resp=await fetch(API_URL+'/api/receipts/customer?phone='+encodeURIComponent(myPhone));
+    var data=await resp.json();
+    var rows=(data.data||data)||[];
+    if(Array.isArray(rows)&&rows.length){
+      h='<div class="d-card"><table><thead><tr><th>#</th><th>Type</th><th>Amount</th><th>Date</th><th></th></tr></thead><tbody>';
       rows.forEach(function(r){
-        h+='<tr><td>'+esc(r.number)+'</td><td>'+esc(r.payment_type)+'</td><td>RM'+(r.amount||0)+'</td><td>'+fd(r.created_at||'')+'</td></tr>';
+        h+='<tr><td>'+esc(r.number)+'</td><td>'+esc(r.payment_type)+'</td><td>RM'+(r.amount||0)+'</td><td>'+fd(r.created_at||'')+'</td><td><a href="'+API_URL+'/api/receipts/'+r.id+'/pdf" target="_blank" class="d-btn" style="padding:4px 8px;font-size:.7rem;text-decoration:none">PDF</a></td></tr>';
       });
       h+='</tbody></table></div>';
     }

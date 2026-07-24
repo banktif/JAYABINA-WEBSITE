@@ -4,6 +4,7 @@ import { err, ok, uuid, nowISO, json as jsonResponse } from '../utils/helpers';
 import { requireAuth } from '../utils/middleware';
 import { createDb, type AppDb } from '../db/client';
 import { appSettings as appSettingsTbl, bookings, customers, quotations } from '../db/schema';
+import { nextDocNumber } from '../utils/counter';
 
 // Service templates
 const SERVICE_TEMPLATES: Record<string, { name: string; items: { description: string; amount: number }[] }> = {
@@ -24,6 +25,150 @@ const SERVICE_TEMPLATES: Record<string, { name: string; items: { description: st
 export async function handleQuotations(req: Request, env: Env, path: string): Promise<Response> {
   const url = new URL(req.url);
   const db = createDb(env);
+
+  // GET /api/quotations/customer?phone=XXX — customer view their own quotations
+  if (path === '/api/quotations/customer' && req.method === 'GET') {
+    try {
+      const phone = url.searchParams.get('phone') || '';
+      if (!phone) return err('Missing phone parameter');
+      const rows = await db.select().from(quotations)
+        .where(eq(quotations.customerPhone, phone))
+        .orderBy(sql`${quotations.createdAt} DESC`).all();
+      return ok(rows);
+    } catch (e: any) { return err(e.msg || 'Error', e.status || 400); }
+  }
+
+  // POST /api/quotations/:id/accept — customer self-serve accept (phone-verified)
+  const acceptMatch = path.match(/^\/api\/quotations\/([a-f0-9-]+)\/accept$/);
+  if (acceptMatch && req.method === 'POST') {
+    try {
+      const qid = acceptMatch[1];
+      const { phone } = await req.json() as any || {};
+      const q = await db.select().from(quotations).where(eq(quotations.id, qid)).get();
+      if (!q) return err('Not found', 404);
+      if (q.status !== 'sent' && q.status !== 'draft') return err('Quotation cannot be accepted in ' + q.status + ' status', 409);
+      if (normalizePhone(phone || '') !== normalizePhone(q.customerPhone)) return err('Phone does not match', 403);
+
+      const priceTotal = parseFloat(await getSetting(db, 'price_total') || '300');
+      const priceDeposit = parseFloat(await getSetting(db, 'price_deposit') || '150');
+      const bId = uuid();
+      await db.insert(bookings).values({
+        id: bId, customerName: q.customerName, customerPhone: q.customerPhone,
+        customerAddress: q.customerAddress,
+        bookingDate: new Date().toISOString().split('T')[0], bookingTime: '9am',
+        amount: q.amount || priceTotal, depositAmount: priceDeposit,
+        status: 'pending_payment', customerId: q.customerId
+      });
+      await db.update(quotations).set({ status: 'accepted', convertedBookingId: bId, updatedAt: nowISO() })
+        .where(eq(quotations.id, qid));
+      return ok({ accepted: true, booking_id: bId });
+    } catch (e: any) { return err(e.msg || 'Error', e.status || 400); }
+  }
+
+  // POST /api/quotations/:id/reject — customer self-serve reject (phone-verified)
+  const rejectMatch = path.match(/^\/api\/quotations\/([a-f0-9-]+)\/reject$/);
+  if (rejectMatch && req.method === 'POST') {
+    try {
+      const qid = rejectMatch[1];
+      const { phone } = await req.json() as any || {};
+      const q = await db.select().from(quotations).where(eq(quotations.id, qid)).get();
+      if (!q) return err('Not found', 404);
+      if (q.status !== 'sent' && q.status !== 'draft') return err('Quotation cannot be rejected in ' + q.status + ' status', 409);
+      if (normalizePhone(phone || '') !== normalizePhone(q.customerPhone)) return err('Phone does not match', 403);
+
+      await db.update(quotations).set({ status: 'rejected', updatedAt: nowISO() })
+        .where(eq(quotations.id, qid));
+      return ok({ rejected: true });
+    } catch (e: any) { return err(e.msg || 'Error', e.status || 400); }
+  }
+
+  // GET /api/quotations/public/:id — public view page (no auth, for WA link)
+  const publicMatch = path.match(/^\/api\/quotations\/public\/([a-f0-9-]+)$/);
+  if (publicMatch && req.method === 'GET') {
+    try {
+      const q = await db.select().from(quotations).where(eq(quotations.id, publicMatch[1])).get();
+      if (!q) return htmlPage('Quotation Not Found', '<h1 style="text-align:center;margin-top:80px">Sebut harga tidak dijumpai.</h1><p style="text-align:center;color:#999">Quotation mungkin telah tamat atau dipadam.</p>');
+
+      const items = safeParse(q.details);
+      const siteUrl = env.SITE_URL || 'https://www.jayabina.com';
+      const now = new Date().toISOString();
+      const isExpired = q.validUntil && q.validUntil < now.split('T')[0];
+      const canAccept = (q.status === 'sent' || q.status === 'draft') && !isExpired;
+
+      let statusBanner = '';
+      if (q.status === 'accepted') statusBanner = '<div style="background:#dcfce7;border:2px solid #166534;color:#166534;padding:20px;border-radius:12px;text-align:center;margin:24px 0"><h2 style="margin:0">Sebut Harga Diterima</h2><p style="margin:8px 0 0">Booking ID: ' + (q.convertedBookingId || '-') + '</p></div>';
+      else if (q.status === 'rejected') statusBanner = '<div style="background:#fef2f2;border:2px solid #e5484d;color:#e5484d;padding:20px;border-radius:12px;text-align:center;margin:24px 0"><h2 style="margin:0">Sebut Harga Ditolak</h2></div>';
+      else if (q.status === 'expired' || isExpired) statusBanner = '<div style="background:#fff7ed;border:2px solid #f59e0b;color:#92400e;padding:20px;border-radius:12px;text-align:center;margin:24px 0"><h2 style="margin:0">Sebut Harga Telah Tamat</h2><p style="margin:8px 0 0">Sila hubungi kami untuk sebut harga baru.</p></div>';
+
+      const itemsHtml = items.length ? items.map((i: any) => `<tr><td style="padding:10px;border-bottom:1px solid #ddd">${escapeHtml(i.description)}</td><td style="padding:10px;border-bottom:1px solid #ddd;text-align:right;font-weight:600">RM${i.amount}</td></tr>`).join('') :
+        `<tr><td style="padding:10px">${escapeHtml(q.serviceType)}</td><td style="padding:10px;text-align:right;font-weight:600">RM${q.amount}</td></tr>`;
+
+      const acceptForm = canAccept ? `
+<div id="acceptArea" style="margin:24px 0;padding:20px;background:#f0fdf4;border-radius:12px;text-align:center">
+  <p style="font-weight:700;margin-bottom:12px">Sila masukkan nombor telefon untuk sahkan:</p>
+  <input type="tel" id="qPhone" placeholder="0123456789" style="padding:12px;border:1px solid #ddd;border-radius:8px;width:220px;text-align:center;font-size:1rem" maxlength="13">
+  <div style="margin-top:12px;display:flex;gap:10px;justify-content:center">
+    <button id="btnAccept" onclick="acceptQuote()" style="padding:12px 24px;background:#166534;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer">Terima Sebut Harga</button>
+    <button id="btnReject" onclick="rejectQuote()" style="padding:12px 24px;background:#fff;color:#e5484d;border:2px solid #e5484d;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer">Tolak</button>
+  </div>
+  <p id="qMsg" style="margin-top:12px;font-size:.82rem;min-height:20px"></p>
+</div>` : '';
+
+      const html = `<!DOCTYPE html><html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sebut Harga — JAYABINA</title>
+<style>body{font-family:Arial,sans-serif;max-width:700px;margin:0 auto;padding:24px;color:#333;background:#f8faf9}
+h1{color:#166534;font-size:24px;border-bottom:3px solid #166534;padding-bottom:8px}
+table{width:100%;border-collapse:collapse;margin:20px 0}
+th{background:#f0fdf4;padding:10px;text-align:left}
+.total{text-align:right;font-size:20px;font-weight:bold;margin-top:16px;padding:16px;background:#f0fdf4;border-radius:8px;color:#166534}
+.footer{margin-top:40px;font-size:12px;color:#999;border-top:1px solid #eee;padding-top:16px;text-align:center}
+.deposit{text-align:center;font-size:.9rem;color:#166534;margin-top:8px}
+.spin{text-align:center;font-size:.82rem;color:#999}</style></head><body>
+<h1>JAYABINA — Sebut Harga</h1>
+<p><strong>Kepada:</strong> ${escapeHtml(q.customerName)}</p>
+<p><strong>Alamat:</strong> ${escapeHtml(q.customerAddress)}</p>
+<p><strong>Telefon:</strong> ${escapeHtml(q.customerPhone)}</p>
+<p><strong>Tarikh:</strong> ${new Date().toLocaleDateString('ms-MY')}</p>
+<p><strong>Sah Sehingga:</strong> ${q.validUntil ? new Date(q.validUntil).toLocaleDateString('ms-MY') : '7 hari'}</p>
+${statusBanner}
+<table><thead><tr><th>Perkara</th><th style="text-align:right">Harga (RM)</th></tr></thead><tbody>${itemsHtml}</tbody></table>
+<div class="total">Jumlah: RM${q.amount}</div>
+<p class="deposit">Deposit RM${parseFloat(await getSetting(db, 'price_deposit') || '150')} untuk sahkan tempahan.</p>
+${acceptForm}
+<p style="font-size:.82rem;color:#666;text-align:center">Harga tertakluk kepada perubahan selepas tempoh sah laku. Semua harga dalam Ringgit Malaysia (RM).</p>
+<div class="footer">Jaya Bina Services · No. Pendaftaran: JR0188646-T · www.jayabina.com</div>
+<script>
+var QID='${q.id}';
+function normalizePhone(p){return String(p||'').replace(/\\D/g,'');}
+function showMsg(m,c){var el=document.getElementById('qMsg');el.textContent=m;el.style.color=c||'#333';}
+async function acceptQuote(){
+  var btn=document.getElementById('btnAccept');btn.disabled=true;btn.textContent='Processing...';
+  var phone=document.getElementById('qPhone').value.trim();
+  if(!phone){showMsg('Sila masukkan nombor telefon','#e5484d');btn.disabled=false;btn.textContent='Terima Sebut Harga';return}
+  try{
+    var r=await fetch('${siteUrl}/api/quotations/'+QID+'/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:phone})});
+    var d=await r.json();
+    if(!r.ok)throw new Error(d.error||'Gagal');
+    showMsg('Berjaya diterima! Booking ID: '+d.data.booking_id,'#166534');
+    document.getElementById('acceptArea').innerHTML='<div style="background:#dcfce7;border:2px solid #166534;color:#166534;padding:20px;border-radius:12px;text-align:center"><h2 style="margin:0">Sebut Harga Diterima</h2><p style="margin:8px 0 0">Booking ID: '+d.data.booking_id+'</p></div>';
+    setTimeout(function(){location.href='${siteUrl}/akaun/';},2000);
+  }catch(e){showMsg(e.message,'#e5484d');btn.disabled=false;btn.textContent='Terima Sebut Harga'}
+}
+async function rejectQuote(){
+  var btn=document.getElementById('btnReject');btn.disabled=true;btn.textContent='Processing...';
+  var phone=document.getElementById('qPhone').value.trim();
+  if(!phone){showMsg('Sila masukkan nombor telefon','#e5484d');btn.disabled=false;btn.textContent='Tolak';return}
+  try{
+    var r=await fetch('${siteUrl}/api/quotations/'+QID+'/reject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:phone})});
+    var d=await r.json();
+    if(!r.ok)throw new Error(d.error||'Gagal');
+    document.getElementById('acceptArea').innerHTML='<div style="background:#fef2f2;border:2px solid #e5484d;color:#e5484d;padding:20px;border-radius:12px;text-align:center"><h2 style="margin:0">Sebut Harga Ditolak</h2></div>';
+  }catch(e){showMsg(e.message,'#e5484d');btn.disabled=false;btn.textContent='Tolak'}
+}
+</script></body></html>`;
+
+      return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+    } catch (e: any) { return err(e.msg || 'Error', e.status || 400); }
+  }
 
   // GET /api/quotations - list
   if (path === '/api/quotations' && req.method === 'GET') {
@@ -70,20 +215,26 @@ export async function handleQuotations(req: Request, env: Env, path: string): Pr
       }
 
       const qid = uuid();
-      const prefix = await getSetting(db, 'quotation_prefix') || 'QT';
-      const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
-      const count = await db.select({ cnt: sql`count(*)` }).from(quotations)
-        .where(sql`date(${quotations.createdAt}) = date('now')`).get() as any;
-      const seq = String((count?.cnt ?? 0) + 1).padStart(3, '0');
-      const number = `${prefix}-${today}-${seq}`;
+      const number = await nextDocNumber(db, 'quotation', quotations);
+
+      const taxEnabled = parseInt(await getSetting(db, 'tax_enabled') || '0', 10) === 1;
+      const taxRate = parseFloat(await getSetting(db, 'tax_rate') || '6');
+      const effectiveRate = taxEnabled ? taxRate : 0;
+      const subtotal = amount;
+      const taxAmount = taxEnabled ? Math.round(subtotal * effectiveRate) / 100 : 0;
+      const total = subtotal + taxAmount;
 
       await db.insert(quotations).values({
         id: qid,
+        number,
         customerName: customer_name,
         customerPhone: customer_phone,
         customerAddress: customer_address,
         serviceType: service_type,
-        amount,
+        amount: total,
+        subtotal,
+        taxRate: effectiveRate,
+        taxAmount,
         details: details ? JSON.stringify(details) : '',
         zoneId: zone_id || null,
         status: 'draft',
@@ -185,7 +336,7 @@ export async function handleQuotations(req: Request, env: Env, path: string): Pr
       const msg = `*JAYABINA — Sebut Harga*\n\n` +
         `Kepada: ${q.customerName}\nAlamat: ${q.customerAddress}\nServis: ${q.serviceType}\n\n` +
         `${itemsText}\n\nJumlah: RM${q.amount}\n\n` +
-        `Sah kan: ${siteUrl}/success.html?quote=${q.id}`;
+        `Sah kan: ${siteUrl}/api/quotations/public/${q.id}`;
 
       let waSent = false, emailSent = false;
 
@@ -229,6 +380,12 @@ export async function handleQuotations(req: Request, env: Env, path: string): Pr
       const itemsHtml = items.length ? items.map((i: any) => `<tr><td style="padding:10px;border-bottom:1px solid #ddd">${escapeHtml(i.description)}</td><td style="padding:10px;border-bottom:1px solid #ddd;text-align:right">RM${i.amount}</td></tr>`).join('') :
         `<tr><td style="padding:10px">${escapeHtml(q.serviceType)}</td><td style="padding:10px;text-align:right">RM${q.amount}</td></tr>`;
 
+      const taxEnabled = (q.taxRate || 0) > 0;
+      const subtotal = q.subtotal || q.amount;
+      const taxRows = taxEnabled ? `
+      <tr><td style="padding:10px;text-align:right">Subtotal:</td><td style="padding:10px;text-align:right">RM${subtotal}</td></tr>
+      <tr><td style="padding:10px;text-align:right">SST ${q.taxRate}%:</td><td style="padding:10px;text-align:right">RM${q.taxAmount || 0}</td></tr>` : '';
+
       const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Sebut Harga — JAYABINA</title>
 <style>body{font-family:Arial,sans-serif;max-width:700px;margin:40px auto;padding:20px;color:#333}
 h1{color:#166534;font-size:24px;border-bottom:3px solid #166534;padding-bottom:8px}
@@ -238,14 +395,15 @@ th{background:#f0fdf4;padding:10px;text-align:left}
 .footer{margin-top:40px;font-size:12px;color:#999;border-top:1px solid #eee;padding-top:16px}
 </style></head><body>
 <h1>JAYABINA — Sebut Harga</h1>
+<p><strong>No:</strong> ${escapeHtml(q.number || '')}</p>
 <p><strong>Kepada:</strong> ${escapeHtml(q.customerName)}</p>
 <p><strong>Alamat:</strong> ${escapeHtml(q.customerAddress)}</p>
 <p><strong>Telefon:</strong> ${escapeHtml(q.customerPhone)}</p>
 <p><strong>Tarikh:</strong> ${new Date().toLocaleDateString('ms-MY')}</p>
 <p><strong>Sah Sehingga:</strong> ${q.validUntil ? new Date(q.validUntil).toLocaleDateString('ms-MY') : '7 hari'}</p>
-<table><thead><tr><th>Perkara</th><th style="text-align:right">Harga (RM)</th></tr></thead><tbody>${itemsHtml}</tbody></table>
+<table><thead><tr><th>Perkara</th><th style="text-align:right">Harga (RM)</th></tr></thead><tbody>${itemsHtml}${taxRows}</tbody></table>
 <div class="total">Jumlah: RM${q.amount}</div>
-<p><strong>Syarat:</strong> Deposit RM${parseFloat(await getSetting(db, 'price_deposit') || '150')} untuk sahkan tempahan.</p>
+<p><strong>Syarat:</strong> Deposit RM${parseFloat(await getSetting(db, 'price_deposit') || '150')} untuk sahkan tempahan.${taxEnabled ? ' Termasuk SST ' + q.taxRate + '%.' : ''}</p>
 <p>Harga tertakluk kepada perubahan selepas tempoh sah laku. Semua harga dalam Ringgit Malaysia (RM).</p>
 <div class="footer">Jaya Bina Services · No. Pendaftaran: JR0188646-T · www.jayabina.com · banktifweb1@gmail.com</div>
 </body></html>`;
@@ -269,4 +427,14 @@ function safeParse(raw: any): any[] {
 
 function escapeHtml(s: string): string {
   return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function normalizePhone(p: string): string {
+  return String(p || '').replace(/\D/g, '');
+}
+
+function htmlPage(title: string, body: string): Response {
+  return new Response(`<!DOCTYPE html><html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} — JAYABINA</title><style>body{font-family:Arial,sans-serif;max-width:700px;margin:0 auto;padding:24px;color:#333;background:#f8faf9}</style></head><body>${body}</body></html>`, {
+    headers: { 'Content-Type': 'text/html; charset=utf-8' }
+  });
 }
