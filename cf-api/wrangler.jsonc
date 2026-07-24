@@ -25,6 +25,9 @@
     "BAYARCASH_PAYMENT_CHANNEL": "5",
     "SITE_URL": "https://www.jayabina.com"
   },
+  "ai": {
+    "binding": "AI"
+  },
   "routes": [
     {
       "pattern": "api.jayabina.com",
