@@ -31,8 +31,8 @@
   --radius-lg:16px;
   --shadow:0 1px 2px rgba(22,101,52,.04),0 2px 6px rgba(22,101,52,.06);
   --shadow-lg:0 12px 34px rgba(22,101,52,.10);
-  --menu-bg:#e7f3ea;
-  --menu-overlay:rgba(231,243,234,.86);
+  --menu-bg:#f5f5f5;
+  --menu-overlay:rgba(245,245,245,.86);
   --surface-hover:#edf7f0;
   --canvas-glow:rgba(22,101,52,.07);
   --nav-glass:rgba(255,255,255,.94);
