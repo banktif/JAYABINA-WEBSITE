@@ -53,14 +53,16 @@
     }
 
     /* Drawer accordion sections (mobile collapsible menu) */
-    .dr-section{overflow:hidden;transition:max-height .3s ease}
-    .dr-section.collapsed{max-height:0}
-    .dr-section-trigger{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;color:var(--text2);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .12s;border:none;background:none;width:100%;text-align:left;font-family:var(--font);min-height:48px}
-    .dr-section-trigger:hover{background:var(--bg);color:var(--text)}
-    .dr-section-trigger span{width:24px;text-align:center;font-size:1rem;flex-shrink:0}
-    .dr-section-trigger .dr-chevron{margin-left:auto;font-size:.6rem;transition:transform .2s;opacity:.5;flex-shrink:0}
-    .dr-section.collapsed .dr-section-trigger .dr-chevron{transform:rotate(-90deg)}
-    .dr-section .drawer-item{padding-left:38px}
+    .dr-section{border-bottom:1px solid var(--border);margin:0 -8px;padding:0 8px}
+    .dr-section:last-of-type{border-bottom:0}
+    .dr-trigger{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;color:var(--text2);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .12s;border:none;background:none;width:100%;text-align:left;font-family:var(--font);min-height:48px;-webkit-appearance:none;appearance:none}
+    .dr-trigger:hover{background:var(--bg);color:var(--text)}
+    .dr-trigger span:first-child{width:24px;text-align:center;font-size:1rem;flex-shrink:0}
+    .dr-trigger .dr-chevron{margin-left:auto;font-size:.6rem;transition:transform .2s;opacity:.5;flex-shrink:0}
+    .dr-section.open .dr-trigger .dr-chevron{transform:rotate(180deg)}
+    .dr-body{display:none;padding:0 0 6px}
+    .dr-section.open .dr-body{display:flex;flex-direction:column}
+    .dr-body .drawer-item{padding-left:38px}
 
     /* Phone-specific styles */
     .card-phone{font-size:.7rem;color:var(--accent);font-weight:600}
@@ -401,35 +403,43 @@
     <button class="drawer-item" onclick="showDashboard();toggleDrawer()"><span><i data-lucide="layout-dashboard"></i></span> Dashboard</button>
 
     <div class="dr-section" id="drOps">
-      <button class="dr-section-trigger" onclick="toggleDrSection('drOps')" aria-expanded="true"><span><i data-lucide="layout-grid"></i></span> Operations<span class="dr-chevron">&#x25BE;</span></button>
-      <button class="drawer-item" onclick="showBookings();toggleDrawer()">All bookings</button>
-      <button class="drawer-item" onclick="showBookings('pending_payment');toggleDrawer()">Pending payment <span class="d-nav-badge" id="drBadge" style="margin-left:auto">0</span></button>
-      <button class="drawer-item" onclick="showBookings('confirmed');toggleDrawer()">Confirmed</button>
-      <button class="drawer-item" onclick="showBookings('completed');toggleDrawer()">Completed</button>
-      <button class="drawer-item" onclick="showSchedule();toggleDrawer()">Schedule</button>
-      <button class="drawer-item" onclick="showCustomers();toggleDrawer()">Customers</button>
+      <button class="dr-trigger" onclick="toggleDrSection('drOps')" aria-expanded="false"><span><i data-lucide="layout-grid"></i></span> Operations<span class="dr-chevron">&#x25BE;</span></button>
+      <div class="dr-body">
+        <button class="drawer-item" onclick="showBookings();toggleDrawer()">All bookings</button>
+        <button class="drawer-item" onclick="showBookings('pending_payment');toggleDrawer()">Pending payment <span class="d-nav-badge" id="drBadge" style="margin-left:auto">0</span></button>
+        <button class="drawer-item" onclick="showBookings('confirmed');toggleDrawer()">Confirmed</button>
+        <button class="drawer-item" onclick="showBookings('completed');toggleDrawer()">Completed</button>
+        <button class="drawer-item" onclick="showSchedule();toggleDrawer()">Schedule</button>
+        <button class="drawer-item" onclick="showCustomers();toggleDrawer()">Customers</button>
+      </div>
     </div>
 
     <div class="dr-section" id="drBiz">
-      <button class="dr-section-trigger" onclick="toggleDrSection('drBiz')" aria-expanded="true"><span><i data-lucide="file-text"></i></span> Biz<span class="dr-chevron">&#x25BE;</span></button>
-      <button class="drawer-item" onclick="showQuotations();toggleDrawer()">Quotations</button>
-      <button class="drawer-item" onclick="showInvoices();toggleDrawer()">Invoices</button>
-      <button class="drawer-item" onclick="showReceipts();toggleDrawer()">Receipts</button>
+      <button class="dr-trigger" onclick="toggleDrSection('drBiz')" aria-expanded="false"><span><i data-lucide="file-text"></i></span> Biz<span class="dr-chevron">&#x25BE;</span></button>
+      <div class="dr-body">
+        <button class="drawer-item" onclick="showQuotations();toggleDrawer()">Quotations</button>
+        <button class="drawer-item" onclick="showInvoices();toggleDrawer()">Invoices</button>
+        <button class="drawer-item" onclick="showReceipts();toggleDrawer()">Receipts</button>
+      </div>
     </div>
 
     <div class="dr-section" id="drTeam">
-      <button class="dr-section-trigger" onclick="toggleDrSection('drTeam')" aria-expanded="true"><span><i data-lucide="bar-chart-3"></i></span> Team &amp; Analytics<span class="dr-chevron">&#x25BE;</span></button>
-      <button class="drawer-item" onclick="showAutopilot();toggleDrawer()">Autopilot</button>
-      <button class="drawer-item" onclick="showStaff();toggleDrawer()">Staff</button>
-      <button class="drawer-item" onclick="showStaffPriority();toggleDrawer()">Priority</button>
-      <button class="drawer-item" onclick="showReports();toggleDrawer()">Reports</button>
+      <button class="dr-trigger" onclick="toggleDrSection('drTeam')" aria-expanded="false"><span><i data-lucide="bar-chart-3"></i></span> Team &amp; Analytics<span class="dr-chevron">&#x25BE;</span></button>
+      <div class="dr-body">
+        <button class="drawer-item" onclick="showAutopilot();toggleDrawer()">Autopilot</button>
+        <button class="drawer-item" onclick="showStaff();toggleDrawer()">Staff</button>
+        <button class="drawer-item" onclick="showStaffPriority();toggleDrawer()">Priority</button>
+        <button class="drawer-item" onclick="showReports();toggleDrawer()">Reports</button>
+      </div>
     </div>
 
     <div class="dr-section" id="drSys">
-      <button class="dr-section-trigger" onclick="toggleDrSection('drSys')" aria-expanded="true"><span><i data-lucide="settings"></i></span> System<span class="dr-chevron">&#x25BE;</span></button>
-      <button class="drawer-item" onclick="showWebsite();toggleDrawer()">Website</button>
-      <button class="drawer-item" onclick="showSettings();toggleDrawer()">Settings</button>
-      <button class="drawer-item" onclick="showBackup();toggleDrawer()">Backup</button>
+      <button class="dr-trigger" onclick="toggleDrSection('drSys')" aria-expanded="false"><span><i data-lucide="settings"></i></span> System<span class="dr-chevron">&#x25BE;</span></button>
+      <div class="dr-body">
+        <button class="drawer-item" onclick="showWebsite();toggleDrawer()">Website</button>
+        <button class="drawer-item" onclick="showSettings();toggleDrawer()">Settings</button>
+        <button class="drawer-item" onclick="showBackup();toggleDrawer()">Backup</button>
+      </div>
     </div>
   </div>
   <div class="drawer-menu" style="border-top:1px solid var(--border);padding-top:8px">
@@ -608,7 +618,7 @@ async function quickUpdate(id,s){if(!confirmStatus(s))return;try{var r=await SB.
 // ═══════════ VIEW SWITCHING ═══════════
 function esc(s){return(s===null||s===undefined?'':s).toString().replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})}
 function toggleSection(id){var s=document.getElementById(id);if(s)s.classList.toggle('collapsed');}
-function toggleDrSection(id){var s=document.getElementById(id),t=s?s.querySelector('.dr-section-trigger'):null;if(!s)return;var collapsed=s.classList.contains('collapsed');if(collapsed){s.classList.remove('collapsed');s.style.maxHeight=s.scrollHeight+'px';if(t)t.setAttribute('aria-expanded','true');s.addEventListener('transitionend',function c(){if(!s.classList.contains('collapsed'))s.style.maxHeight='';s.removeEventListener('transitionend',c)},{once:true})}else{s.style.maxHeight=s.scrollHeight+'px';s.classList.add('collapsed');if(t)t.setAttribute('aria-expanded','false');requestAnimationFrame(function(){s.style.maxHeight='0px'})}}
+function toggleDrSection(id){var s=document.getElementById(id);if(!s)return;var wasOpen=s.classList.contains('open');document.querySelectorAll('.dr-section.open').forEach(function(sec){sec.classList.remove('open');var t=sec.querySelector('.dr-trigger');if(t)t.setAttribute('aria-expanded','false')});if(!wasOpen){s.classList.add('open');var t=s.querySelector('.dr-trigger');if(t)t.setAttribute('aria-expanded','true')}}
 function errorMessage(e){return e&&e.message?e.message:(typeof e==='string'?e:'Request failed. Please try again.')}
 function localDateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function moneyValue(v){var n=Number(v);return Number.isFinite(n)?n:0}
