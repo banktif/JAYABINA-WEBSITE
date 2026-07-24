@@ -52,6 +52,16 @@
     .d-sidebar{overflow-y:auto}
     }
 
+    /* Drawer accordion sections (mobile collapsible menu) */
+    .dr-section{overflow:hidden;max-height:800px;transition:max-height .3s ease}
+    .dr-section.collapsed{max-height:0!important}
+    .dr-section-trigger{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;color:var(--text2);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .12s;border:none;background:none;width:100%;text-align:left;font-family:var(--font);min-height:48px}
+    .dr-section-trigger:hover{background:var(--bg);color:var(--text)}
+    .dr-section-trigger span{width:24px;text-align:center;font-size:1rem;flex-shrink:0}
+    .dr-section-trigger .dr-chevron{margin-left:auto;font-size:.6rem;transition:transform .2s;opacity:.5;flex-shrink:0}
+    .dr-section.collapsed .dr-section-trigger .dr-chevron{transform:rotate(-90deg)}
+    .dr-section .drawer-item{padding-left:38px}
+
     /* Phone-specific styles */
     .card-phone{font-size:.7rem;color:var(--accent);font-weight:600}
     .d-phone{color:var(--accent);font-weight:600;font-size:.78rem}
@@ -389,20 +399,38 @@
   </div>
   <div class="drawer-menu">
     <button class="drawer-item" onclick="showDashboard();toggleDrawer()"><span><i data-lucide="layout-dashboard"></i></span> Dashboard</button>
-    <button class="drawer-item" onclick="showBookings();toggleDrawer()"><span><i data-lucide="layout-grid"></i></span> All bookings</button>
-    <button class="drawer-item" onclick="showBookings('pending_payment');toggleDrawer()"><span><i data-lucide="clock"></i></span> Pending payment <span class="d-nav-badge" id="drBadge" style="margin-left:auto">0</span></button>
-    <button class="drawer-item" onclick="showSchedule();toggleDrawer()"><span><i data-lucide="calendar"></i></span> Schedule</button>
-    <button class="drawer-item" onclick="showQuotations();toggleDrawer()"><span><i data-lucide="file-text"></i></span> Quotations</button>
-    <button class="drawer-item" onclick="showInvoices();toggleDrawer()"><span><i data-lucide="receipt"></i></span> Invoices</button>
-    <button class="drawer-item" onclick="showReceipts();toggleDrawer()"><span><i data-lucide="file-check"></i></span> Receipts</button>
-    <button class="drawer-item" onclick="showAutopilot();toggleDrawer()"><span><i data-lucide="bot"></i></span> Autopilot</button>
-    <button class="drawer-item" onclick="showStaff();toggleDrawer()"><span><i data-lucide="users"></i></span> Staff</button>
-    <button class="drawer-item" onclick="showStaffPriority();toggleDrawer()"><span><i data-lucide="list-ordered"></i></span> Priority</button>
-    <button class="drawer-item" onclick="showCustomers();toggleDrawer()"><span><i data-lucide="contact"></i></span> Customers</button>
-    <button class="drawer-item" onclick="showReports();toggleDrawer()"><span><i data-lucide="bar-chart-3"></i></span> Reports</button>
-    <button class="drawer-item" onclick="showWebsite();toggleDrawer()"><span><i data-lucide="globe-2"></i></span> Website</button>
-    <button class="drawer-item" onclick="showSettings();toggleDrawer()"><span><i data-lucide="settings"></i></span> Settings</button>
-    <button class="drawer-item" onclick="showBackup();toggleDrawer()"><span><i data-lucide="database-backup"></i></span> Backup</button>
+
+    <div class="dr-section" id="drOps">
+      <button class="dr-section-trigger" onclick="toggleDrSection('drOps')" aria-expanded="true"><span><i data-lucide="layout-grid"></i></span> Operations<span class="dr-chevron">&#x25BE;</span></button>
+      <button class="drawer-item" onclick="showBookings();toggleDrawer()">All bookings</button>
+      <button class="drawer-item" onclick="showBookings('pending_payment');toggleDrawer()">Pending payment <span class="d-nav-badge" id="drBadge" style="margin-left:auto">0</span></button>
+      <button class="drawer-item" onclick="showBookings('confirmed');toggleDrawer()">Confirmed</button>
+      <button class="drawer-item" onclick="showBookings('completed');toggleDrawer()">Completed</button>
+      <button class="drawer-item" onclick="showSchedule();toggleDrawer()">Schedule</button>
+      <button class="drawer-item" onclick="showCustomers();toggleDrawer()">Customers</button>
+    </div>
+
+    <div class="dr-section" id="drBiz">
+      <button class="dr-section-trigger" onclick="toggleDrSection('drBiz')" aria-expanded="true"><span><i data-lucide="file-text"></i></span> Biz<span class="dr-chevron">&#x25BE;</span></button>
+      <button class="drawer-item" onclick="showQuotations();toggleDrawer()">Quotations</button>
+      <button class="drawer-item" onclick="showInvoices();toggleDrawer()">Invoices</button>
+      <button class="drawer-item" onclick="showReceipts();toggleDrawer()">Receipts</button>
+    </div>
+
+    <div class="dr-section" id="drTeam">
+      <button class="dr-section-trigger" onclick="toggleDrSection('drTeam')" aria-expanded="true"><span><i data-lucide="bar-chart-3"></i></span> Team &amp; Analytics<span class="dr-chevron">&#x25BE;</span></button>
+      <button class="drawer-item" onclick="showAutopilot();toggleDrawer()">Autopilot</button>
+      <button class="drawer-item" onclick="showStaff();toggleDrawer()">Staff</button>
+      <button class="drawer-item" onclick="showStaffPriority();toggleDrawer()">Priority</button>
+      <button class="drawer-item" onclick="showReports();toggleDrawer()">Reports</button>
+    </div>
+
+    <div class="dr-section" id="drSys">
+      <button class="dr-section-trigger" onclick="toggleDrSection('drSys')" aria-expanded="true"><span><i data-lucide="settings"></i></span> System<span class="dr-chevron">&#x25BE;</span></button>
+      <button class="drawer-item" onclick="showWebsite();toggleDrawer()">Website</button>
+      <button class="drawer-item" onclick="showSettings();toggleDrawer()">Settings</button>
+      <button class="drawer-item" onclick="showBackup();toggleDrawer()">Backup</button>
+    </div>
   </div>
   <div class="drawer-menu" style="border-top:1px solid var(--border);padding-top:8px">
     <button class="drawer-item" onclick="refreshView();toggleDrawer()"><span><i data-lucide="refresh-cw"></i></span> Refresh data</button>
@@ -580,6 +608,7 @@ async function quickUpdate(id,s){if(!confirmStatus(s))return;try{var r=await SB.
 // ═══════════ VIEW SWITCHING ═══════════
 function esc(s){return(s===null||s===undefined?'':s).toString().replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})}
 function toggleSection(id){var s=document.getElementById(id);if(s)s.classList.toggle('collapsed');}
+function toggleDrSection(id){var s=document.getElementById(id),t=s?s.querySelector('.dr-section-trigger'):null;if(!s)return;var collapsed=s.classList.contains('collapsed');if(collapsed){s.classList.remove('collapsed');s.style.maxHeight=s.scrollHeight+'px';if(t)t.setAttribute('aria-expanded','true')}else{s.style.maxHeight=s.scrollHeight+'px';s.classList.add('collapsed');if(t)t.setAttribute('aria-expanded','false');requestAnimationFrame(function(){s.style.maxHeight='0px'})}}
 function errorMessage(e){return e&&e.message?e.message:(typeof e==='string'?e:'Request failed. Please try again.')}
 function localDateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function moneyValue(v){var n=Number(v);return Number.isFinite(n)?n:0}
